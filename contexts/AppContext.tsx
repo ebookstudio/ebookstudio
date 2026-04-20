@@ -4,6 +4,7 @@ import { User, Seller, UserType, EBook, CartItem, AppContextType, CreatorSiteCon
 import { mockEBooks, mockUsers } from '../services/mockData';
 import { initializeGeminiChat } from '../services/geminiService';
 import { Chat } from '@google/genai';
+import { auth, googleProvider, signInWithPopup, signOut as firebaseSignOut } from '../services/firebase';
 
 const defaultAppContext: AppContextType = {
   currentUser: null,
@@ -182,49 +183,49 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   // --- AUTH METHODS ---
 
-  const handleGoogleLogin = (credentialResponse: any) => {
+  const handleGoogleLogin = async () => {
     try {
-        const token = credentialResponse.credential;
-        if (!token) return;
+        if (!auth || !googleProvider) {
+            console.error("Firebase Auth not initialized");
+            return false;
+        }
 
-        // Decode JWT manually to avoid external dependency
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
+        const result = await signInWithPopup(auth, googleProvider);
+        const user = result.user;
         
-        const payload = JSON.parse(jsonPayload);
+        if (!user) return false;
         
-        // Map Google User to App User (Default to USER/Reader role)
-        const googleUser: User = {
-            id: `google_${payload.sub}`,
-            name: payload.name,
-            email: payload.email,
+        // Map Firebase User to App User (Default to USER/Reader role)
+        const appUser: User = {
+            id: `google_${user.uid}`,
+            name: user.displayName || 'Google User',
+            email: user.email || '',
             purchaseHistory: [],
             wishlist: [],
-            isVerified: false,
-            profileImageUrl: payload.picture
+            isVerified: user.emailVerified,
+            profileImageUrl: user.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.uid}`
         };
 
         // Check if we have previous data for this user in mock/local
-        const existingData = mockUsers[googleUser.id];
+        const existingData = mockUsers[appUser.id];
         if (existingData) {
             // Restore role if they were a seller
             if ('uploadedBooks' in existingData) {
                 setCurrentUser(existingData as Seller, UserType.SELLER);
-                return;
+                return true;
             }
         }
 
-        setCurrentUser(googleUser, UserType.USER);
+        setCurrentUser(appUser, UserType.USER);
         
         // Persist to mock data (runtime cache)
-        mockUsers[googleUser.id] = googleUser;
+        mockUsers[appUser.id] = appUser;
 
-        console.log("Logged in with Google:", googleUser.name);
+        console.log("Logged in with Google via Firebase:", appUser.name);
+        return true;
     } catch (e) {
         console.error("Google Login Failed", e);
+        return false;
     }
   };
 

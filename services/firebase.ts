@@ -5,13 +5,13 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY || import.meta.env.VITE_API_KEY,
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "co-writter-studio.firebaseapp.com",
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "co-writter-studio",
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "co-writter-studio.appspot.com",
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_FIREBASE_APP_ID,
-    measurementId: import.meta.env.VITE_GA_MEASUREMENT_ID
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY || import.meta.env.VITE_API_KEY || "AIzaSyCoe4zQ0HKezes6EsolNJxBQ21ndBGYc2A",
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "code-co-writter.firebaseapp.com",
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "code-co-writter",
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "code-co-writter.firebasestorage.app",
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "718562308268",
+    appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:718562308268:web:69a5cbfea57e5a30c82f09",
+    measurementId: import.meta.env.VITE_GA_MEASUREMENT_ID || "G-3FGFTJ97FP"
 };
 
 // Initialize Firebase
@@ -21,11 +21,16 @@ let db: any;
 let analytics: any;
 const googleProvider = new GoogleAuthProvider();
 
+// Add custom parameters for Google Login
+googleProvider.setCustomParameters({
+    prompt: 'select_account'
+});
+
 try {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     db = getFirestore(app);
-    if (firebaseConfig.measurementId) {
+    if (firebaseConfig.measurementId && typeof window !== 'undefined') {
         analytics = getAnalytics(app);
     }
 } catch (error) {
@@ -33,4 +38,3 @@ try {
 }
 
 export { auth, googleProvider, signInWithPopup, signOut, db, analytics };
-
