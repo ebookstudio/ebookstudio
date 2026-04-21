@@ -1,5 +1,5 @@
 services:
-  co-writter:
+  ebookstudio:
     build:
       context: .
       args:

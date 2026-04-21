@@ -37,7 +37,7 @@ const StudioLandingPage: React.FC = () => {
                 </div>
                 <div className="mt-8 flex flex-col items-center gap-3">
                     <h1 className="text-white text-3xl font-black tracking-tighter uppercase animate-slide-up font-sans">
-                        CO-WRITTER
+                        EBOOKSTUDIO
                     </h1>
                     <div className="flex items-center gap-3 text-neutral-500 font-mono text-[10px] uppercase tracking-[0.2em] animate-fade-in delay-200">
                         <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-ping"></span>

@@ -69,7 +69,7 @@ const CheckoutPage: React.FC = () => {
       key: RAZORPAY_KEY_ID, 
       amount: Math.round(totalAmount * 100), 
       currency: "INR", 
-      name: "Co-Writter Inc.",
+      name: "EbookStudio Inc.",
       description: "Book Purchase",
       image: "https://raw.githubusercontent.com/atherosai/OpenStore.io/main/vite.svg", 
       handler: function (response: any) {

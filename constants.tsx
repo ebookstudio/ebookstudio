@@ -1,8 +1,8 @@
 
 import React from 'react'; // Required for JSX
 
-export const APP_NAME = "co-writter";
-export const ENGINE_NAME = "Co-Author";
+export const APP_NAME = "ebookstudio";
+export const ENGINE_NAME = "Studio AI";
 export const ACCENT_COLOR_CLASS = "brand-accent"; // Matches Tailwind config
 export const BG_DARK_CLASS = "brand-bg-dark";
 export const CARD_DARK_CLASS = "brand-card-dark";

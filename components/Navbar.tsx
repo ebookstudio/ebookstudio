@@ -9,7 +9,7 @@ import MorphicEye from './MorphicEye';
 const { Link, useNavigate, useLocation } = ReactRouterDOM as any;
 
 const Navbar: React.FC = () => {
-  const { currentUser, userType, setCurrentUser, cart } = useAppContext();
+  const { currentUser, userType, cart, logout } = useAppContext();
   const navigate = useNavigate();
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -30,8 +30,8 @@ const Navbar: React.FC = () => {
 
   if (isStandalone) return null;
 
-  const handleLogout = () => {
-    setCurrentUser(null, UserType.GUEST);
+  const handleLogout = async () => {
+    await logout();
     setDropdownOpen(false);
     setMobileMenuOpen(false);
     navigate('/');
@@ -59,7 +59,7 @@ const Navbar: React.FC = () => {
             <div className="flex items-center gap-4 group z-50 relative">
                 <Link to="/" className="flex items-center gap-3">
                    <MorphicEye className="w-9 h-9 border border-white/20 bg-[#111] shadow-[0_0_10px_rgba(255,255,255,0.1)] rounded-full transition-transform duration-300 group-hover:scale-110 will-change-transform" />
-                   <span className="font-bold tracking-tighter text-lg text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:via-neutral-300 group-hover:to-white group-hover:animate-shine transition-all">co-writter</span>
+                   <span className="font-bold tracking-tighter text-lg text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:via-neutral-300 group-hover:to-white group-hover:animate-shine transition-all">ebookstudio</span>
                 </Link>
                 {isStudio && (
                     <div className="hidden sm:flex items-center gap-2 text-neutral-500 font-mono text-[10px] uppercase tracking-widest">

@@ -17,7 +17,7 @@ export const mockEBooks: EBook[] = [
         id: 'p1',
         pageNumber: 1,
         title: 'Welcome to the Future',
-        content: `# Welcome to Ebook-Engine\n\n**Where Thought Becomes Literature.**\n\nEbook-Engine is more than just a writing tool; it is a collaborative neural engine designed to elevate your creative process. Whether you are outlining a sci-fi epic, drafting a technical manual, or publishing your first novel, this platform provides the intelligence and infrastructure you need.\n\n![Workspace](https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&q=80&w=1000)\n\n### Core Philosophy\n\nWe believe that AI should not replace the author, but amplify them. Our "Co-Author" engine is built on Google's Gemini models, fine-tuned to understand narrative structure, tone, and pacing.\n\n### In This Manual\n\nOver the next 10 pages, we will cover:\n- The Studio Interface\n- AI Tools & Prompting\n- Visual Asset Generation\n- Publishing & Monetization`
+        content: `# Welcome to Ebook-Engine\n\n**Where Thought Becomes Literature.**\n\nEbook-Engine is more than just a writing tool; it is a collaborative neural engine designed to elevate your creative process. Whether you are outlining a sci-fi epic, drafting a technical manual, or publishing your first novel, this platform provides the intelligence and infrastructure you need.\n\n![Workspace](https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&q=80&w=1000)\n\n### Core Philosophy\n\nWe believe that AI should not replace the author, but amplify them. Our "Studio AI" engine is built on Google's Gemini models, fine-tuned to understand narrative structure, tone, and pacing.\n\n### In This Manual\n\nOver the next 10 pages, we will cover:\n- The Studio Interface\n- AI Tools & Prompting\n- Visual Asset Generation\n- Publishing & Monetization`
       },
       {
         id: 'p2',
@@ -29,13 +29,13 @@ export const mockEBooks: EBook[] = [
         id: 'p3',
         pageNumber: 3,
         title: 'The eBook Studio',
-        content: `# The Studio\n\nThis is where the magic happens. The Studio is divided into two main zones: the **Context Panel** (Left) and the **Editor** (Right).\n\n![Studio](https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?auto=format&fit=crop&q=80&w=1000)\n\n### 1. The Editor\n\nA distraction-free markdown environment. It supports:\n- **Rich Text**: Headers (#), Bold (**text**), and Lists (- item).\n- **Slash Commands**: Type \`/\` to open the quick menu for headings, images, or AI generation.\n\n### 2. The Context Panel\n\nYour AI Co-Author lives here. You can chat with it to brainstorm ideas, or switch to the **Outline View** to manage your chapters.`
+        content: `# The Studio\n\nThis is where the magic happens. The Studio is divided into two main zones: the **Context Panel** (Left) and the **Editor** (Right).\n\n![Studio](https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?auto=format&fit=crop&q=80&w=1000)\n\n### 1. The Editor\n\nA distraction-free markdown environment. It supports:\n- **Rich Text**: Headers (#), Bold (**text**), and Lists (- item).\n- **Slash Commands**: Type \`/\` to open the quick menu for headings, images, or AI generation.\n\n### 2. The Context Panel\n\nYour AI Studio AI lives here. You can chat with it to brainstorm ideas, or switch to the **Outline View** to manage your chapters.`
       },
       {
         id: 'p4',
         pageNumber: 4,
-        title: 'Using the AI Co-Author',
-        content: `# The Neural Engine\n\nYour Co-Author is always listening. You can ask it to:\n\n- *"Write the next paragraph describing a rainy neon city."*\n- *"Fix the grammar in this chapter."*\n- *"Give me 5 ideas for a plot twist."*\n\n![AI Brain](https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&q=80&w=1000)\n\n### Context Awareness\n\nThe AI reads what you write. If you are in Chapter 3, it knows what happened in Chapter 2. This ensures consistency in character names, plot points, and tone.\n\n**Auto-Pilot**: Use the "Auto-Write" button in the header to let the AI draft an entire chapter structure for you automatically.`
+        title: 'Using the AI Studio AI',
+        content: `# The Neural Engine\n\nYour Studio AI is always listening. You can ask it to:\n\n- *"Write the next paragraph describing a rainy neon city."*\n- *"Fix the grammar in this chapter."*\n- *"Give me 5 ideas for a plot twist."*\n\n![AI Brain](https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&q=80&w=1000)\n\n### Context Awareness\n\nThe AI reads what you write. If you are in Chapter 3, it knows what happened in Chapter 2. This ensures consistency in character names, plot points, and tone.\n\n**Auto-Pilot**: Use the "Auto-Write" button in the header to let the AI draft an entire chapter structure for you automatically.`
       },
       {
         id: 'p5',

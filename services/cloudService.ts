@@ -3,7 +3,7 @@
 // Based on the "GitHub-Powered Ebook Studio" architecture.
 
 const GITHUB_API_BASE = "https://api.github.com";
-const REPO_OWNER = "cowritter";
+const REPO_OWNER = "ebookstudio";
 const REPO_NAME = "user-data";
 
 // --- GitHub as Database ---
@@ -19,8 +19,8 @@ export const saveUserDataToGitHub = async (username: string, data: any): Promise
   // SIMULATION MODE: Persist to LocalStorage to mimic a deployed site
   // This allows the "Live Site" (HostingPreviewPage) to actually load this data in a new tab.
   try {
-      // Key format: cowritter_site_{slug}
-      localStorage.setItem(`cowritter_site_${username}`, JSON.stringify(data));
+      // Key format: ebookstudio_site_{slug}
+      localStorage.setItem(`ebookstudio_site_${username}`, JSON.stringify(data));
       
       // Simulate network latency
       await new Promise(resolve => setTimeout(resolve, 1500));
@@ -28,7 +28,7 @@ export const saveUserDataToGitHub = async (username: string, data: any): Promise
       return { 
           success: true, 
           message: "Deployed to GitHub Pages",
-          url: `https://co-writter.github.io/${username}`
+          url: `https://ebookstudio.github.io/${username}`
       };
   } catch (e) {
       console.error("Deployment failed", e);
@@ -39,7 +39,7 @@ export const saveUserDataToGitHub = async (username: string, data: any): Promise
 export const loadUserProfileFromGitHub = async (username: string) => {
     // 1. Try to load from our Simulated "Cloud" (LocalStorage)
     try {
-        const localData = localStorage.getItem(`cowritter_site_${username}`);
+        const localData = localStorage.getItem(`ebookstudio_site_${username}`);
         if (localData) {
             return JSON.parse(localData);
         }

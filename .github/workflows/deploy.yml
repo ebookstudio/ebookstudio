@@ -33,14 +33,13 @@ jobs:
 
       - name: Build
         env:
-          VITE_API_KEY: AIzaSyCoe4zQ0HKezes6EsolNJxBQ21ndBGYc2A
-          VITE_GEMINI_API_KEY: AIzaSyCoe4zQ0HKezes6EsolNJxBQ21ndBGYc2A
-          VITE_FIREBASE_API_KEY: AIzaSyCoe4zQ0HKezes6EsolNJxBQ21ndBGYc2A
-          VITE_FIREBASE_AUTH_DOMAIN: code-co-writter.firebaseapp.com
-          VITE_FIREBASE_PROJECT_ID: code-co-writter
-          VITE_FIREBASE_STORAGE_BUCKET: code-co-writter.firebasestorage.app
-          VITE_FIREBASE_MESSAGING_SENDER_ID: "718562308268"
-          VITE_FIREBASE_APP_ID: "1:718562308268:web:69a5cbfea57e5a30c82f09"
+          VITE_API_KEY: AIzaSyDigiZpeb7pvEN6gA_0p6Va0OK5yk88QjE
+          VITE_FIREBASE_API_KEY: AIzaSyDigiZpeb7pvEN6gA_0p6Va0OK5yk88QjE
+          VITE_FIREBASE_AUTH_DOMAIN: ebooklabs.firebaseapp.com
+          VITE_FIREBASE_PROJECT_ID: ebooklabs
+          VITE_FIREBASE_STORAGE_BUCKET: ebooklabs.appspot.com
+          VITE_FIREBASE_MESSAGING_SENDER_ID: "55195088674"
+          VITE_FIREBASE_APP_ID: "1:221587475436:web:c0fb1c2b4adf4b6f950ec9"
         run: npm run build
 
       - name: Setup Pages

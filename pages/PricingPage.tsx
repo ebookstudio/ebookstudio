@@ -202,7 +202,7 @@ const PricingPage: React.FC = () => {
                                                 setCurrentUser({
                                                     id: 'dev-user',
                                                     name: 'Dev Author',
-                                                    email: 'dev@co-writter.io',
+                                                    email: 'dev@ebookstudio.io',
                                                     isVerified: true,
                                                     profileImageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=dev'
                                                 }, UserType.USER);
@@ -223,7 +223,7 @@ const PricingPage: React.FC = () => {
                         )}
 
                         <div className="space-y-4 relative z-10">
-                            {['Everything in Reader', 'Publish Unlimited Books', 'Co-Author AI', 'Keep 70% of Sales'].map((feature, i) => (
+                            {['Everything in Reader', 'Publish Unlimited Books', 'Studio AI AI', 'Keep 70% of Sales'].map((feature, i) => (
                                 <div key={i} className="flex items-center gap-3 text-sm text-white font-medium">
                                     <div className="p-0.5 bg-white rounded-full">
                                         <IconCheck className="w-3 h-3 text-black flex-shrink-0" />

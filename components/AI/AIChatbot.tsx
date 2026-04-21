@@ -110,7 +110,7 @@ const AIChatbot: React.FC = () => {
                             <div className={`flex-1 space-y-2 ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
                                 {msg.role === 'ai' && (
                                     <div className="flex items-center justify-between">
-                                        <span className="text-xs font-bold text-white uppercase tracking-wide">Co-Author</span>
+                                        <span className="text-xs font-bold text-white uppercase tracking-wide">Studio AI</span>
                                     </div>
                                 )}
                                 <div className={`text-sm leading-7 font-sans whitespace-pre-wrap ${msg.role === 'user' ? 'text-neutral-200 font-medium' : 'text-neutral-300'}`}>

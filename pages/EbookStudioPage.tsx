@@ -68,7 +68,7 @@ const EbookStudioPage: React.FC = () => {
 
   useEffect(() => {
     if (!chatSessionRef.current) {
-        const initialContext = `You are the Co-Author engine (v3.5) for co-writter.
+        const initialContext = `You are the Studio AI engine (v3.5) for ebookstudio.
         Current User: ${currentUser?.name || 'Author'}.
         Project Context: Active Chapter "${activePage.title}".
         Goal: Writing a world-class book with deep reasoning.`;
@@ -358,7 +358,7 @@ const EbookStudioPage: React.FC = () => {
         <div className="flex flex-1 overflow-hidden relative">
             <aside className="hidden md:flex w-[360px] bg-[#09090b] border-r border-white/10 flex-col z-20 shadow-2xl">
                 <div className="flex border-b border-white/10">
-                    <button onClick={() => setLeftTab('chat')} className={`flex-1 py-4 text-[10px] font-bold uppercase tracking-widest transition-colors ${leftTab === 'chat' ? 'text-white bg-white/5 border-b-2 border-white' : 'text-neutral-500 hover:text-neutral-300'}`}>Co-Author</button>
+                    <button onClick={() => setLeftTab('chat')} className={`flex-1 py-4 text-[10px] font-bold uppercase tracking-widest transition-colors ${leftTab === 'chat' ? 'text-white bg-white/5 border-b-2 border-white' : 'text-neutral-500 hover:text-neutral-300'}`}>Studio AI</button>
                     <button onClick={() => setLeftTab('outline')} className={`flex-1 py-4 text-[10px] font-bold uppercase tracking-widest transition-colors ${leftTab === 'outline' ? 'text-white bg-white/5 border-b-2 border-white' : 'text-neutral-500 hover:text-neutral-300'}`}>Outline</button>
                 </div>
 
@@ -415,7 +415,7 @@ const EbookStudioPage: React.FC = () => {
                                     </button>
                                     <textarea
                                         ref={textareaRef} value={input} onChange={e => setInput(e.target.value)}
-                                        placeholder={isListening ? "Listening..." : "Ask Co-Author..."}
+                                        placeholder={isListening ? "Listening..." : "Ask Studio AI..."}
                                         className="flex-1 bg-transparent border-none outline-none text-white text-sm py-2.5 max-h-32 resize-none font-medium"
                                         onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
                                         disabled={isBusy}

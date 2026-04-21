@@ -102,7 +102,7 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
     { label: "Bullet List", type: 'ul', icon: IconList, desc: "Simple bulleted list" },
     { label: "Quote", type: 'blockquote', icon: IconQuote, desc: "Capture a quote" },
     { label: "Text", type: 'p', icon: IconMinus, desc: "Plain text paragraph" },
-    { label: "Ask Co-Author", action: 'ai', icon: IconSparkles, desc: "Generate text with AI", highlight: true },
+    { label: "Ask Studio AI", action: 'ai', icon: IconSparkles, desc: "Generate text with AI", highlight: true },
     { label: "Generate Image", action: 'img', icon: IconImage, desc: "Create art from description", highlight: true },
   ];
 
@@ -148,7 +148,7 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
           } else {
               setBlocks(newBlocks);
               closeMenu();
-              const userPrompt = window.prompt("Instruction for Co-Author:");
+              const userPrompt = window.prompt("Instruction for Studio AI:");
               if (userPrompt) onTriggerAI(userPrompt);
           }
       } else {

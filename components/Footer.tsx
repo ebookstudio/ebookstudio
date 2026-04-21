@@ -1,15 +1,9 @@
-
 import React, { useEffect, useRef } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { APP_NAME, ENGINE_NAME } from '../constants';
+import { animate, remove } from 'animejs';
 
 const { Link, useLocation } = ReactRouterDOM as any;
-
-declare global {
-  interface Window {
-    anime: any;
-  }
-}
 
 const Footer: React.FC = () => {
   const location = useLocation();
@@ -18,15 +12,14 @@ const Footer: React.FC = () => {
   // Animation Effect: Linear Flowing Waves
   useEffect(() => {
     // Only run animation if we are rendering the footer (i.e. if the ref exists)
-    if (waveRef.current && window.anime) {
+    if (waveRef.current) {
         // Clear any existing animations on these targets (optional safety)
-        window.anime.remove('.wave-path-1');
-        window.anime.remove('.wave-path-2');
-        window.anime.remove('.wave-path-3');
+        remove('.wave-path-1');
+        remove('.wave-path-2');
+        remove('.wave-path-3');
 
         // Wave 1 (Deepest/Back) - Slowest
-        window.anime({
-            targets: '.wave-path-1',
+        animate('.wave-path-1', {
             translateX: [0, -1440],
             duration: 20000,
             easing: 'linear',
@@ -34,8 +27,7 @@ const Footer: React.FC = () => {
         });
 
         // Wave 2 (Middle) - Medium Speed
-        window.anime({
-            targets: '.wave-path-2',
+        animate('.wave-path-2', {
             translateX: [0, -1440],
             duration: 15000,
             easing: 'linear',
@@ -43,8 +35,7 @@ const Footer: React.FC = () => {
         });
 
         // Wave 3 (Front) - Fastest
-        window.anime({
-            targets: '.wave-path-3',
+        animate('.wave-path-3', {
             translateX: [0, -1440],
             duration: 8000,
             easing: 'linear',

@@ -169,7 +169,7 @@ const CinematicWriterOverlay: React.FC<CinematicWriterOverlayProps> = ({
                     <MorphicEye className="w-10 h-10 border border-white/10 bg-black/50 shadow-2xl" isActive={isStreaming} />
                 </div>
                 <div>
-                    <h2 className="text-sm font-bold tracking-[0.2em] text-white uppercase">Co-Author</h2>
+                    <h2 className="text-sm font-bold tracking-[0.2em] text-white uppercase">Studio AI</h2>
                     <div className="flex items-center gap-2">
                         <span className={`w-1.5 h-1.5 rounded-full ${isStreaming ? 'bg-green-500 animate-pulse' : 'bg-neutral-600'}`}></span>
                         <p className="text-[10px] text-neutral-500 font-medium uppercase tracking-widest">

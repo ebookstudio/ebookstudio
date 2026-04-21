@@ -131,7 +131,7 @@ const HomePage: React.FC = () => {
             <div className="max-w-7xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     
-                    {/* Feature 1: AI Co-Author */}
+                    {/* Feature 1: AI Studio AI */}
                     <div className="p-8 rounded-[32px] bg-black/40 backdrop-blur-xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] hover:border-white/20 hover:scale-105 transition-all duration-300 group relative overflow-hidden">
                         <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         
@@ -139,7 +139,7 @@ const HomePage: React.FC = () => {
                             <IconBrain className="w-7 h-7 text-indigo-400 drop-shadow-[0_0_8px_rgba(129,140,248,0.5)]" />
                         </div>
                         
-                        <h3 className="text-2xl font-bold text-white mb-3">AI Co-Author</h3>
+                        <h3 className="text-2xl font-bold text-white mb-3">AI Studio AI</h3>
                         <p className="text-neutral-400 leading-relaxed text-sm">
                             Write with AI. Plan your chapters, write full pages, and fix grammar easily with our writing tools.
                         </p>
@@ -184,7 +184,7 @@ const HomePage: React.FC = () => {
                  
                  <h2 className="text-4xl md:text-5xl font-black text-white mb-8 tracking-tight">Built for Everyone</h2>
                  <p className="text-lg md:text-xl text-neutral-400 leading-relaxed mb-12 font-light">
-                     Co-Writter isn't just a tool; it's a partner. We believe that everyone has a story worth telling, 
+                     EbookStudio isn't just a tool; it's a partner. We believe that everyone has a story worth telling, 
                      and with the right help, anyone can become an author.
                  </p>
                  <Link to="/store" className="inline-flex items-center gap-2 text-white font-bold border-b border-white pb-1 hover:opacity-70 transition-opacity tracking-widest uppercase text-sm">

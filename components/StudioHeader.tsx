@@ -30,7 +30,7 @@ const StudioHeader: React.FC<StudioHeaderProps> = ({ children }) => {
                 <Link to="/" className="flex items-center gap-3 group">
                     <MorphicEye className="w-8 h-8 border border-white/10 bg-neutral-900 rounded-full" />
                     <div className="flex items-center gap-2">
-                        <span className="font-bold tracking-tighter text-lg">co-writter</span>
+                        <span className="font-bold tracking-tighter text-lg">ebookstudio</span>
                         <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest text-neutral-500">Studio</span>
                     </div>
                 </Link>

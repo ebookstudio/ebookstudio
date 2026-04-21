@@ -8,82 +8,9 @@
   <meta name="theme-color" content="#000000" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>co-writter</title>
+  <title>ebookstudio</title>
   
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-  
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        container: {
-          center: true,
-          padding: "2rem",
-          screens: {
-            "2xl": "1400px",
-          },
-        },
-        extend: {
-          colors: {
-            border: "#27272a",
-            input: "#27272a",
-            ring: "#ffffff",
-            background: "#000000",
-            foreground: "#ffffff",
-            primary: {
-              DEFAULT: "#ffffff",
-              foreground: "#000000",
-            },
-            secondary: {
-              DEFAULT: "#18181b",
-              foreground: "#ffffff",
-            },
-            muted: {
-              DEFAULT: "#18181b",
-              foreground: "#a1a1aa",
-            },
-            card: {
-              DEFAULT: "#000000",
-              foreground: "#ffffff",
-            },
-            brand: {
-              accent: "#81c995", // Google Green-ish
-            }
-          },
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
-          },
-          animation: {
-            "spin-slow": "spin 3s linear infinite",
-            "float": "float 8s ease-in-out infinite",
-            "pulse-square": "pulse-square 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-            "slide-up": "slide-up 0.4s cubic-bezier(0.19, 1, 0.22, 1) backwards",
-            "fade-in": "fade-in 0.3s ease-out forwards",
-          },
-          keyframes: {
-            "float": {
-              "0%, 100%": { transform: "translateY(0)" },
-              "50%": { transform: "translateY(-20px)" },
-            },
-            "pulse-square": {
-              "0%, 100%": { opacity: "1", transform: "scale(1)" },
-              "50%": { opacity: "0.5", transform: "scale(0.9)" },
-            },
-            "slide-up": {
-               "0%": { opacity: "0", transform: "translateY(20px)" },
-               "100%": { opacity: "1", transform: "translateY(0)" },
-            },
-            "fade-in": {
-              "0%": { opacity: "0" },
-              "100%": { opacity: "1" }
-            }
-          }
-        },
-      },
-    }
-  </script>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <style>
@@ -124,7 +51,7 @@
       background-color: rgba(255, 255, 255, 0.3);
     }
   </style>
-<link rel="stylesheet" href="/index.css">
+
 </head>
 <body class="selection:bg-white selection:text-black antialiased bg-black text-white">
   <div id="root"></div>

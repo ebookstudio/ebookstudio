@@ -1,25 +1,8 @@
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-
-const GlobalErrorLogger = () => {
-  React.useEffect(() => {
-    const handleError = (event: ErrorEvent) => {
-      console.error("Global Error Caught:", event.error);
-    };
-    const handleRejection = (event: PromiseRejectionEvent) => {
-      console.error("Unhandled Rejection:", event.reason);
-    };
-    window.addEventListener('error', handleError);
-    window.addEventListener('unhandledrejection', handleRejection);
-    return () => {
-      window.removeEventListener('error', handleError);
-      window.removeEventListener('unhandledrejection', handleRejection);
-    }
-  }, []);
-  return null;
-}
+import ErrorBoundary from './components/ErrorBoundary';
+import './index.css';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -29,7 +12,8 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <GlobalErrorLogger />
-    <App />
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
   </React.StrictMode>
 );

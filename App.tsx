@@ -15,6 +15,8 @@ import EditEBookPage from './pages/EditEBookPage';
 import EbookStudioPage from './pages/EbookStudioPage';
 import EbookReaderPage from './pages/EbookReaderPage';
 import HostingPreviewPage from './pages/HostingPreviewPage';
+import LoadingScreen from './components/LoadingScreen';
+import { useAppContext } from './contexts/AppContext';
 
 // Policy Pages
 import ContactPage from './pages/ContactPage';
@@ -60,37 +62,49 @@ const AnimatedRoutes = () => {
     );
 };
 
+const AppContent: React.FC = () => {
+  const { isInitialAuthCheck } = useAppContext();
+
+  if (isInitialAuthCheck) {
+    return <LoadingScreen />;
+  }
+
+  return (
+    <HashRouter>
+      <div className="flex flex-col min-h-screen bg-black font-sans text-foreground overflow-x-hidden relative">
+        
+        {/* === GLOBAL ANTIGRAVITY THEME BACKGROUND === */}
+        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+           {/* Deep Space Gradients */}
+           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(20,20,30,1)_0%,rgba(0,0,0,1)_100%)]"></div>
+           
+           {/* Floating Debris / Geometry */}
+           <div className="absolute top-[20%] left-[15%] w-32 h-32 border border-white/5 rounded-full animate-float opacity-30 blur-[1px]"></div>
+           <div className="absolute bottom-[25%] right-[20%] w-64 h-64 border border-white/5 rotate-45 animate-float-delayed opacity-20"></div>
+           
+           {/* Scanlines */}
+           <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none"></div>
+           <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent animate-[grid-flow_8s_linear_infinite]"></div>
+        </div>
+
+        {/* === Foreground Content === */}
+        <div className="flex-grow relative z-10 flex flex-col w-full"> 
+          <Navbar />
+          <main className="flex-grow flex flex-col">
+              <AnimatedRoutes />
+          </main>
+          <Footer />
+        </div>
+        
+      </div>
+    </HashRouter>
+  );
+};
+
 const App: React.FC = () => {
   return (
     <AppProvider>
-      <HashRouter>
-        <div className="flex flex-col min-h-screen bg-black font-sans text-foreground overflow-x-hidden relative">
-          
-          {/* === GLOBAL ANTIGRAVITY THEME BACKGROUND === */}
-          <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-             {/* Deep Space Gradients */}
-             <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(20,20,30,1)_0%,rgba(0,0,0,1)_100%)]"></div>
-             
-             {/* Floating Debris / Geometry */}
-             <div className="absolute top-[20%] left-[15%] w-32 h-32 border border-white/5 rounded-full animate-float opacity-30 blur-[1px]"></div>
-             <div className="absolute bottom-[25%] right-[20%] w-64 h-64 border border-white/5 rotate-45 animate-float-delayed opacity-20"></div>
-             
-             {/* Scanlines */}
-             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none"></div>
-             <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent animate-[grid-flow_8s_linear_infinite]"></div>
-          </div>
-
-          {/* === Foreground Content === */}
-          <div className="flex-grow relative z-10 flex flex-col w-full"> 
-            <Navbar />
-            <main className="flex-grow flex flex-col">
-                <AnimatedRoutes />
-            </main>
-            <Footer />
-          </div>
-          
-        </div>
-      </HashRouter>
+      <AppContent />
     </AppProvider>
   );
 };

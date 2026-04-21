@@ -4,8 +4,9 @@ import { User, Seller, UserType, EBook, CartItem, AppContextType, CreatorSiteCon
 import { mockEBooks, mockUsers } from '../services/mockData';
 import { initializeGeminiChat } from '../services/geminiService';
 import { Chat } from '@google/genai';
-import { auth, googleProvider, signInWithPopup, signOut as firebaseSignOut } from '../services/firebase';
-import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import { auth, googleProvider, signInWithPopup, signOut, db } from '../services/firebase';
+import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 const defaultAppContext: AppContextType = {
   currentUser: null,
@@ -25,11 +26,11 @@ const defaultAppContext: AppContextType = {
   addCreatedBook: () => {},
   updateEBook: () => {}, 
   handleGoogleLogin: () => {},
-  handlePhoneLogin: async () => ({ success: false }),
-  verifyOtp: async () => ({ success: false }),
   handleEmailLogin: async () => ({ success: false }),
   upgradeToSeller: () => {},
   verifyUser: () => {},
+  isInitialAuthCheck: true,
+  logout: async () => {},
 };
 
 const AppContext = createContext<AppContextType>(defaultAppContext);
@@ -72,20 +73,69 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       } catch (e) { return mockEBooks; }
   });
 
-  const theme = 'dark'; // For now, only dark theme
   const [geminiChat, setGeminiChat] = useState<Chat | null>(null);
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+  const [isInitialAuthCheck, setIsInitialAuthCheck] = useState(true);
 
-  // 2. Persistence Effect: Save state on any change
+  // 2. Firebase Auth Listener
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        if (firebaseUser) {
+            console.log("Firebase Auth State: Logged In", firebaseUser.email);
+            
+            // Try to load full profile from Firestore
+            try {
+                const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    setCurrentUserState(userData as User | Seller);
+                    setUserTypeState(userData.uploadedBooks ? UserType.SELLER : UserType.USER);
+                } else {
+                    // New user or missing profile, create a basic one
+                    const newUser: User = {
+                        id: firebaseUser.uid,
+                        name: firebaseUser.displayName || 'Unknown User',
+                        email: firebaseUser.email || '',
+                        purchaseHistory: [],
+                        wishlist: [],
+                        isVerified: firebaseUser.emailVerified,
+                        profileImageUrl: firebaseUser.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${firebaseUser.uid}`
+                    };
+                    setCurrentUser(newUser, UserType.USER);
+                    // Optionally save to Firestore here if needed
+                }
+            } catch (e) {
+                console.error("Failed to fetch user profile", e);
+                // Fallback to basic info from firebaseUser
+                const fallbackUser: User = {
+                    id: firebaseUser.uid,
+                    name: firebaseUser.displayName || 'User',
+                    email: firebaseUser.email || '',
+                    purchaseHistory: [],
+                    wishlist: [],
+                    isVerified: firebaseUser.emailVerified,
+                };
+                setCurrentUser(fallbackUser, UserType.USER);
+            }
+        } else {
+            console.log("Firebase Auth State: Logged Out");
+            setCurrentUserState(null);
+            setUserTypeState(UserType.GUEST);
+        }
+        setIsInitialAuthCheck(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // 3. Persistence Effect: Save state on any change (excluding sensitive auth)
   useEffect(() => {
       const stateToSave = {
-          currentUser,
-          userType,
           cart,
           allBooks
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-  }, [currentUser, userType, cart, allBooks]);
+  }, [cart, allBooks]);
 
   const setCurrentUser = (user: User | Seller | null, type: UserType) => {
     setCurrentUserState(user);
@@ -188,43 +238,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const handleGoogleLogin = async () => {
     try {
-        if (!auth || !googleProvider) {
-            console.error("Firebase Auth not initialized");
-            return false;
-        }
-
         const result = await signInWithPopup(auth, googleProvider);
-        const user = result.user;
-        
-        if (!user) return false;
-        
-        // Map Firebase User to App User (Default to USER/Reader role)
-        const appUser: User = {
-            id: `google_${user.uid}`,
-            name: user.displayName || 'Google User',
-            email: user.email || '',
-            purchaseHistory: [],
-            wishlist: [],
-            isVerified: user.emailVerified,
-            profileImageUrl: user.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.uid}`
-        };
-
-        // Check if we have previous data for this user in mock/local
-        const existingData = mockUsers[appUser.id];
-        if (existingData) {
-            // Restore role if they were a seller
-            if ('uploadedBooks' in existingData) {
-                setCurrentUser(existingData as Seller, UserType.SELLER);
-                return true;
-            }
-        }
-
-        setCurrentUser(appUser, UserType.USER);
-        
-        // Persist to mock data (runtime cache)
-        mockUsers[appUser.id] = appUser;
-
-        console.log("Logged in with Google via Firebase:", appUser.name);
+        console.log("Google Login Success:", result.user.displayName);
         return true;
     } catch (e) {
         console.error("Google Login Failed", e);
@@ -232,95 +247,26 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   };
 
-  const handlePhoneLogin = async (phoneNumber: string, recaptchaContainerId: string) => {
-    try {
-        if (!auth) return { success: false };
-        
-        const appVerifier = new RecaptchaVerifier(auth, recaptchaContainerId, {
-            'size': 'invisible'
-        });
-
-        const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
-        // Store confirmationResult in a ref or state if needed, but for simplicity we'll return it
-        return { success: true, confirmationResult };
-    } catch (error) {
-        console.error("Phone Login Error:", error);
-        return { success: false, error };
-    }
-  };
-
-  const verifyOtp = async (confirmationResult: any, otp: string) => {
-    try {
-        const result = await confirmationResult.confirm(otp);
-        const user = result.user;
-
-        const appUser: User = {
-            id: `phone_${user.uid}`,
-            name: user.phoneNumber || 'Phone User',
-            email: '',
-            purchaseHistory: [],
-            wishlist: [],
-            isVerified: true,
-            profileImageUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.uid}`
-        };
-
-        setCurrentUser(appUser, UserType.USER);
-        mockUsers[appUser.id] = appUser;
-        return { success: true };
-    } catch (error) {
-        console.error("OTP Verification Error:", error);
-        return { success: false, error };
-    }
-  };
+  const logout = async () => {
+      try {
+          await signOut(auth);
+          setCurrentUserState(null);
+          setUserTypeState(UserType.GUEST);
+          setCart([]);
+      } catch (e) {
+          console.error("Logout failed", e);
+      }
+  }
 
   // ADDED: Email Login for Admin/Owner and Paid Writers
-  const handleEmailLogin = async (inputEmail: string, inputPass: string): Promise<{success: boolean, message?: string}> => {
-      
-      const email = inputEmail.trim();
-      const password = inputPass.trim();
-
-      // 1. Secure Admin Login (Using Environment Variables with Fallback)
-      // Ideally, define VITE_ADMIN_USER and VITE_ADMIN_PASS in your .env file
-      let adminUser = 'opendev-labs';
-      let adminPass = 'co-pass-access';
-      
-      // Use try-catch for environment variable access to prevent crash in certain environments
+  const handleEmailLogin = async (email: string, password: string): Promise<{success: boolean, message?: string}> => {
       try {
-          // Cast import.meta to any to avoid TS error: Property 'env' does not exist on type 'ImportMeta'
-          const meta = import.meta as any;
-          if (meta.env) {
-              adminUser = meta.env.VITE_ADMIN_USER || adminUser;
-              adminPass = meta.env.VITE_ADMIN_PASS || adminPass;
-          }
-      } catch (e) {
-          console.warn("Could not access env vars, using defaults.");
+          await signInWithEmailAndPassword(auth, email, password);
+          return { success: true };
+      } catch (e: any) {
+          console.error("Email Login Failed", e);
+          return { success: false, message: e.message || "Invalid credentials." };
       }
-
-      if (email === adminUser && password === adminPass) {
-          const adminProfile = mockUsers['seller_opendev'];
-          if (adminProfile) {
-              setCurrentUser(adminProfile as Seller, UserType.SELLER);
-              return { success: true };
-          } else {
-              return { success: false, message: "Admin profile configuration missing." };
-          }
-      }
-
-      // 2. Check for other paid writers in Mock DB
-      const foundUserEntry = Object.values(mockUsers).find(user => user.email === email);
-      
-      if (foundUserEntry) {
-          if ('uploadedBooks' in foundUserEntry) {
-               // In a real app, you would hash and verify the password here.
-               // For this demo, we assume the password matches if the email exists as a seller.
-               setCurrentUser(foundUserEntry as Seller, UserType.SELLER);
-               return { success: true };
-          } else {
-              return { success: false, message: "This email is not registered as a Writer account." };
-          }
-      }
-
-      return { success: false, message: "Invalid credentials." };
   };
 
   const upgradeToSeller = () => {
@@ -362,8 +308,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       }
   };
 
+  const theme = 'dark';
+
   return (
-    <AppContext.Provider value={{ currentUser, userType, setCurrentUser, cart, addToCart, removeFromCart, clearCart, theme, geminiChat, initializeChat, isChatbotOpen, toggleChatbot, updateSellerCreatorSite, allBooks, addCreatedBook, updateEBook, handleGoogleLogin, handlePhoneLogin, verifyOtp, handleEmailLogin, upgradeToSeller, verifyUser }}>
+    <AppContext.Provider value={{ currentUser, userType, setCurrentUser, cart, addToCart, removeFromCart, clearCart, theme, geminiChat, initializeChat, isChatbotOpen, toggleChatbot, updateSellerCreatorSite, allBooks, addCreatedBook, updateEBook, handleGoogleLogin, handleEmailLogin, upgradeToSeller, verifyUser, isInitialAuthCheck, logout }}>
       {children}
     </AppContext.Provider>
   );

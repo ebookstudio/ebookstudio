@@ -210,7 +210,7 @@ const LoginPage: React.FC = () => {
                                     setCurrentUser({
                                         id: 'dev-user',
                                         name: 'Dev Author',
-                                        email: 'dev@co-writter.io',
+                                        email: 'dev@ebookstudio.io',
                                         isVerified: true,
                                         profileImageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=dev'
                                     }, UserType.USER);
@@ -225,11 +225,11 @@ const LoginPage: React.FC = () => {
                                     setCurrentUser({
                                         id: 'dev-seller',
                                         name: 'Dev Creator',
-                                        email: 'creator@co-writter.io',
+                                        email: 'creator@ebookstudio.io',
                                         isVerified: true,
                                         profileImageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=creator',
                                         username: '@devcreator',
-                                        payoutEmail: 'creator@co-writter.io',
+                                        payoutEmail: 'creator@ebookstudio.io',
                                         uploadedBooks: [],
                                         creatorSite: {
                                             isEnabled: true,

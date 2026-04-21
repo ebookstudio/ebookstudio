@@ -39,7 +39,7 @@ const NotFoundPage: React.FC = () => {
             </div>
 
             <div className="absolute bottom-8 left-0 right-0 text-center">
-                <span className="text-[9px] font-mono text-neutral-700 uppercase tracking-widest">Co-Writter Neural OS v1.0.4</span>
+                <span className="text-[9px] font-mono text-neutral-700 uppercase tracking-widest">EbookStudio Neural OS v1.0.4</span>
             </div>
         </div>
     );

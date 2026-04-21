@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# --- CO-WRITTER GIT AUTH HELPER ---
+# --- EBOOKSTUDIO GIT AUTH HELPER ---
 # This script helps resolve the 403 Forbidden error during git push.
 
 echo "=========================================="
-echo "   CO-WRITTER GIT AUTHENTICATION HELPER   "
+echo "   EBOOKSTUDIO GIT AUTHENTICATION HELPER   "
 echo "=========================================="
 echo ""
 
-REPO_URL="https://github.com/co-writter/co-writter.github.io.git"
+REPO_URL="https://github.com/ebookstudio/ebookstudio.github.io.git"
 UPSTREAM_NAME="upstream"
 
 echo "Current Git Config (Upstream):"
@@ -29,12 +29,12 @@ case $choice in
             echo "Token cannot be empty."
             exit 1
         fi
-        NEW_URL="https://$token@github.com/co-writter/co-writter.github.io.git"
+        NEW_URL="https://$token@github.com/ebookstudio/ebookstudio.github.io.git"
         git remote set-url $UPSTREAM_NAME "$NEW_URL"
         echo "Remote updated with PAT."
         ;;
     2)
-        NEW_URL="git@github.com:co-writter/co-writter.github.io.git"
+        NEW_URL="git@github.com:ebookstudio/ebookstudio.github.io.git"
         git remote set-url $UPSTREAM_NAME "$NEW_URL"
         echo "Remote updated to SSH."
         echo "NOTE: Ensure your public key (~/.ssh/id_rsa.pub) is added to your GitHub account."

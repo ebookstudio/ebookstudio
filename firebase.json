@@ -1,6 +1,6 @@
 {
     "hosting": {
-        "site": "code-co-writter",
+        "site": "ebooklabs",
         "public": "dist",
         "ignore": [
             "firebase.json",
@@ -50,5 +50,11 @@
                 ]
             }
         ]
+    },
+    "firestore": {
+        "rules": "firestore.rules"
+    },
+    "storage": {
+        "rules": "storage.rules"
     }
 }

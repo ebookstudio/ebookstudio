@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Only authenticated users can read/write their own data
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    // Marketplace listings – anyone can read, only authors can write
+    match /listings/{listingId} {
+      allow read: if true;
+      allow create, update: if request.auth != null && 
+        request.resource.data.authorId == request.auth.uid;
+    }
+    // Audit logs – append-only, server-side only (use Firebase Functions)
+    match /audit/{docId} {
+      allow write: if false; // prevent client writes
+      allow read: if request.auth != null && request.auth.token.admin == true;
+    }
+  }
+}
