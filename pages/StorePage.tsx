@@ -1,223 +1,294 @@
 import React, { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import BookCard from '../components/BookCard';
-import { EBook } from '../types';
-import { IconSearch, IconStar, IconArrowRight } from '../constants';
-import Modal from '../components/Modal'; 
-import CustomDropdown, { DropdownOption } from '../components/CustomDropdown';
 import { useAppContext } from '../contexts/AppContext';
+import { EBook } from '../types';
 import * as ReactRouterDOM from 'react-router-dom';
+import { 
+    IconShoppingCart, IconSearch, IconCheck, IconArrowRight,
+    IconStar
+} from '../constants';
 import MorphicEye from '../components/MorphicEye';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { 
+    Dialog, DialogContent, DialogHeader, 
+    DialogTitle, DialogDescription 
+} from '@/components/ui/dialog';
+import { 
+    Select, SelectContent, SelectItem, 
+    SelectTrigger, SelectValue 
+} from '@/components/ui/select';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
 
 const { useNavigate } = ReactRouterDOM as any;
 
 const StorePage: React.FC = () => {
-  const { addToCart, allBooks } = useAppContext(); 
+  const { allBooks, addToCart, cart } = useAppContext();
   const navigate = useNavigate();
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('All');
-  const [selectedPriceFilter, setSelectedPriceFilter] = useState<'All' | 'Free' | 'Paid'>('All');
-  const [sortBy] = useState('publicationDate'); 
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBook, setSelectedBook] = useState<EBook | null>(null);
 
-  const genres = useMemo(() => ['All', ...new Set(allBooks.map(book => book.genre))], [allBooks]);
-  const genreOptions: DropdownOption[] = genres.map(g => ({ label: g === 'All' ? 'All Genres' : g, value: g }));
-  
-  const priceOptions: DropdownOption[] = [
-      { label: 'All Prices', value: 'All' },
-      { label: 'Free Only', value: 'Free' },
-      { label: 'Paid Only', value: 'Paid' },
-  ];
+  const genres = useMemo(() => ['All', ...Array.from(new Set(allBooks.map(b => b.genre)))], [allBooks]);
 
-  const filteredAndSortedBooks = useMemo(() => {
-    let books = allBooks.filter(book =>
-      book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      book.author.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    if (selectedGenre !== 'All') books = books.filter(book => book.genre === selectedGenre);
-    
-    if (selectedPriceFilter === 'Free') books = books.filter(book => book.price === 0);
-    else if (selectedPriceFilter === 'Paid') books = books.filter(book => book.price > 0);
-
-    return books.sort((a, b) => {
-      return new Date(b.publicationDate).getTime() - new Date(a.publicationDate).getTime();
+  const filteredBooks = useMemo(() => {
+    return allBooks.filter(book => {
+      const matchesSearch = book.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          book.author.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesGenre = selectedGenre === 'All' || book.genre === selectedGenre;
+      return matchesSearch && matchesGenre;
     });
-  }, [searchTerm, selectedGenre, selectedPriceFilter, allBooks]);
+  }, [allBooks, searchTerm, selectedGenre]);
 
-  const featuredBook = useMemo(() => {
-      return allBooks.find(b => b.title.includes("Manual")) || allBooks.find(b => b.price > 0) || allBooks[0];
-  }, [allBooks]);
+  const isInCart = (id: string) => cart.some(item => item.id === id);
 
-  const handleViewDetails = (bookId: string) => {
-    const book = allBooks.find(b => b.id === bookId);
-    if (book) {
-      setSelectedBook(book);
-      setIsModalOpen(true);
-    }
-  };
-
-  const handleModalAction = () => {
-    if (selectedBook) {
-        if (selectedBook.price === 0) navigate(`/read/${selectedBook.id}`);
-        else addToCart(selectedBook);
-        setIsModalOpen(false);
-    }
-  };
+  const spotlightBook = useMemo(() => allBooks[0], [allBooks]);
 
   return (
-    <div className="min-h-screen bg-[#000000] overflow-hidden">
-      
-      {/* Ambient Background */}
+    <div className="min-h-screen bg-[#000000] pt-32 pb-40 selection:bg-white selection:text-black">
       <div className="fixed inset-0 z-0">
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[1000px] h-[1000px] bg-white/[0.01] rounded-full blur-[160px]" />
-          <div className="absolute inset-0 bg-dot-matrix opacity-[0.2]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-white/[0.02] rounded-full blur-[150px]" />
+          <div className="absolute inset-0 bg-dot-matrix opacity-[0.1]" />
       </div>
 
-      {/* --- FEATURED SECTION --- */}
-      <section className="relative pt-48 px-6 pb-20 z-10">
-          {featuredBook && !searchTerm && selectedGenre === 'All' && (
-            <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1.5 }}
-                className="max-w-screen-xl mx-auto relative group"
-            >
-                <div className="glass-card-premium p-10 md:p-24 overflow-hidden relative min-h-[600px] flex items-center rounded-[60px] border-white/5 shadow-2xl">
-                    <div className="absolute inset-0 z-0">
-                        <img src={featuredBook.coverImageUrl} className="w-full h-full object-cover opacity-20 scale-110 transition-transform duration-[3000ms] group-hover:scale-100" alt="" />
-                        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/40 to-transparent" />
-                    </div>
+      <div className="container mx-auto px-8 lg:px-16 max-w-7xl relative z-10">
+        
+        {/* --- STORE HEADER --- */}
+        <header className="mb-24 flex flex-col md:flex-row md:items-end justify-between gap-12">
+            <div className="max-w-3xl">
+                <Badge variant="outline" className="px-6 py-1.5 border-white/10 text-zinc-500 text-[9px] font-black uppercase tracking-[0.4em] rounded-full bg-white/5 mb-8">
+                    Neural Marketplace / v1.0
+                </Badge>
+                <h1 className="text-white text-6xl md:text-8xl font-black tracking-tighter leading-none mb-6">Archive.</h1>
+                <p className="text-zinc-500 text-lg md:text-xl font-medium leading-relaxed max-w-xl">
+                    Discover synthetic manuscripts and human-authored masterpieces synchronized for your creative expansion.
+                </p>
+            </div>
+            <div className="flex items-center gap-6">
+                <Button 
+                    variant="outline"
+                    onClick={() => navigate('/checkout')}
+                    className="h-20 px-10 rounded-full border-white/5 bg-[#050505] hover:bg-[#0a0a0a] transition-all relative group shadow-2xl"
+                >
+                    <IconShoppingCart className="w-5 h-5 text-white mr-4" />
+                    <span className="type-tiny text-white">Neural Cart</span>
+                    {cart.length > 0 && (
+                        <span className="absolute -top-2 -right-2 w-8 h-8 bg-white text-black text-[10px] font-black flex items-center justify-center rounded-full shadow-2xl animate-pulse">
+                            {cart.length}
+                        </span>
+                    )}
+                </Button>
+            </div>
+        </header>
 
-                    <div className="relative z-10 flex flex-col md:flex-row gap-16 md:gap-24 items-center w-full">
-                        <div className="w-full md:w-[320px] flex-shrink-0">
-                            <motion.div 
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.5, duration: 1 }}
-                                className="relative shadow-[0_50px_100px_rgba(0,0,0,0.8)]"
-                            >
-                                <img 
-                                    src={featuredBook.coverImageUrl} 
-                                    className="w-full aspect-[2/3] object-cover rounded-3xl border border-white/10" 
-                                    alt={featuredBook.title} 
-                                />
-                            </motion.div>
-                        </div>
-
-                        <div className="flex-1">
+        {/* --- SPOTLIGHT SECTION --- */}
+        {spotlightBook && (
+            <section className="mb-32">
+                <Card className="bg-[#050505] border-white/10 rounded-[64px] overflow-hidden group shadow-2xl relative">
+                    <div className="absolute inset-0 bg-dot-matrix opacity-[0.05]" />
+                    <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-white/[0.03] rounded-full blur-[120px] group-hover:bg-white/[0.05] transition-all duration-1000" />
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-2">
+                        <div className="p-12 lg:p-24 flex flex-col justify-center">
                             <div className="flex items-center gap-4 mb-10">
-                                <IconStar className="w-5 h-5 text-white animate-pulse" />
-                                <span className="text-[10px] uppercase tracking-[0.4em] font-black text-white/50">Neural Spotlight</span>
+                                <Badge className="bg-white text-black hover:bg-zinc-200 px-4 py-1 text-[8px] font-black uppercase tracking-[0.2em] rounded-full">
+                                    Featured Protocol
+                                </Badge>
+                                <span className="type-tiny opacity-30">Archive Spotlight</span>
                             </div>
-                            <h1 className="type-display text-white text-6xl md:text-8xl font-black mb-10 tracking-tighter leading-none">
-                                {featuredBook.title}
-                            </h1>
-                            <p className="type-body text-zinc-400 text-xl max-w-xl mb-12 leading-relaxed font-medium">
-                                {featuredBook.description}
+                            <h2 className="text-white text-5xl lg:text-7xl font-black tracking-tighter leading-none mb-8 group-hover:scale-[1.01] transition-transform duration-700">
+                                {spotlightBook.title}
+                            </h2>
+                            <p className="text-zinc-500 text-lg leading-relaxed mb-12 max-w-lg">
+                                {spotlightBook.description.slice(0, 180)}...
                             </p>
-                            <div className="flex flex-col sm:flex-row gap-6">
-                                <button onClick={() => handleViewDetails(featuredBook.id)} className="btn-primary rounded-full px-12 py-5 text-xs">
-                                    Analyze Details <IconArrowRight className="w-4 h-4" />
-                                </button>
-                                <button 
-                                    onClick={() => featuredBook.price === 0 ? navigate(`/read/${featuredBook.id}`) : addToCart(featuredBook)}
-                                    className="btn-secondary rounded-full px-12 py-5 text-xs"
+                            <div className="flex flex-wrap gap-6">
+                                <Button 
+                                    onClick={() => setSelectedBook(spotlightBook)}
+                                    className="h-16 px-12 rounded-full bg-white text-black hover:bg-zinc-200 transition-all shadow-2xl"
                                 >
-                                    {featuredBook.price === 0 ? 'Synchronize' : `Sync Protocol — $${(featuredBook.price/100).toFixed(2)}`}
-                                </button>
+                                    <span className="type-tiny">Analyze Metadata</span>
+                                </Button>
+                                <Button 
+                                    variant="outline"
+                                    onClick={() => addToCart(spotlightBook)}
+                                    disabled={isInCart(spotlightBook.id)}
+                                    className="h-16 px-12 rounded-full border-white/10 bg-transparent text-white hover:bg-white/5 transition-all"
+                                >
+                                    <span className="type-tiny">{isInCart(spotlightBook.id) ? 'Archive Ingested' : 'Ingest Fragment'}</span>
+                                </Button>
+                            </div>
+                        </div>
+                        <div className="relative h-[400px] lg:h-auto bg-[#0a0a0a] flex items-center justify-center p-12 overflow-hidden border-l border-white/5">
+                            <div className="relative group/cover">
+                                <div className="absolute inset-0 bg-white/20 rounded-[32px] blur-3xl opacity-0 group-hover/cover:opacity-30 transition-all duration-1000 scale-75" />
+                                <img 
+                                    src={spotlightBook.coverImageUrl} 
+                                    alt={spotlightBook.title} 
+                                    className="w-64 lg:w-80 h-auto rounded-[32px] shadow-[0_40px_100px_rgba(0,0,0,0.8)] border border-white/5 transform group-hover:scale-105 group-hover:-rotate-2 transition-all duration-1000 grayscale-[0.3] group-hover:grayscale-0"
+                                />
                             </div>
                         </div>
                     </div>
-                </div>
-            </motion.div>
-          )}
-      </section>
+                </Card>
+            </section>
+        )}
 
-      {/* --- FILTER ARCHITECTURE --- */}
-      <section className="sticky top-24 z-50 px-6 py-6 pointer-events-none">
-          <div className="max-w-screen-xl mx-auto pointer-events-auto">
-            <div className="glass-navbar p-3 rounded-[32px] border border-white/5 shadow-2xl flex flex-col md:flex-row gap-4 items-center">
-                <div className="relative flex-grow w-full">
-                    <IconSearch className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-                    <input 
-                        type="text"
-                        placeholder="Search the Neural Archive..."
-                        className="bg-transparent border-none focus:ring-0 w-full pl-14 py-3 text-sm text-white placeholder:text-zinc-600"
-                        value={searchTerm}
-                        onChange={e => setSearchTerm(e.target.value)}
-                    />
-                </div>
-                <div className="flex gap-3 w-full md:w-auto">
-                    <CustomDropdown options={genreOptions} value={selectedGenre} onChange={setSelectedGenre} className="flex-1 md:w-48 bg-white/5 rounded-2xl border-white/5 text-[10px]" />
-                    <CustomDropdown options={priceOptions} value={selectedPriceFilter} onChange={(val) => setSelectedPriceFilter(val as any)} className="flex-1 md:w-40 bg-white/5 rounded-2xl border-white/5 text-[10px]" />
-                </div>
+        {/* --- FILTER INTERFACE --- */}
+        <div className="flex flex-col md:flex-row items-center gap-6 mb-20">
+            <div className="relative flex-1 group">
+                <IconSearch className="absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-600 group-focus-within:text-white transition-colors" />
+                <Input 
+                    placeholder="Query Archive By Title, Author, or Tag..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="h-20 pl-16 pr-8 bg-[#050505] border-white/5 rounded-[32px] text-white placeholder:text-zinc-700 focus:border-white/20 focus:ring-0 transition-all shadow-2xl"
+                />
             </div>
-          </div>
-      </section>
+            <div className="w-full md:w-72">
+                <Select value={selectedGenre} onValueChange={setSelectedGenre}>
+                    <SelectTrigger className="h-20 px-8 bg-[#050505] border-white/5 rounded-[32px] text-white focus:ring-0 shadow-2xl">
+                        <SelectValue placeholder="Genre Classification" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#0a0a0a] border-white/10 text-white rounded-2xl p-2">
+                        {genres.map(g => (
+                            <SelectItem key={g} value={g} className="rounded-xl py-3 hover:bg-white/5 focus:bg-white/5 transition-colors cursor-pointer">
+                                <span className="type-tiny">{g}</span>
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+        </div>
 
-      {/* --- REPOSITORY GRID --- */}
-      <section className="relative z-10 px-6 pt-10 pb-48">
-          <div className="max-w-screen-xl mx-auto">
-            {filteredAndSortedBooks.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-                    {filteredAndSortedBooks.map((book, idx) => (
-                        <motion.div
-                            key={book.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ delay: (idx % 4) * 0.1 }}
-                            viewport={{ once: true }}
-                        >
-                            <BookCard book={book} onViewDetails={handleViewDetails} />
-                        </motion.div>
-                    ))}
-                </div>
-            ) : (
-                <div className="py-64 text-center glass-card-premium rounded-[60px] border-dashed border-white/10">
-                    <div className="flex justify-center mb-10 opacity-20">
-                        <MorphicEye variant="logo" className="w-20 h-20" />
+        {/* --- BOOK GRID --- */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+            {filteredBooks.map((book) => (
+                <Card 
+                    key={book.id} 
+                    className="bg-[#050505] border-white/5 rounded-[48px] overflow-hidden group hover:border-white/20 transition-all duration-700 shadow-2xl hover:shadow-[0_40px_100px_rgba(0,0,0,0.4)]"
+                >
+                    <div className="relative aspect-[3/4] overflow-hidden p-8">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60 z-10" />
+                        <img 
+                            src={book.coverImageUrl} 
+                            alt={book.title} 
+                            className="w-full h-full object-cover rounded-3xl transform group-hover:scale-110 transition-transform duration-1000 grayscale-[0.5] group-hover:grayscale-0 shadow-2xl"
+                        />
+                        <div className="absolute bottom-10 left-10 right-10 z-20 flex justify-between items-end">
+                            <Badge className="bg-black/80 backdrop-blur-md text-white border-white/10 px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-full">
+                                {book.genre}
+                            </Badge>
+                            <span className="text-white text-3xl font-black tracking-tighter">${book.price.toFixed(2)}</span>
+                        </div>
                     </div>
-                    <h3 className="type-h2 text-zinc-500 mb-4 tracking-widest uppercase text-sm">No neural fragments found.</h3>
-                    <p className="type-body text-zinc-700">Adjust your synchronization parameters.</p>
-                </div>
+                    
+                    <CardContent className="p-10 pt-4">
+                        <h3 className="text-white text-2xl font-black tracking-tighter leading-tight mb-2 group-hover:text-zinc-300 transition-colors">{book.title}</h3>
+                        <p className="type-tiny opacity-40 mb-8">{book.author}</p>
+                        <p className="text-zinc-500 text-sm line-clamp-2 leading-relaxed mb-10">
+                            {book.description}
+                        </p>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                            <Button 
+                                variant="outline"
+                                onClick={() => setSelectedBook(book)}
+                                className="h-14 rounded-full border-white/5 bg-white/5 text-white hover:bg-white/10 transition-all"
+                            >
+                                <span className="type-tiny">Details</span>
+                            </Button>
+                            <Button 
+                                onClick={() => addToCart(book)}
+                                disabled={isInCart(book.id)}
+                                className="h-14 rounded-full bg-white text-black hover:bg-zinc-200 transition-all shadow-xl"
+                            >
+                                <span className="type-tiny">{isInCart(book.id) ? <IconCheck className="w-4 h-4" /> : 'Ingest'}</span>
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            ))}
+        </div>
+
+        {/* --- BOOK DETAIL DIALOG --- */}
+        <Dialog open={!!selectedBook} onOpenChange={(open) => !open && setSelectedBook(null)}>
+            {selectedBook && (
+                <DialogContent className="max-w-5xl p-0 bg-[#020202] border-white/10 rounded-[48px] overflow-hidden shadow-[0_0_150px_rgba(255,255,255,0.05)]">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 h-full lg:h-[700px]">
+                        <div className="lg:col-span-5 relative bg-[#050505] p-12 lg:p-20 flex items-center justify-center border-r border-white/5">
+                            <div className="absolute inset-0 bg-dot-matrix opacity-[0.05]" />
+                            <img 
+                                src={selectedBook.coverImageUrl} 
+                                alt={selectedBook.title} 
+                                className="w-full max-w-[300px] h-auto rounded-[32px] shadow-[0_40px_100px_rgba(0,0,0,0.8)] border border-white/5"
+                            />
+                        </div>
+                        <div className="lg:col-span-7 flex flex-col">
+                            <ScrollArea className="flex-1 p-12 lg:p-20">
+                                <DialogHeader className="mb-12">
+                                    <div className="flex items-center gap-4 mb-8">
+                                        <Badge variant="outline" className="px-4 py-1 border-white/10 text-emerald-500 text-[8px] font-black uppercase tracking-[0.2em] rounded-full bg-emerald-500/5">
+                                            Archive Verified
+                                        </Badge>
+                                        <Separator orientation="vertical" className="h-4 bg-white/10" />
+                                        <span className="type-tiny opacity-30">{selectedBook.genre}</span>
+                                    </div>
+                                    <DialogTitle className="text-white text-5xl lg:text-7xl font-black tracking-tighter leading-none mb-4">
+                                        {selectedBook.title}
+                                    </DialogTitle>
+                                    <DialogDescription className="type-tiny text-zinc-500">
+                                        Protocol Initialized By {selectedBook.author}
+                                    </DialogDescription>
+                                </DialogHeader>
+                                
+                                <div className="space-y-10">
+                                    <div>
+                                        <h4 className="type-tiny mb-4 opacity-30">Metadata Overview</h4>
+                                        <p className="text-zinc-400 text-lg leading-relaxed">
+                                            {selectedBook.description}
+                                        </p>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-8">
+                                        <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5">
+                                            <p className="type-tiny opacity-30 mb-2">Publication</p>
+                                            <p className="text-white font-mono text-xs">{selectedBook.publicationDate}</p>
+                                        </div>
+                                        <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5">
+                                            <p className="type-tiny opacity-30 mb-2">Complexity</p>
+                                            <p className="text-white font-mono text-xs">Standard Archive</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ScrollArea>
+                            
+                            <div className="p-12 lg:p-20 bg-[#050505] border-t border-white/5 flex items-center justify-between">
+                                <div className="flex flex-col">
+                                    <span className="type-tiny opacity-30 mb-2">Acquisition Fee</span>
+                                    <span className="text-white text-5xl font-black tracking-tighter">${selectedBook.price.toFixed(2)}</span>
+                                </div>
+                                <Button 
+                                    onClick={() => {
+                                        addToCart(selectedBook);
+                                        setSelectedBook(null);
+                                    }}
+                                    disabled={isInCart(selectedBook.id)}
+                                    className="h-20 px-16 rounded-full bg-white text-black hover:bg-zinc-200 transition-all shadow-2xl"
+                                >
+                                    <span className="type-tiny">{isInCart(selectedBook.id) ? 'Ingested' : 'Ingest Fragment'}</span>
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </DialogContent>
             )}
-          </div>
-      </section>
-
-      {/* --- PREVIEW ARCHITECTURE --- */}
-      {selectedBook && (
-        <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="" size="lg">
-            <div className="flex flex-col md:flex-row min-h-[600px] bg-[#050505] overflow-hidden rounded-[40px] border border-white/10">
-                <div className="w-full md:w-1/2 relative min-h-[400px] border-b md:border-b-0 md:border-r border-white/5">
-                    <img src={selectedBook.coverImageUrl} className="w-full h-full object-cover" alt="" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-transparent opacity-60" />
-                </div>
-                <div className="w-full md:w-1/2 p-12 md:p-20 flex flex-col">
-                    <div className="flex items-center gap-3 mb-10">
-                        <span className="text-[10px] uppercase tracking-[0.4em] font-black text-zinc-500">{selectedBook.genre}</span>
-                        <div className="h-[1px] flex-grow bg-white/5" />
-                    </div>
-                    <h2 className="type-h1 text-white text-4xl md:text-5xl font-black mb-6 leading-tight">{selectedBook.title}</h2>
-                    <p className="type-body text-zinc-400 text-lg mb-12">By <span className="text-white font-bold">{selectedBook.author}</span></p>
-                    <p className="type-small text-zinc-500 mb-16 leading-relaxed line-clamp-8">
-                        {selectedBook.description}
-                    </p>
-                    <div className="flex items-center justify-between pt-12 border-t border-white/5 mt-auto">
-                        <span className="type-h2 text-white text-3xl font-black">{selectedBook.price === 0 ? 'FREE' : `$${(selectedBook.price/100).toFixed(2)}`}</span>
-                        <button onClick={handleModalAction} className="btn-primary rounded-full px-12 py-5 text-xs">
-                            {selectedBook.price === 0 ? 'Initialize Sync' : 'Add to Protocol'}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </Modal>
-      )}
+        </Dialog>
+      </div>
     </div>
   );
 };
 
 export default StorePage;
-

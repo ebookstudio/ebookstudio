@@ -6,7 +6,7 @@ interface MorphicEyeProps {
   variant?: 'hero' | 'logo';
 }
 
-const MorphicEye: React.FC<MorphicEyeProps> = ({ className = "w-20 h-20", isActive = true, variant = 'hero' }) => {
+const MorphicEye: React.FC<MorphicEyeProps> = ({ className = "", isActive = true, variant = 'hero' }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [pupilPos, setPupilPos] = useState({ x: 0, y: 0 });
   const [isBlinking, setIsBlinking] = useState(false);
@@ -27,10 +27,10 @@ const MorphicEye: React.FC<MorphicEyeProps> = ({ className = "w-20 h-20", isActi
       const dx = clientX - centerX;
       const dy = clientY - centerY;
       const distance = Math.sqrt(dx * dx + dy * dy);
-      const maxDistance = variant === 'logo' ? 4 : 15;
+      const maxDistance = variant === 'logo' ? 3 : 12;
       
       const angle = Math.atan2(dy, dx);
-      const moveDistance = Math.min(distance / 20, maxDistance);
+      const moveDistance = Math.min(distance / 25, maxDistance);
       
       setPupilPos({
         x: Math.cos(angle) * moveDistance,
@@ -56,8 +56,8 @@ const MorphicEye: React.FC<MorphicEyeProps> = ({ className = "w-20 h-20", isActi
     let blinkTimeout: ReturnType<typeof setTimeout>;
     const triggerBlink = () => {
       setIsBlinking(true);
-      setTimeout(() => setIsBlinking(false), 150);
-      const nextBlink = 2000 + Math.random() * 5000;
+      setTimeout(() => setIsBlinking(false), 120);
+      const nextBlink = 3000 + Math.random() * 6000;
       blinkTimeout = setTimeout(triggerBlink, nextBlink);
     };
     blinkTimeout = setTimeout(triggerBlink, 3000);
@@ -66,53 +66,51 @@ const MorphicEye: React.FC<MorphicEyeProps> = ({ className = "w-20 h-20", isActi
 
   const isLogo = variant === 'logo';
 
+  const Eye = () => (
+    <div className={`relative ${isLogo ? 'w-5 h-5' : 'w-24 h-24'} rounded-full bg-[#030303] border border-white/10 overflow-hidden shadow-2xl transition-all duration-700`}>
+      {/* Deep Gradient */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03)_0%,transparent_70%)]" />
+
+      {/* Blink Layer */}
+      <div 
+        className={`absolute inset-0 bg-[#000] z-40 transition-all duration-150 ease-in-out origin-top ${isBlinking ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0'}`}
+      />
+
+      {/* Pupil Container */}
+      <div 
+        className="absolute inset-0 flex items-center justify-center z-30 transition-transform duration-200 ease-out"
+        style={{ transform: `translate(${pupilPos.x}px, ${pupilPos.y}px)` }}
+      >
+        <div className={`${isLogo ? 'w-2 h-2' : 'w-10 h-10'} rounded-full bg-white relative shadow-[0_0_15px_rgba(255,255,255,0.4)]`}>
+           <div className="absolute top-[20%] left-[20%] w-[30%] h-[30%] bg-white rounded-full blur-[0.5px] opacity-80" />
+           {!isLogo && (
+             <div className="absolute inset-[-4px] rounded-full border border-white/5 animate-pulse" />
+           )}
+        </div>
+      </div>
+
+      {/* Scanline Interface (Hero Only) */}
+      {!isLogo && (
+        <div className="absolute inset-0 z-20 pointer-events-none opacity-[0.15]">
+          <div className="w-full h-full bg-[repeating-linear-gradient(0deg,rgba(255,255,255,0.05)_0px,rgba(255,255,255,0.05)_1px,transparent_1px,transparent_2px)]" />
+          <div className="w-full h-[1px] bg-white absolute top-0 animate-scanline" />
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div 
       ref={containerRef}
-      className={`relative flex items-center justify-center select-none transition-all duration-700 ${className}`}
+      className={`relative flex items-center justify-center gap-4 sm:gap-8 select-none ${className}`}
     >
-      {/* Outer Glow Ring (Hero Only) */}
+      {/* Background Atmosphere */}
       {!isLogo && (
-        <div className="absolute inset-[-20%] rounded-full bg-white/[0.03] blur-2xl animate-pulse" />
+        <div className="absolute inset-[-50%] bg-white/[0.01] blur-[80px] rounded-full animate-pulse pointer-events-none" />
       )}
-
-      {/* Main Socket */}
-      <div className={`relative w-full h-full rounded-full bg-[#080808] border ${isLogo ? 'border-white/10' : 'border-white/20'} overflow-hidden shadow-2xl`}>
-        
-        {/* Internal Gradient Depth */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_0%,transparent_70%)]" />
-
-        {/* Eyelid / Blink */}
-        <div 
-          className={`absolute inset-0 bg-black z-40 transition-all duration-200 ease-in-out origin-top ${isBlinking ? 'scale-y-100' : 'scale-y-0'}`}
-          style={{ borderBottom: '1px solid rgba(255,255,255,0.2)' }}
-        />
-
-        {/* Gaze Container */}
-        <div 
-          className="absolute inset-0 flex items-center justify-center z-30 transition-transform duration-200 ease-out"
-          style={{ transform: `translate(${pupilPos.x}px, ${pupilPos.y}px)` }}
-        >
-          {/* Main Pupil / Light Core */}
-          <div className={`${isLogo ? 'w-[40%] h-[40%]' : 'w-[50%] h-[50%]'} rounded-full bg-white relative shadow-[0_0_20px_rgba(255,255,255,0.5)]`}>
-             {/* Dynamic Highlight */}
-             <div className="absolute top-[20%] left-[20%] w-[30%] h-[30%] bg-white rounded-full blur-[1px] opacity-90" />
-             
-             {/* Neural Ring (Hero Only) */}
-             {!isLogo && (
-               <div className="absolute inset-[-8px] rounded-full border border-white/20 animate-pulse-slow" />
-             )}
-          </div>
-        </div>
-
-        {/* Scanline Interface (Hero Only) */}
-        {!isLogo && (
-          <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden opacity-30">
-            <div className="w-full h-full bg-[repeating-linear-gradient(0deg,rgba(255,255,255,0.03)_0px,rgba(255,255,255,0.03)_1px,transparent_1px,transparent_2px)]" />
-            <div className="w-full h-[2px] bg-white absolute top-0 animate-scanline shadow-[0_0_10px_white]" />
-          </div>
-        )}
-      </div>
+      
+      <Eye />
+      <Eye />
     </div>
   );
 };

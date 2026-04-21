@@ -1,12 +1,10 @@
-
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useAppContext } from '../contexts/AppContext';
 import { EBook, EBookPage } from '../types';
 import * as ReactRouterDOM from 'react-router-dom';
 import {
-    IconBook, IconSparkles, IconSend, IconPlus, IconArrowLeft,
-    IconRocket, IconX, IconMic, IconStop, IconImage, IconCheck, IconBrain, 
-    IconFeather
+    IconSparkles, IconSend, IconPlus, IconArrowLeft,
+    IconX, IconMic, IconStop, IconCheck, IconBrain
 } from '../constants';
 import {
     createStudioSession, generateBookCover, transcribeAudio
@@ -15,6 +13,11 @@ import { Chat, Part } from '@google/genai';
 import MorphicEye from '../components/MorphicEye';
 import NovelEditor from '../components/NovelEditor';
 import CinematicWriterOverlay from '../components/CinematicWriterOverlay';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 
 const { useNavigate, useLocation } = ReactRouterDOM as any;
 
@@ -149,7 +152,6 @@ const EbookStudioPage: React.FC = () => {
       if (e.target.files) {
           const newFiles = Array.from(e.target.files);
           setAttachments(prev => [...prev, ...newFiles]);
-          // Fix: Explicitly cast file to Blob to avoid 'unknown' or 'File' typing issues in some environments
           const newPreviews = newFiles.map((file: File) => URL.createObjectURL(file as Blob));
           setAttachmentPreviews(prev => [...prev, ...newPreviews]);
       }
@@ -158,7 +160,6 @@ const EbookStudioPage: React.FC = () => {
   const removeAttachment = (index: number) => {
       setAttachments(prev => prev.filter((_, i) => i !== index));
       setAttachmentPreviews((prev: string[]) => {
-          // Fix: Ensure we are revoking a valid string reference
           if (prev[index]) {
               URL.revokeObjectURL(prev[index]);
           }
@@ -324,7 +325,7 @@ const EbookStudioPage: React.FC = () => {
   const lastAiMessage = messages.slice().reverse().find(m => m.role === 'ai');
 
   return (
-    <div className="flex flex-col h-screen bg-black text-white overflow-hidden font-sans">
+    <div className="flex flex-col h-screen bg-black text-white overflow-hidden selection:bg-white selection:text-black">
         
         <CinematicWriterOverlay 
             isOpen={isCinematicMode} 
@@ -334,154 +335,214 @@ const EbookStudioPage: React.FC = () => {
             chapterTitle={activePage.title}
         />
 
-        <header className="h-14 border-b border-white/10 bg-[#050505] flex items-center justify-between px-4 z-50 shrink-0">
-            <button onClick={() => navigate('/dashboard')} className="flex items-center gap-2 text-neutral-400 hover:text-white uppercase text-[10px] font-bold tracking-widest transition-colors">
-                <IconArrowLeft className="w-4 h-4" /> Exit Studio
-            </button>
+        {/* --- STUDIO HEADER --- */}
+        <header className="h-20 border-b border-white/5 bg-[#050505] flex items-center justify-between px-8 z-50 shrink-0">
+            <div className="flex items-center gap-8">
+                <Button 
+                    variant="ghost" 
+                    onClick={() => navigate('/dashboard')} 
+                    className="group p-0 text-zinc-500 hover:text-white"
+                >
+                    <IconArrowLeft className="w-4 h-4 mr-3 group-hover:-translate-x-1 transition-transform" /> 
+                    <span className="type-tiny">Exit Studio</span>
+                </Button>
+                <Separator orientation="vertical" className="h-6 bg-white/10" />
+                <div className="flex items-center gap-4">
+                    <MorphicEye variant="logo" isActive={isBusy} className="w-8 h-8" />
+                    <div>
+                        <h1 className="type-display text-lg leading-none">Sovereign Studio</h1>
+                        <p className="type-tiny text-zinc-600 mt-1">Core Engine v3.5</p>
+                    </div>
+                </div>
+            </div>
 
-            <div className="flex items-center gap-3">
-                <button
+            <div className="flex items-center gap-6">
+                <Button
                     onClick={handleAutoWrite}
                     disabled={isBusy || autoPilotMode !== 'idle'}
-                    className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-[10px] font-bold uppercase hover:bg-indigo-500/20 transition-colors disabled:opacity-50 text-indigo-300"
+                    className="h-12 px-8 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/20 transition-all disabled:opacity-50"
                 >
-                    {isBusy ? <IconSparkles className="w-3 h-3 animate-spin" /> : <IconBrain className="w-3 h-3" />}
-                    {autoPilotMode !== 'idle' ? 'Processing...' : 'Neural Auto-Pilot'}
-                </button>
-                <div className="h-4 w-px bg-white/10 mx-1"></div>
-                <button onClick={handleExport} className="bg-white text-black px-6 py-1.5 rounded-full text-[10px] font-bold uppercase hover:bg-neutral-200 transition-colors shadow-[0_0_15px_rgba(255,255,255,0.15)]">
-                    Sync Changes
-                </button>
+                    {isBusy ? <IconSparkles className="w-4 h-4 animate-spin mr-3" /> : <IconBrain className="w-4 h-4 mr-3" />}
+                    <span className="type-tiny">{autoPilotMode !== 'idle' ? 'Processing...' : 'Neural Auto-Pilot'}</span>
+                </Button>
+                
+                <Button 
+                    onClick={handleExport} 
+                    className="h-12 px-10 rounded-full bg-white text-black hover:bg-zinc-200 transition-all shadow-2xl"
+                >
+                    <span className="type-tiny">Sync Protocol</span>
+                </Button>
             </div>
         </header>
 
         <div className="flex flex-1 overflow-hidden relative">
-            <aside className="hidden md:flex w-[360px] bg-[#09090b] border-r border-white/10 flex-col z-20 shadow-2xl">
-                <div className="flex border-b border-white/10">
-                    <button onClick={() => setLeftTab('chat')} className={`flex-1 py-4 text-[10px] font-bold uppercase tracking-widest transition-colors ${leftTab === 'chat' ? 'text-white bg-white/5 border-b-2 border-white' : 'text-neutral-500 hover:text-neutral-300'}`}>Studio AI</button>
-                    <button onClick={() => setLeftTab('outline')} className={`flex-1 py-4 text-[10px] font-bold uppercase tracking-widest transition-colors ${leftTab === 'outline' ? 'text-white bg-white/5 border-b-2 border-white' : 'text-neutral-500 hover:text-neutral-300'}`}>Outline</button>
+            
+            {/* --- STUDIO SIDEBAR --- */}
+            <aside className="hidden lg:flex w-[400px] bg-[#020202] border-r border-white/5 flex-col z-20 shadow-2xl">
+                <div className="p-4 border-b border-white/5">
+                    <Tabs value={leftTab} onValueChange={(v: any) => setLeftTab(v)}>
+                        <TabsList className="w-full bg-white/[0.02] h-12 p-1 rounded-full border border-white/5">
+                            <TabsTrigger value="chat" className="flex-1 rounded-full text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-black">Neural Core</TabsTrigger>
+                            <TabsTrigger value="outline" className="flex-1 rounded-full text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-black">Blueprint</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
                 </div>
 
                 <div className="flex-1 overflow-hidden relative flex flex-col">
                     {leftTab === 'chat' && (
                         <>
-                            <div className="flex-1 overflow-y-auto custom-scrollbar p-0">
-                                {messages.map((msg, idx) => (
-                                    <div key={msg.id} className="py-6 px-5 border-b border-white/5 last:border-0 hover:bg-white/[0.02] transition-colors group">
-                                        <div className="flex items-center gap-3 mb-2 opacity-80 group-hover:opacity-100 transition-opacity">
-                                            {msg.role === 'user' ? (
-                                                <div className="w-5 h-5 rounded-full bg-neutral-800 flex items-center justify-center border border-white/10">
-                                                    <span className="text-[10px] font-bold text-neutral-400">U</span>
-                                                </div>
-                                            ) : (
-                                                <div className="w-5 h-5 rounded-full bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20">
-                                                    <IconSparkles className="w-3 h-3 text-indigo-400" />
-                                                </div>
-                                            )}
-                                            <span className={`text-[10px] font-bold uppercase tracking-widest ${msg.role === 'user' ? 'text-neutral-500' : 'text-indigo-400'}`}>
-                                                {msg.role === 'user' ? 'Human' : 'Neural Core'}
-                                            </span>
+                            <ScrollArea className="flex-1 p-0">
+                                <div className="space-y-0">
+                                    {messages.map((msg, idx) => (
+                                        <div key={msg.id} className="py-10 px-8 border-b border-white/[0.03] last:border-0 hover:bg-white/[0.01] transition-colors group">
+                                            <div className="flex items-center gap-4 mb-6">
+                                                <Badge variant="outline" className={`px-4 py-1 border-white/10 text-[8px] font-black uppercase tracking-widest ${msg.role === 'user' ? 'text-zinc-500' : 'text-indigo-400 bg-indigo-500/5'}`}>
+                                                    {msg.role === 'user' ? 'Human Operator' : 'Neural Core'}
+                                                </Badge>
+                                            </div>
+                                            <div className={`text-sm leading-relaxed font-medium whitespace-pre-wrap ${msg.role === 'user' ? 'text-white' : 'text-zinc-400'}`}>
+                                                {msg.attachments?.map((src, i) => (
+                                                    <img key={i} src={src} className="h-24 w-auto rounded-2xl mb-6 border border-white/10 shadow-2xl" />
+                                                ))}
+                                                {msg.text}
+                                                {msg.isToolUse && (
+                                                    <div className="mt-6 flex items-center gap-3">
+                                                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                                        <span className="type-tiny text-emerald-500">Synchronizing Editor...</span>
+                                                    </div>
+                                                )}
+                                                {msg.role === 'ai' && msg.isStreaming && idx === messages.length - 1 && (
+                                                    <span className="inline-block w-1.5 h-4 ml-2 bg-indigo-500 animate-pulse" />
+                                                )}
+                                            </div>
                                         </div>
-                                        <div className={`pl-8 text-sm leading-7 font-medium whitespace-pre-wrap font-sans ${msg.role === 'user' ? 'text-white' : 'text-neutral-300'}`}>
-                                            {msg.attachments?.map((src, i) => <img key={i} src={src} className="h-20 w-auto rounded-lg mb-2" />)}
-                                            {msg.text}
-                                            {msg.isToolUse && <div className="mt-2 text-[9px] text-green-400 uppercase tracking-widest flex items-center gap-1"><IconCheck className="w-2 h-2" /> Sync Active</div>}
-                                            {msg.role === 'ai' && msg.isStreaming && idx === messages.length - 1 && <span className="inline-block w-2 h-4 ml-1 bg-indigo-500 animate-pulse"></span>}
-                                        </div>
-                                    </div>
-                                ))}
-                                <div ref={messagesEndRef} />
-                            </div>
+                                    ))}
+                                    <div ref={messagesEndRef} />
+                                </div>
+                            </ScrollArea>
 
-                            <div className="p-4 bg-[#09090b] border-t border-white/10">
+                            {/* Chat Input Interface */}
+                            <div className="p-8 bg-[#020202] border-t border-white/5">
                                 {attachmentPreviews.length > 0 && (
-                                    <div className="flex gap-2 mb-3 px-1 overflow-x-auto">
+                                    <div className="flex gap-4 mb-6 overflow-x-auto pb-2">
                                         {attachmentPreviews.map((src, idx) => (
-                                            <div key={idx} className="relative group flex-shrink-0">
-                                                <img src={src} className="h-14 w-14 object-cover rounded-lg border border-white/10 shadow-md" />
-                                                <button onClick={() => removeAttachment(idx)} className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-black rounded-full text-white border border-white/20 hover:bg-red-500 transition-colors"><IconX className="w-3 h-3" /></button>
+                                            <div key={idx} className="relative group shrink-0">
+                                                <img src={src} className="h-16 w-16 object-cover rounded-xl border border-white/10 shadow-2xl" />
+                                                <button 
+                                                    onClick={() => removeAttachment(idx)} 
+                                                    className="absolute -top-2 -right-2 w-6 h-6 bg-black rounded-full text-white border border-white/20 hover:bg-rose-500 transition-all flex items-center justify-center"
+                                                >
+                                                    <IconX className="w-3 h-3" />
+                                                </button>
                                             </div>
                                         ))}
                                     </div>
                                 )}
-                                <div className={`bg-[#151515] border rounded-[28px] p-2 flex items-end gap-2 shadow-lg transition-colors ${isBusy ? 'border-indigo-500/30' : 'border-white/10 focus-within:border-white/20'}`}>
-                                    <button onClick={() => fileInputRef.current?.click()} className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-neutral-400 hover:text-white transition-colors mb-0.5"><IconPlus className="w-4 h-4" /></button>
+                                
+                                <div className={`
+                                    bg-[#0a0a0a] border rounded-[32px] p-4 flex items-end gap-4 shadow-2xl transition-all duration-500
+                                    ${isBusy ? 'border-indigo-500/30 ring-4 ring-indigo-500/10' : 'border-white/5 focus-within:border-white/20'}
+                                `}>
+                                    <button 
+                                        onClick={() => fileInputRef.current?.click()} 
+                                        className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-zinc-500 hover:text-white transition-all shrink-0"
+                                    >
+                                        <IconPlus className="w-5 h-5" />
+                                    </button>
                                     <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileSelect} accept="image/*,application/pdf" multiple />
+                                    
                                     <button
                                         onMouseDown={startRecording} onMouseUp={stopRecording}
-                                        className={`w-9 h-9 rounded-full flex items-center justify-center transition-all flex-shrink-0 mb-0.5 ${isListening ? 'bg-red-500 text-white scale-110' : 'bg-white/5 text-neutral-400 hover:text-white'}`}
+                                        className={`w-10 h-10 rounded-full flex items-center justify-center transition-all shrink-0 ${isListening ? 'bg-rose-500 text-white scale-110 shadow-[0_0_20px_rgba(244,63,94,0.5)]' : 'bg-white/5 text-zinc-500 hover:text-white'}`}
                                     >
                                         {isListening ? <IconStop className="w-4 h-4" /> : <IconMic className="w-4 h-4" />}
                                     </button>
+
                                     <textarea
                                         ref={textareaRef} value={input} onChange={e => setInput(e.target.value)}
-                                        placeholder={isListening ? "Listening..." : "Ask Studio AI..."}
-                                        className="flex-1 bg-transparent border-none outline-none text-white text-sm py-2.5 max-h-32 resize-none font-medium"
+                                        placeholder={isListening ? "Listening..." : "Command Studio AI..."}
+                                        className="flex-1 bg-transparent border-none outline-none text-white text-sm py-2 max-h-32 resize-none font-medium placeholder:text-zinc-700"
                                         onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
                                         disabled={isBusy}
                                     />
-                                    <button onClick={() => handleSendMessage()} className="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition-transform mb-0.5 disabled:opacity-50">
+                                    
+                                    <button 
+                                        onClick={() => handleSendMessage()} 
+                                        disabled={isBusy || (!input.trim() && attachments.length === 0)}
+                                        className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition-all disabled:opacity-30 shrink-0"
+                                    >
                                         {isBusy ? <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin"></div> : <IconSend className="w-4 h-4" />}
                                     </button>
                                 </div>
-                                <div className="flex justify-between items-center mt-2 px-2 text-[9px] text-neutral-600 font-mono">
-                                    <span>GEMINI 3 FLASH CORE</span>
-                                    <span>{activePage.content.length} CHARS</span>
+                                <div className="flex justify-between items-center mt-6 px-2">
+                                    <span className="type-tiny opacity-30">Gemini 3.5 Flash Core</span>
+                                    <span className="type-tiny opacity-30 tabular-nums">{activePage.content.length} CHARS</span>
                                 </div>
                             </div>
                         </>
                     )}
 
                     {leftTab === 'outline' && (
-                         <div className="p-4 space-y-2 overflow-y-auto flex-1">
-                             {pages.map((p, idx) => (
-                                 <button
-                                    key={p.id} onClick={() => setActivePageId(p.id)}
-                                    className={`w-full text-left p-4 rounded-xl border text-sm transition-all group ${activePageId === p.id ? 'bg-white/10 border-white/20 text-white shadow-lg' : 'border-transparent text-neutral-500 hover:bg-white/5'}`}
+                         <ScrollArea className="flex-1 p-6">
+                             <div className="space-y-3">
+                                 {pages.map((p, idx) => (
+                                     <button
+                                        key={p.id} onClick={() => setActivePageId(p.id)}
+                                        className={`w-full text-left p-8 rounded-[32px] border transition-all group relative overflow-hidden ${activePageId === p.id ? 'bg-white/[0.05] border-white/20 text-white shadow-2xl' : 'border-transparent text-zinc-500 hover:bg-white/[0.02]'}`}
+                                     >
+                                         {activePageId === p.id && <div className="absolute left-0 top-0 bottom-0 w-1 bg-white" />}
+                                         <div className="flex items-center justify-between mb-2">
+                                             <span className="type-tiny opacity-50 tracking-widest">Node {idx + 1}</span>
+                                             {activePageId === p.id && <div className="w-2 h-2 rounded-full bg-emerald-500" />}
+                                         </div>
+                                         <span className="type-display text-xl truncate block">{p.title}</span>
+                                     </button>
+                                 ))}
+                                 <Button
+                                    variant="outline"
+                                    onClick={() => {
+                                        const newId = Date.now().toString();
+                                        setPages([...pages, { id: newId, title: 'New Chapter', content: '', pageNumber: pages.length + 1 }]);
+                                        setActivePageId(newId);
+                                    }}
+                                    className="w-full h-20 border-dashed border-white/10 text-zinc-500 hover:text-white rounded-[32px] mt-8 flex items-center justify-center gap-4 transition-all"
                                  >
-                                     <div className="flex items-center justify-between mb-1">
-                                         <span className="text-[9px] uppercase font-bold opacity-50 tracking-wider">Chapter {idx + 1}</span>
-                                         {activePageId === p.id && <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>}
-                                     </div>
-                                     <span className="font-bold truncate block">{p.title}</span>
-                                 </button>
-                             ))}
-                             <button
-                                onClick={() => {
-                                    const newId = Date.now().toString();
-                                    setPages([...pages, { id: newId, title: 'New Chapter', content: '', pageNumber: pages.length + 1 }]);
-                                    setActivePageId(newId);
-                                }}
-                                className="w-full py-4 border border-dashed border-white/10 text-neutral-500 text-xs font-bold uppercase rounded-xl hover:border-white/30 hover:text-white mt-4 flex items-center justify-center gap-2 transition-all"
-                             >
-                                 <IconPlus className="w-3 h-3" /> Append Node
-                             </button>
-                         </div>
+                                     <IconPlus className="w-4 h-4" /> 
+                                     <span className="type-tiny">Append Node</span>
+                                 </Button>
+                             </div>
+                         </ScrollArea>
                     )}
                 </div>
             </aside>
 
+            {/* --- STUDIO EDITOR --- */}
             <main className="flex-1 flex flex-col relative bg-[#000000]">
-                <div className="h-10 bg-[#050505] border-b border-white/5 flex items-center justify-between px-6 shrink-0">
-                     <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-[0.2em]">{activePage.title}</span>
-                     <div className="flex items-center gap-4 text-[9px] font-mono text-neutral-600 uppercase tracking-widest">
-                         <span className="bg-white/5 px-2 py-0.5 rounded">MODALITY: TEXT/IMAGE</span>
-                         <div className="flex items-center gap-2">
-                             <div className={`w-1.5 h-1.5 rounded-full ${isBusy ? 'bg-indigo-500 animate-pulse' : 'bg-green-500'}`}></div>
-                             <span>{isBusy ? 'SYNCING' : 'STABLE'}</span>
+                <div className="h-12 bg-[#050505] border-b border-white/[0.03] flex items-center justify-between px-10 shrink-0">
+                     <div className="flex items-center gap-4">
+                         <Badge variant="outline" className="px-3 py-0.5 border-white/5 text-[9px] font-black uppercase tracking-widest text-zinc-600">Active Buffer</Badge>
+                         <span className="type-tiny text-zinc-500">{activePage.title}</span>
+                     </div>
+                     <div className="flex items-center gap-8">
+                         <div className="flex items-center gap-3 type-tiny opacity-30">
+                             <div className={`w-1.5 h-1.5 rounded-full ${isBusy ? 'bg-indigo-500 animate-pulse' : 'bg-emerald-500'}`} />
+                             <span>{isBusy ? 'Processing Data' : 'Protocol Stable'}</span>
                          </div>
                      </div>
                 </div>
-                <div className="flex-1 overflow-y-auto custom-scrollbar scroll-smooth">
-                    <NovelEditor
-                        title={activePage.title}
-                        onTitleChange={(t) => setPages(prev => prev.map(p => p.id === activePageId ? {...p, title: t} : p))}
-                        content={activePage.content}
-                        onContentChange={(c) => setPages(prev => prev.map(p => p.id === activePageId ? {...p, content: c} : p))}
-                        onTriggerAI={(p) => handleSendMessage(undefined, `Write content: ${p}`)}
-                        onTriggerImageGen={(p) => handleSendMessage(undefined, `Generate image: ${p}`)}
-                    />
-                </div>
+                
+                <ScrollArea className="flex-1 scroll-smooth">
+                    <div className="max-w-5xl mx-auto py-20 px-10">
+                        <NovelEditor
+                            title={activePage.title}
+                            onTitleChange={(t) => setPages(prev => prev.map(p => p.id === activePageId ? {...p, title: t} : p))}
+                            content={activePage.content}
+                            onContentChange={(c) => setPages(prev => prev.map(p => p.id === activePageId ? {...p, content: c} : p))}
+                            onTriggerAI={(p) => handleSendMessage(undefined, `Write content: ${p}`)}
+                            onTriggerImageGen={(p) => handleSendMessage(undefined, `Generate image: ${p}`)}
+                        />
+                    </div>
+                </ScrollArea>
             </main>
         </div>
     </div>
