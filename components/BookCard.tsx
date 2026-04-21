@@ -1,5 +1,5 @@
-
 import React from 'react';
+import { motion } from 'framer-motion';
 import { EBook } from '../types';
 import { useAppContext } from '../contexts/AppContext';
 import { IconShoppingCart, IconBook } from '../constants'; 
@@ -20,80 +20,71 @@ const BookCard: React.FC<BookCardProps> = ({ book, onViewDetails }) => {
 
   const handleAction = (e: React.MouseEvent) => {
     e.stopPropagation(); 
-    if (isFree) {
-        navigate(`/read/${book.id}`);
-    } else {
-        addToCart(book);
-    }
+    if (isFree) navigate(`/read/${book.id}`);
+    else addToCart(book);
   };
   
   const handleCardClick = () => {
-    if (onViewDetails) {
-        onViewDetails(book.id);
-    }
+    if (onViewDetails) onViewDetails(book.id);
   };
 
   return (
-    <div 
-      className="group relative bg-black/40 backdrop-blur-sm rounded-[20px] overflow-hidden border border-white/10 hover:border-white/30 transition-all duration-500 ease-obsidian cursor-pointer flex flex-col h-full hover:-translate-y-2 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] will-change-transform"
+    <motion.div 
+      whileHover={{ y: -10 }}
+      className="group relative cursor-pointer"
       onClick={handleCardClick}
     >
-      {/* Image Container */}
-      <div className="w-full aspect-[3/4] relative overflow-hidden bg-[#050505] border-b border-white/5">
-        <img 
-            src={book.coverImageUrl || 'https://picsum.photos/400/600'} 
-            alt={`Cover of ${book.title}`} 
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-obsidian opacity-90 group-hover:opacity-100 will-change-transform"
-            loading="lazy"
-        />
+      {/* 3D-Like Card Container */}
+      <div className="glass-card-premium rounded-[32px] overflow-hidden flex flex-col h-full border border-white/5 group-hover:border-white/20 transition-all duration-500 shadow-[0_40px_80px_rgba(0,0,0,0.4)]">
         
-        {/* Overlay Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500"></div>
-
-        {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-2">
-            {isFree && (
-                <div className="bg-white text-black text-[9px] font-bold px-3 py-1 uppercase tracking-widest rounded-full shadow-lg">
-                    Free
-                </div>
-            )}
-        </div>
-      </div>
-    
-      {/* Content */}
-      <div className="p-5 flex flex-col flex-grow relative">
-        <div className="mb-4">
-            <div className="flex items-center justify-between mb-2">
-                 <span className="text-[9px] font-bold text-neutral-500 uppercase tracking-widest border border-white/10 px-2 py-0.5 rounded-full">{book.genre}</span>
+        {/* Cover Image with Depth */}
+        <div className="aspect-[3/4] overflow-hidden relative">
+            <img 
+                src={book.coverImageUrl} 
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
+                alt={book.title} 
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+            
+            {/* Genre Badge */}
+            <div className="absolute top-6 left-6">
+                <span className="glass-panel px-3 py-1 text-[8px] font-bold uppercase tracking-[0.3em] rounded-full border-white/10">
+                    {book.genre}
+                </span>
             </div>
-            <h3 className="text-lg font-bold text-white leading-tight line-clamp-2 mb-1 group-hover:text-neutral-200 transition-colors" title={book.title}>
+        </div>
+
+        {/* Content Section */}
+        <div className="p-8 flex flex-col flex-grow">
+            <h3 className="text-xl font-bold title-neural mb-2 line-clamp-2 leading-tight group-hover:text-white transition-colors">
                 {book.title}
             </h3>
-            <p className="text-xs text-neutral-500 uppercase tracking-widest line-clamp-1">{book.author}</p>
-        </div>
-        
-        <div className="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
-            <span className="text-lg font-light text-white font-mono">
-                {isFree ? 'FREE' : `₹${book.price.toFixed(0)}`}
-            </span>
-            
-            <button 
-                onClick={handleAction}
-                className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 transition-all duration-300 ease-obsidian hover:scale-105 active:scale-95 ${
-                    isFree 
-                    ? 'bg-white/10 text-white hover:bg-white hover:text-black border border-white/20' 
-                    : 'bg-white text-black hover:bg-neutral-200 shadow-[0_0_15px_rgba(255,255,255,0.2)]'
-                }`}
-            >
-                {isFree ? (
-                    <>Read <IconBook className="w-3 h-3" /></>
-                ) : (
-                    <>Add <IconShoppingCart className="w-3 h-3" /></>
-                )}
-            </button>
+            <p className="text-[10px] text-muted uppercase tracking-widest font-medium mb-6">
+                {book.author}
+            </p>
+
+            <div className="mt-auto flex items-center justify-between pt-6 border-t border-white/5">
+                <span className="text-xl font-bold font-display">
+                    {isFree ? 'FREE' : `₹${book.price}`}
+                </span>
+                
+                <button 
+                    onClick={handleAction}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 ${
+                        isFree 
+                        ? 'bg-white/5 text-white border border-white/10 hover:bg-white hover:text-black' 
+                        : 'bg-white text-black hover:scale-110 shadow-[0_0_20px_rgba(255,255,255,0.2)]'
+                    }`}
+                >
+                    {isFree ? <IconBook className="w-4 h-4" /> : <IconShoppingCart className="w-4 h-4" />}
+                </button>
+            </div>
         </div>
       </div>
-    </div>
+
+      {/* Decorative Glow behind the card on hover */}
+      <div className="absolute -inset-4 bg-white/5 blur-[40px] rounded-[40px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+    </motion.div>
   );
 };
 

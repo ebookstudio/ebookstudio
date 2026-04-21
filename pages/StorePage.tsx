@@ -1,8 +1,8 @@
-
 import React, { useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import BookCard from '../components/BookCard';
 import { EBook } from '../types';
-import { IconShoppingCart, IconSearch, IconBook, IconStar } from '../constants';
+import { IconShoppingCart, IconSearch, IconBook, IconStar, IconArrowRight } from '../constants';
 import Modal from '../components/Modal'; 
 import CustomDropdown, { DropdownOption } from '../components/CustomDropdown';
 import { useAppContext } from '../contexts/AppContext';
@@ -22,7 +22,6 @@ const StorePage: React.FC = () => {
   const [selectedBook, setSelectedBook] = useState<EBook | null>(null);
 
   const genres = useMemo(() => ['All', ...new Set(allBooks.map(book => book.genre))], [allBooks]);
-
   const genreOptions: DropdownOption[] = genres.map(g => ({ label: g === 'All' ? 'All Genres' : g, value: g }));
   
   const priceOptions: DropdownOption[] = [
@@ -43,25 +42,15 @@ const StorePage: React.FC = () => {
       book.author.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    if (selectedGenre !== 'All') {
-      books = books.filter(book => book.genre === selectedGenre);
-    }
+    if (selectedGenre !== 'All') books = books.filter(book => book.genre === selectedGenre);
     
-    if (selectedPriceFilter === 'Free') {
-        books = books.filter(book => book.price === 0);
-    } else if (selectedPriceFilter === 'Paid') {
-        books = books.filter(book => book.price > 0);
-    }
+    if (selectedPriceFilter === 'Free') books = books.filter(book => book.price === 0);
+    else if (selectedPriceFilter === 'Paid') books = books.filter(book => book.price > 0);
 
     return books.sort((a, b) => {
-      if (sortBy === 'title') {
-        return a.title.localeCompare(b.title);
-      } else if (sortBy === 'price') {
-        return a.price - b.price;
-      } else if (sortBy === 'publicationDate') {
-        return new Date(b.publicationDate).getTime() - new Date(a.publicationDate).getTime();
-      }
-      return 0;
+      if (sortBy === 'title') return a.title.localeCompare(b.title);
+      if (sortBy === 'price') return a.price - b.price;
+      return new Date(b.publicationDate).getTime() - new Date(a.publicationDate).getTime();
     });
   }, [searchTerm, selectedGenre, selectedPriceFilter, sortBy, allBooks]);
 
@@ -79,152 +68,124 @@ const StorePage: React.FC = () => {
 
   const handleModalAction = () => {
     if (selectedBook) {
-        if (selectedBook.price === 0) {
-            navigate(`/read/${selectedBook.id}`);
-        } else {
-            addToCart(selectedBook);
-        }
+        if (selectedBook.price === 0) navigate(`/read/${selectedBook.id}`);
+        else addToCart(selectedBook);
         setIsModalOpen(false);
     }
   };
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 pt-24 pb-safe md:pb-24 overflow-x-hidden">
+    <div className="min-h-screen bg-black bg-neural-mesh pt-32 pb-24 px-6">
       
-      {/* Featured Hero */}
+      {/* --- LUXURY FEATURED RELEASE --- */}
       {featuredBook && !searchTerm && selectedGenre === 'All' && (
-        <div className="relative w-full rounded-[32px] overflow-hidden mb-12 md:mb-16 group border border-white/10 shadow-2xl animate-fade-in flex flex-col md:block h-auto md:h-[500px]">
-             <div 
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-[2s] group-hover:scale-105"
-                style={{backgroundImage: `url(${featuredBook.coverImageUrl})`}}
-             ></div>
-             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent md:bg-gradient-to-r md:from-black md:via-black/80 md:to-transparent"></div>
-             
-             <div className="relative z-10 p-8 md:p-16 flex flex-col justify-end md:justify-center min-h-[400px] md:h-full max-w-2xl">
-                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand-accent/20 border border-brand-accent/30 w-fit mb-4 md:mb-6 backdrop-blur-md rounded-full animate-slide-up">
-                     <IconStar className="w-3 h-3 text-brand-accent fill-current" />
-                     <span className="text-[10px] md:text-xs font-bold text-brand-accent uppercase tracking-widest">Featured Release</span>
-                 </div>
-                 
-                 <h1 className="text-3xl md:text-6xl font-black text-white mb-3 md:mb-4 leading-tight tracking-tight drop-shadow-lg">
-                    {featuredBook.title}
-                 </h1>
-                 <p className="text-sm md:text-xl text-neutral-300 mb-6 md:mb-8 line-clamp-3 leading-relaxed drop-shadow-md">
-                    {featuredBook.description}
-                 </p>
-                 
-                 <div className="flex flex-col sm:flex-row gap-3">
-                     <button 
-                        onClick={() => handleViewDetails(featuredBook.id)}
-                        className="bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold py-3.5 px-8 rounded-full hover:bg-white hover:text-black transition-all text-xs uppercase tracking-widest"
-                     >
-                         View Details
-                     </button>
-                     <button 
-                        onClick={() => {
-                            if (featuredBook.price === 0) navigate(`/read/${featuredBook.id}`);
-                            else addToCart(featuredBook);
-                        }}
-                        className="px-8 py-3.5 rounded-full bg-white text-black font-bold transition-all hover:scale-105 flex items-center justify-center gap-2 text-xs uppercase tracking-widest"
-                     >
-                        {featuredBook.price === 0 ? <><IconBook className="w-4 h-4"/> Read Now</> : <><IconShoppingCart className="w-4 h-4"/> Add to Cart</>}
-                     </button>
-                 </div>
+        <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-7xl mx-auto mb-24 relative overflow-hidden glass-panel rounded-[60px] min-h-[600px] flex items-center"
+        >
+             <div className="absolute inset-0 z-0">
+                <img src={featuredBook.coverImageUrl} className="w-full h-full object-cover opacity-20 scale-110 blur-xl" alt="" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black via-black/40 to-transparent"></div>
              </div>
-        </div>
+
+             <div className="relative z-10 p-12 md:p-24 flex flex-col md:flex-row gap-16 items-center">
+                <div className="w-full md:w-5/12">
+                    <motion.div 
+                        whileHover={{ rotateY: 15, rotateX: -5 }}
+                        className="relative group cursor-pointer"
+                    >
+                        <div className="absolute inset-0 bg-white/20 blur-[60px] rounded-[30px] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <img 
+                            src={featuredBook.coverImageUrl} 
+                            className="w-full aspect-[2/3] object-cover rounded-[30px] shadow-[0_40px_80px_rgba(0,0,0,0.8)] border border-white/10 relative z-10" 
+                            alt={featuredBook.title} 
+                        />
+                    </motion.div>
+                </div>
+
+                <div className="w-full md:w-7/12">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 glass-panel rounded-full mb-8">
+                        <IconStar className="w-3 h-3 text-white" />
+                        <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Neural Drop</span>
+                    </div>
+                    <h1 className="text-6xl md:text-8xl font-black title-neural mb-6 leading-none text-gradient">
+                        {featuredBook.title}
+                    </h1>
+                    <p className="text-xl text-muted mb-12 max-w-xl font-light">
+                        {featuredBook.description}
+                    </p>
+                    <div className="flex gap-6">
+                        <button onClick={() => handleViewDetails(featuredBook.id)} className="btn-premium px-12 py-5 text-[10px]">
+                            Details <IconArrowRight className="w-4 h-4" />
+                        </button>
+                        <button 
+                            onClick={() => featuredBook.price === 0 ? navigate(`/read/${featuredBook.id}`) : addToCart(featuredBook)}
+                            className="btn-premium-outline px-12 py-5 text-[10px]"
+                        >
+                            {featuredBook.price === 0 ? 'Read Now' : `Add to Cart - ₹${featuredBook.price}`}
+                        </button>
+                    </div>
+                </div>
+             </div>
+        </motion.div>
       )}
 
-      {/* Floating Filter Bar - Refactored for Mobile Stability */}
-      <div className="sticky top-20 z-30 mx-auto w-full mb-8 transition-all duration-300">
-        <div className="bg-black/90 backdrop-blur-xl border border-white/10 shadow-xl rounded-[24px] p-2 md:p-3 flex flex-col md:flex-row gap-2 md:gap-3 items-stretch">
-            
-            {/* Search Input - Expanded */}
-            <div className="relative group w-full flex-grow">
-                <IconSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500 group-focus-within:text-white transition-colors" />
+      {/* --- PREMIUM FILTER BAR --- */}
+      <div className="max-w-7xl mx-auto mb-16">
+        <div className="glass-panel p-3 rounded-[32px] flex flex-col md:flex-row gap-4 items-center">
+            <div className="relative flex-grow w-full">
+                <IconSearch className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-600" />
                 <input 
                     type="text"
-                    placeholder="Search books, authors..."
-                    className="w-full h-full bg-white/5 border border-transparent focus:border-white/10 rounded-full py-3 pl-10 pr-4 text-white placeholder-neutral-500 focus:outline-none focus:bg-white/10 transition-all text-sm font-bold min-h-[48px]"
+                    placeholder="Search the neural library..."
+                    className="w-full bg-white/5 border border-transparent focus:border-white/10 rounded-[20px] py-4 pl-14 pr-6 text-white placeholder-neutral-700 outline-none transition-all font-medium"
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
                 />
             </div>
-
-            {/* Filters - Grid on Mobile (No clipping), Flex on Desktop */}
-            <div className="grid grid-cols-2 md:flex gap-2 w-full md:w-auto">
-                <CustomDropdown 
-                    options={genreOptions}
-                    value={selectedGenre}
-                    onChange={setSelectedGenre}
-                    className="w-full md:w-auto md:min-w-[160px]" 
-                    placeholder="Genres"
-                />
-                <CustomDropdown 
-                    options={priceOptions}
-                    value={selectedPriceFilter}
-                    onChange={(val) => setSelectedPriceFilter(val as any)}
-                    className="w-full md:w-auto md:min-w-[130px]"
-                    placeholder="Price"
-                />
-                {/* Span full width on odd mobile grid row */}
-                <CustomDropdown 
-                    options={sortOptions}
-                    value={sortBy}
-                    onChange={setSortBy}
-                    className="col-span-2 md:col-span-1 w-full md:w-auto md:min-w-[150px]"
-                    placeholder="Sort By"
-                />
+            <div className="flex gap-4 w-full md:w-auto">
+                <CustomDropdown options={genreOptions} value={selectedGenre} onChange={setSelectedGenre} className="flex-1 md:w-48" />
+                <CustomDropdown options={priceOptions} value={selectedPriceFilter} onChange={(val) => setSelectedPriceFilter(val as any)} className="flex-1 md:w-40" />
             </div>
         </div>
       </div>
 
-      {filteredAndSortedBooks.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 pb-20">
-          {filteredAndSortedBooks.map(book => (
-            <BookCard key={book.id} book={book} onViewDetails={handleViewDetails} />
-          ))}
-        </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center py-20 border border-dashed border-white/10 rounded-3xl bg-white/5 text-center px-4">
-            <IconSearch className="w-12 h-12 text-neutral-600 mb-4" />
-            <p className="text-xl text-white font-bold">No books found</p>
-            <p className="text-neutral-500 mt-2 text-sm">Try adjusting your filters.</p>
-        </div>
-      )}
+      {/* --- GRID OF BOOKS --- */}
+      <div className="max-w-7xl mx-auto">
+        {filteredAndSortedBooks.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+                {filteredAndSortedBooks.map(book => (
+                    <BookCard key={book.id} book={book} onViewDetails={handleViewDetails} />
+                ))}
+            </div>
+        ) : (
+            <div className="py-40 text-center glass-panel rounded-[40px]">
+                <IconSearch className="w-20 h-20 text-neutral-800 mx-auto mb-8" />
+                <h3 className="text-3xl font-bold mb-4">No volumes found.</h3>
+                <p className="text-muted">Try adjusting your search or filters.</p>
+            </div>
+        )}
+      </div>
 
+      {/* --- LUXURY PREVIEW MODAL --- */}
       {selectedBook && (
         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="" size="lg">
-            <div className="flex flex-col md:flex-row h-full max-h-[85vh] overflow-y-auto md:overflow-hidden bg-black">
-                <div className="w-full md:w-5/12 bg-neutral-900 relative">
-                    <img 
-                        src={selectedBook.coverImageUrl} 
-                        alt={selectedBook.title} 
-                        className="w-full h-full object-cover opacity-90" 
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+            <div className="flex flex-col md:flex-row h-full bg-black overflow-hidden">
+                <div className="w-full md:w-1/2 relative h-[400px] md:h-auto">
+                    <img src={selectedBook.coverImageUrl} className="w-full h-full object-cover" alt="" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
                 </div>
-                
-                <div className="w-full md:w-7/12 flex flex-col p-6 md:p-10">
-                    <div className="mb-6">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-brand-accent mb-2 block">{selectedBook.genre}</span>
-                        <h2 className="text-2xl md:text-4xl font-black text-white leading-none mb-2">{selectedBook.title}</h2>
-                        <p className="text-base text-neutral-400">by {selectedBook.author}</p>
-                    </div>
-
-                    <div className="flex-grow overflow-y-auto custom-scrollbar pr-2 mb-6">
-                        <p className="text-neutral-300 text-sm leading-relaxed font-light">
-                            {selectedBook.description}
-                        </p>
-                    </div>
-                    
-                    <div className="mt-auto pt-6 border-t border-white/10 flex items-center justify-between">
-                        <span className="text-3xl font-bold text-white">
-                            {selectedBook.price === 0 ? 'Free' : `₹${selectedBook.price}`}
-                        </span>
-                        <button 
-                            onClick={handleModalAction}
-                            className="bg-white text-black px-8 py-3 rounded-full font-bold text-xs uppercase tracking-widest hover:bg-neutral-200"
-                        >
+                <div className="w-full md:w-1/2 p-12 flex flex-col justify-center">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-neutral-600 mb-6">{selectedBook.genre}</span>
+                    <h2 className="text-5xl font-black title-neural mb-4 leading-none">{selectedBook.title}</h2>
+                    <p className="text-lg text-neutral-400 mb-8 font-light">by {selectedBook.author}</p>
+                    <p className="text-muted text-sm leading-relaxed mb-12 line-clamp-6">
+                        {selectedBook.description}
+                    </p>
+                    <div className="flex items-center justify-between pt-12 border-t border-white/5">
+                        <span className="text-4xl font-bold">{selectedBook.price === 0 ? 'Free' : `₹${selectedBook.price}`}</span>
+                        <button onClick={handleModalAction} className="btn-premium px-10 py-4 text-[10px]">
                             {selectedBook.price === 0 ? 'Read Now' : 'Add to Cart'}
                         </button>
                     </div>

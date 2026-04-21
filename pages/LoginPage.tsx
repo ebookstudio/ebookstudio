@@ -5,7 +5,7 @@ import { APP_NAME, IconSparkles, IconMail, IconLock, IconArrowRight, IconBook } 
 import * as ReactRouterDOM from 'react-router-dom';
 import { UserType } from '../types';
 
-const { useNavigate } = ReactRouterDOM as any;
+const { useNavigate, Link } = ReactRouterDOM as any;
 
 const LoginPage: React.FC = () => {
     const { handleEmailLogin, handleGoogleLogin, setCurrentUser } = useAppContext();
