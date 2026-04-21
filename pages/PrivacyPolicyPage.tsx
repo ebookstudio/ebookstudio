@@ -1,111 +1,111 @@
-
 import React from 'react';
 import { APP_NAME, IconCheck } from '../constants';
 import MorphicEye from '../components/MorphicEye';
 
 const PrivacyPolicyPage: React.FC = () => {
   return (
-    <div className="min-h-screen w-full relative bg-transparent font-sans pt-32 pb-20">
+    <div className="min-h-screen w-full relative bg-black pt-32 pb-20 bg-dot-matrix">
       
-      {/* Background Decor */}
-      <div className="fixed inset-0 z-[-1] pointer-events-none">
-          <div className="absolute top-[20%] right-[10%] w-[500px] h-[500px] bg-white/5 rounded-full blur-[120px]"></div>
-      </div>
-
-      <div className="container mx-auto px-6 max-w-4xl relative z-10 animate-slide-up">
+      <div className="container mx-auto px-6 max-w-4xl relative z-10 animate-fade-in">
         
         {/* Header */}
-        <div className="text-center mb-16">
-            <div className="flex justify-center mb-6">
-                <MorphicEye className="w-20 h-20 border border-white/20 bg-black shadow-[0_0_30px_rgba(255,255,255,0.1)] rounded-full" isActive={true} />
+        <div className="text-center mb-20">
+            <div className="flex justify-center mb-8">
+                <MorphicEye className="w-20 h-20 border border-white/20 bg-black shadow-[0_0_50px_rgba(255,255,255,0.1)] rounded-full" isActive={true} />
             </div>
-            <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-4">Privacy Policy</h1>
-            <p className="text-neutral-400 text-sm font-mono uppercase tracking-widest">
-                Last Updated: {new Date().toLocaleDateString()}
+            <h1 className="type-display text-white mb-4">Privacy Policy</h1>
+            <p className="type-tiny text-zinc-500 font-mono uppercase tracking-[0.3em]">
+                Last Synchronized: {new Date().toLocaleDateString()}
             </p>
         </div>
 
         {/* Content Card */}
-        <div className="bg-[#0b0b0b] border border-white/10 rounded-[32px] p-8 md:p-12 shadow-2xl relative overflow-hidden">
+        <div className="glass-card-premium rounded-[40px] p-8 md:p-16 relative overflow-hidden">
              
              {/* Security Badge */}
-             <div className="absolute top-0 right-0 p-6 opacity-50 hidden md:block">
-                 <div className="flex items-center gap-2 px-3 py-1 bg-green-900/20 border border-green-500/30 rounded-full">
-                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                     <span className="text-[10px] font-bold text-green-500 uppercase tracking-widest">Google Core Security Active</span>
+             <div className="absolute top-0 right-0 p-8 opacity-50 hidden md:block">
+                 <div className="flex items-center gap-3 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                     <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                     <span className="type-tiny font-bold text-emerald-400 uppercase tracking-widest">Quantum Encryption Active</span>
                  </div>
              </div>
 
-             <div className="space-y-12 text-neutral-300 leading-relaxed">
+             <div className="space-y-16 text-zinc-400 leading-relaxed">
                 
                 <section>
-                    <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
-                        <span className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-sm border border-white/10">01</span>
-                        Introduction
+                    <h2 className="type-h3 text-white mb-6 flex items-center gap-4">
+                        <span className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center type-tiny font-bold border border-white/10 text-white">01</span>
+                        Initiation
                     </h2>
-                    <p>
-                        At {APP_NAME}, accessible from <span className="text-white font-mono">ebook-engine.github.io</span>, the privacy of our visitors and creators is our top priority. This Privacy Policy document contains types of information that is collected and recorded by {APP_NAME} and how we use it.
+                    <p className="type-body">
+                        At {APP_NAME}, accessible via <span className="text-white font-mono">ebook-engine.github.io</span>, the integrity of your neural assets and personal data is our primary directive. This Privacy Protocol outlines the parameters of data ingestion and retention.
                     </p>
                 </section>
 
                 <section>
-                    <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
-                        <span className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-sm border border-white/10">02</span>
-                        Google Core Data & Security
+                    <h2 className="type-h3 text-white mb-6 flex items-center gap-4">
+                        <span className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center type-tiny font-bold border border-white/10 text-white">02</span>
+                        Core Security Architecture
                     </h2>
-                    <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                        <p className="mb-4 text-sm font-medium text-white">
-                            We comply with Google API Services User Data Policy, including the Limited Use requirements.
+                    <div className="glass-card-premium bg-white/[0.02] rounded-3xl p-8">
+                        <p className="mb-6 type-tiny font-bold text-white uppercase tracking-widest">
+                            Compliance with Global Security Standards
                         </p>
-                        <ul className="space-y-3">
-                            <li className="flex gap-3 text-sm text-neutral-400">
-                                <IconCheck className="w-5 h-5 text-google-blue shrink-0" />
-                                <span><strong>Authentication:</strong> We use Google OAuth 2.0 to securely authenticate users. Your password is never stored on our servers.</span>
+                        <ul className="space-y-5">
+                            <li className="flex gap-4 type-tiny text-zinc-400">
+                                <IconCheck className="w-5 h-5 text-emerald-400 shrink-0" />
+                                <span><strong className="text-white">Authentication:</strong> We utilize Google OAuth 2.0 for secure identity verification. Your credentials never touch our persistent storage.</span>
                             </li>
-                            <li className="flex gap-3 text-sm text-neutral-400">
-                                <IconCheck className="w-5 h-5 text-google-blue shrink-0" />
-                                <span><strong>Database Integrity:</strong> User data (such as eBook drafts) is processed using ephemeral secure sessions. Long-term storage leverages secure cloud infrastructure.</span>
+                            <li className="flex gap-4 type-tiny text-zinc-400">
+                                <IconCheck className="w-5 h-5 text-emerald-400 shrink-0" />
+                                <span><strong className="text-white">Data Isolation:</strong> Manuscript drafts are processed within isolated secure enclaves. Long-term assets are encrypted at rest using AES-256.</span>
                             </li>
-                            <li className="flex gap-3 text-sm text-neutral-400">
-                                <IconCheck className="w-5 h-5 text-google-blue shrink-0" />
-                                <span><strong>Gemini AI:</strong> Content generated via Google Gemini is transmitted over encrypted (TLS 1.3) channels.</span>
+                            <li className="flex gap-4 type-tiny text-zinc-400">
+                                <IconCheck className="w-5 h-5 text-emerald-400 shrink-0" />
+                                <span><strong className="text-white">Neural Processing:</strong> All AI-generated content via Gemini is transmitted through TLS 1.3 encrypted tunnels.</span>
                             </li>
                         </ul>
                     </div>
                 </section>
 
                 <section>
-                    <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
-                        <span className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-sm border border-white/10">03</span>
-                        Information Collection
+                    <h2 className="type-h3 text-white mb-6 flex items-center gap-4">
+                        <span className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center type-tiny font-bold border border-white/10 text-white">03</span>
+                        Inbound Data Metrics
                     </h2>
-                    <p className="mb-4">We collect information to provide better services to all our users:</p>
-                    <ul className="list-disc list-inside ml-4 space-y-2 text-neutral-400">
-                        <li>Personal identification (Name, Email address, Profile Picture).</li>
-                        <li>Log Data (IP address, browser version, visit duration).</li>
-                        <li>Transactional Data (Purchase history of eBooks).</li>
+                    <p className="mb-6 type-body">We monitor specific metrics to optimize your creative experience:</p>
+                    <ul className="space-y-3 type-tiny text-zinc-500">
+                        <li className="flex items-center gap-3">
+                            <div className="w-1.5 h-1.5 rounded-full bg-zinc-700"></div>
+                            Identity Metrics (Name, Email, Verified Avatar)
+                        </li>
+                        <li className="flex items-center gap-3">
+                            <div className="w-1.5 h-1.5 rounded-full bg-zinc-700"></div>
+                            System Telemetry (IP Address, Protocol Version, Duration)
+                        </li>
+                        <li className="flex items-center gap-3">
+                            <div className="w-1.5 h-1.5 rounded-full bg-zinc-700"></div>
+                            Protocol History (Acquisition logs and manuscript access)
+                        </li>
                     </ul>
                 </section>
 
                 <section>
-                    <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
-                        <span className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-sm border border-white/10">04</span>
-                        Data Usage & Rights
+                    <h2 className="type-h3 text-white mb-6 flex items-center gap-4">
+                        <span className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center type-tiny font-bold border border-white/10 text-white">04</span>
+                        Sovereign Rights
                     </h2>
-                    <p>
-                        We use the collected data to maintain our service, notify you about changes, provide customer support, and detect technical issues.
-                    </p>
-                    <p className="mt-4">
-                        You have the right to request copies of your personal data, request corrections, or request deletion of your account at any time via the User Dashboard.
+                    <p className="type-body">
+                        You maintain total sovereignty over your data. You may request a full export of your neural history or trigger a permanent purge of all associated records via your Control Dashboard at any time.
                     </p>
                 </section>
 
              </div>
 
              {/* Footer Note */}
-             <div className="mt-12 pt-8 border-t border-white/5 text-center">
-                 <p className="text-xs text-neutral-600 uppercase tracking-widest">
-                     Protected by Ebook-Engine Secure Enclave
+             <div className="mt-20 pt-10 border-t border-white/5 text-center">
+                 <p className="type-tiny text-zinc-600 uppercase tracking-[0.5em]">
+                     SECURED BY EBOOK-ENGINE ENCLAVE
                  </p>
              </div>
         </div>

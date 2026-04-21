@@ -30,50 +30,49 @@ const BookCard: React.FC<BookCardProps> = ({ book, onViewDetails }) => {
 
   return (
     <motion.div 
-      whileHover={{ y: -10 }}
+      whileHover={{ y: -8 }}
       className="group relative cursor-pointer"
       onClick={handleCardClick}
     >
-      {/* 3D-Like Card Container */}
-      <div className="glass-card-premium rounded-[32px] overflow-hidden flex flex-col h-full border border-white/5 group-hover:border-white/20 transition-all duration-500 shadow-[0_40px_80px_rgba(0,0,0,0.4)]">
+      <div className="glass-card-premium rounded-3xl overflow-hidden flex flex-col h-full bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all duration-500">
         
-        {/* Cover Image with Depth */}
-        <div className="aspect-[3/4] overflow-hidden relative">
+        {/* Cover Image - Standard Book Ratio 2:3 */}
+        <div className="aspect-[2/3] overflow-hidden relative">
             <img 
                 src={book.coverImageUrl} 
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
                 alt={book.title} 
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
             
             {/* Genre Badge */}
-            <div className="absolute top-6 left-6">
-                <span className="glass-panel px-3 py-1 text-[8px] font-bold uppercase tracking-[0.3em] rounded-full border-white/10">
+            <div className="absolute top-4 left-4">
+                <span className="glass-panel px-3 py-1 text-[9px] font-bold uppercase tracking-wider rounded-md border-white/5 backdrop-blur-md">
                     {book.genre}
                 </span>
             </div>
         </div>
 
         {/* Content Section */}
-        <div className="p-8 flex flex-col flex-grow">
-            <h3 className="text-xl font-bold title-neural mb-2 line-clamp-2 leading-tight group-hover:text-white transition-colors">
+        <div className="p-6 flex flex-col flex-grow">
+            <h3 className="type-h3 text-white mb-2 line-clamp-1 group-hover:text-white transition-colors">
                 {book.title}
             </h3>
-            <p className="text-[10px] text-muted uppercase tracking-widest font-medium mb-6">
-                {book.author}
+            <p className="type-tiny text-zinc-500 mb-6">
+                by {book.author}
             </p>
 
-            <div className="mt-auto flex items-center justify-between pt-6 border-t border-white/5">
-                <span className="text-xl font-bold font-display">
-                    {isFree ? 'FREE' : `₹${book.price}`}
+            <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5">
+                <span className="type-h3 font-bold text-white">
+                    {isFree ? 'FREE' : `$${(book.price / 100).toFixed(2)}`}
                 </span>
                 
                 <button 
                     onClick={handleAction}
-                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500 ${
+                    className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-500 ${
                         isFree 
-                        ? 'bg-white/5 text-white border border-white/10 hover:bg-white hover:text-black' 
-                        : 'bg-white text-black hover:scale-110 shadow-[0_0_20px_rgba(255,255,255,0.2)]'
+                        ? 'bg-white/5 text-zinc-400 border border-white/10 hover:bg-white hover:text-black hover:border-white' 
+                        : 'bg-white text-black hover:scale-110 shadow-lg'
                     }`}
                 >
                     {isFree ? <IconBook className="w-4 h-4" /> : <IconShoppingCart className="w-4 h-4" />}
@@ -81,11 +80,9 @@ const BookCard: React.FC<BookCardProps> = ({ book, onViewDetails }) => {
             </div>
         </div>
       </div>
-
-      {/* Decorative Glow behind the card on hover */}
-      <div className="absolute -inset-4 bg-white/5 blur-[40px] rounded-[40px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
     </motion.div>
   );
 };
 
 export default BookCard;
+

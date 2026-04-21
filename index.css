@@ -1,16 +1,30 @@
 @import "tailwindcss";
 
-/* EbookStudio - $1M UI Design System */
+/* EbookStudio - Production Design System v1.0 */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;600;800;900&display=swap');
 
 :root {
   --bg-obsidian: #000000;
+  --bg-dark-grey: #0a0a0a;
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.08);
   --neural-glow: rgba(99, 102, 241, 0.15);
   --accent-primary: #ffffff;
-  --text-muted: #888888;
+  --text-main: #ffffff;
+  --text-muted: #a1a1aa;
+  --text-dim: #71717a;
+  
+  /* Spacing Scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
 }
 
 * {
@@ -18,19 +32,67 @@
   padding: 0;
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 html, body, #root {
   height: 100%;
   width: 100%;
   background-color: var(--bg-obsidian);
-  color: #fff;
-  font-family: 'Inter', sans-serif;
+  color: var(--text-main);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
-h1, h2, h3, h4, .font-display {
+/* --- Typography Scale --- */
+.type-display {
   font-family: 'Outfit', sans-serif;
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+
+.type-h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.type-h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.type-h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.type-body {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.type-small {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.type-tiny {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 /* --- Premium Backgrounds --- */
@@ -60,103 +122,84 @@ h1, h2, h3, h4, .font-display {
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.05);
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 1.5rem;
 }
 
 .glass-card-premium:hover {
   background: rgba(255, 255, 255, 0.04);
   border-color: rgba(255, 255, 255, 0.15);
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 20px var(--neural-glow);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
-/* --- Bento Grid --- */
-.bento-grid {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 1.5rem;
+/* --- Premium Inputs --- */
+.input-premium {
+  @apply bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-500 transition-all duration-300 w-full;
 }
 
-.bento-item {
-  grid-column: span 12;
-}
-
-@media (min-width: 768px) {
-  .bento-item-4 { grid-column: span 4; }
-  .bento-item-8 { grid-column: span 8; }
-  .bento-item-6 { grid-column: span 6; }
+.input-premium:focus {
+  @apply outline-none border-white/40 ring-4 ring-white/5 bg-white/[0.08];
 }
 
 /* --- Premium Buttons --- */
-.btn-premium {
-  @apply relative overflow-hidden px-8 py-4 rounded-full font-bold uppercase tracking-[0.2em] text-[10px] transition-all duration-500 flex items-center justify-center gap-2;
+.btn-primary {
+  @apply relative overflow-hidden px-8 py-4 rounded-xl font-bold uppercase tracking-[0.15em] text-[11px] transition-all duration-500 flex items-center justify-center gap-2;
   background: white;
   color: black;
 }
 
-.btn-premium:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+.btn-primary:hover {
+  @apply scale-[1.02] shadow-[0_0_30px_rgba(255,255,255,0.2)];
+  background: #f4f4f5;
 }
 
-.btn-premium-outline {
-  @apply relative overflow-hidden px-8 py-4 rounded-full font-bold uppercase tracking-[0.2em] text-[10px] transition-all duration-500 border border-white/10 flex items-center justify-center gap-2;
-  background: rgba(255, 255, 255, 0.02);
+.btn-secondary {
+  @apply relative overflow-hidden px-8 py-4 rounded-xl font-bold uppercase tracking-[0.15em] text-[11px] transition-all duration-500 border border-white/10 flex items-center justify-center gap-2;
+  background: rgba(255, 255, 255, 0.03);
   color: white;
 }
 
-.btn-premium-outline:hover {
-  border-color: white;
-  background: rgba(255, 255, 255, 0.1);
+.btn-secondary:hover {
+  @apply border-white/30 bg-white/5;
 }
 
-/* --- Typography --- */
+/* --- Focus Rings for Accessibility --- */
+a:focus-visible, button:focus-visible {
+  @apply outline-none ring-2 ring-white ring-offset-2 ring-offset-black;
+}
+
+/* --- Typography Helpers --- */
 .text-gradient {
-  background: linear-gradient(to bottom right, #fff 30%, #555 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.text-muted {
-  color: var(--text-muted);
-  line-height: 1.6;
-}
-
 /* --- Animations --- */
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.animate-shimmer {
-  position: relative;
-  overflow: hidden;
-}
-
-.animate-shimmer::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-  animation: shimmer 2s infinite;
+.animate-fade-in {
+  animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* --- Scrollbar --- */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #000;
+  background: var(--bg-obsidian);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #222;
+  background: #27272a;
   border-radius: 10px;
+  border: 2px solid var(--bg-obsidian);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #444;
+  background: #3f3f46;
 }

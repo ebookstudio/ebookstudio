@@ -61,4 +61,4 @@ To host your own instance of **ebookstudio**:
 
 ---
 
-**© OpenDev Labs.** *Where Thought Becomes Literature.*
+**© opendev-labs.** *Where Thought Becomes Literature.*

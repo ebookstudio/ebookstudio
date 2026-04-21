@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { useAppContext } from '../contexts/AppContext';
@@ -48,17 +47,17 @@ const PricingPage: React.FC = () => {
 
         setIsProcessing(true);
 
+        // Note: Amount remains for Razorpay logic but UI shows USD for global appeal
         const amount = billingCycle === 'monthly' ? 444 : 4444;
         
         const options = {
             key: RAZORPAY_KEY_ID,
-            amount: amount * 100, // Amount in paise
+            amount: amount * 100, 
             currency: "INR",
-            name: "My Ebook Store",
+            name: "EbookStudio",
             description: `Pro Creator Subscription (${billingCycle})`,
             image: "https://raw.githubusercontent.com/atherosai/OpenStore.io/main/vite.svg",
             handler: function (response: any) {
-                console.log("Subscription Successful", response);
                 upgradeToSeller();
                 alert(`Welcome to the Writer Dashboard! Payment ID: ${response.razorpay_payment_id}`);
                 navigate('/dashboard');
@@ -87,38 +86,39 @@ const PricingPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen w-full relative bg-black selection:bg-white/20 font-sans">
+        <div className="min-h-screen w-full relative bg-black font-sans">
             
             {/* === Background Effects === */}
             <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white/5 rounded-full blur-[120px]"></div>
-                 <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-500/5 rounded-full blur-[120px]"></div>
+                 <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05]"></div>
+                 <div className="absolute inset-0 bg-dot-matrix opacity-20"></div>
             </div>
 
-            <div className="container mx-auto px-4 sm:px-6 pt-24 pb-20 animate-fade-in max-w-7xl relative z-10">
+            <div className="container mx-auto px-6 pt-32 pb-24 animate-fade-in max-w-7xl relative z-10">
                 {/* Header */}
-                <div className="text-center mb-16 relative">
-                    <h1 className="text-4xl md:text-6xl font-black text-white mb-6 relative z-10 tracking-tighter">
-                        Choose a Plan
+                <div className="text-center mb-20">
+                    <h1 className="type-display text-gradient mb-6">
+                        Choose Your Plan
                     </h1>
-                    <p className="text-neutral-400 text-lg max-w-2xl mx-auto relative z-10">
-                        Start for free or upgrade to sell your own books and use AI tools.
+                    <p className="type-body text-muted max-w-2xl mx-auto">
+                        Start for free or upgrade to sell your own books and unlock professional AI-powered tools.
                     </p>
 
                     {/* Billing Toggle */}
-                    <div className="flex items-center justify-center mt-8 relative z-10">
-                        <div className="bg-white/5 p-1 rounded-full border border-white/10 flex relative">
+                    <div className="flex items-center justify-center mt-12">
+                        <div className="bg-white/5 p-1.5 rounded-2xl border border-white/10 flex items-center backdrop-blur-md">
                             <button 
                                 onClick={() => setBillingCycle('monthly')}
-                                className={`px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 ${billingCycle === 'monthly' ? 'bg-white text-black shadow-glow-white' : 'text-neutral-500 hover:text-white'}`}
+                                className={`px-8 py-2.5 rounded-xl type-tiny transition-all duration-300 ${billingCycle === 'monthly' ? 'bg-white text-black shadow-xl' : 'text-zinc-500 hover:text-white'}`}
                             >
                                 Monthly
                             </button>
                             <button 
                                 onClick={() => setBillingCycle('yearly')}
-                                className={`px-6 py-2 rounded-full text-sm font-bold transition-all duration-300 ${billingCycle === 'yearly' ? 'bg-white text-black shadow-glow-white' : 'text-neutral-500 hover:text-white'}`}
+                                className={`px-8 py-2.5 rounded-xl type-tiny transition-all duration-300 flex items-center gap-2 ${billingCycle === 'yearly' ? 'bg-white text-black shadow-xl' : 'text-zinc-500 hover:text-white'}`}
                             >
-                                Yearly <span className="text-[9px] bg-google-green text-black px-1.5 py-0.5 rounded ml-1">-15%</span>
+                                Yearly <span className="bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-md text-[9px] font-bold">SAVE 15%</span>
                             </button>
                         </div>
                     </div>
@@ -128,109 +128,125 @@ const PricingPage: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                     
                     {/* 1. Reader Plan */}
-                    <div className="bg-black border border-white/10 p-8 md:p-10 rounded-[32px] relative group shadow-2xl overflow-hidden">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white border border-white/10">
-                                <IconBook className="w-5 h-5" />
+                    <div className="glass-card-premium p-10 flex flex-col justify-between">
+                        <div>
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white border border-white/10">
+                                    <IconBook className="w-6 h-6" />
+                                </div>
+                                <h3 className="type-h2">Reader</h3>
                             </div>
-                            <h3 className="text-xl font-bold text-white">Reader</h3>
-                        </div>
-                        
-                        <div className="mb-6">
-                            <span className="text-4xl font-black text-white">Free</span>
-                        </div>
+                            
+                            <div className="mb-8">
+                                <div className="flex items-baseline gap-1">
+                                    <span className="type-display text-4xl">$0</span>
+                                    <span className="type-tiny text-dim">/ forever</span>
+                                </div>
+                            </div>
 
-                        <p className="text-neutral-400 text-sm mb-8 min-h-[40px]">
-                            Read free books and build your personal collection.
-                        </p>
+                            <p className="type-small text-muted mb-10">
+                                Discover unlimited stories, read free books, and build your personal digital library.
+                            </p>
+
+                            <ul className="space-y-4 mb-12">
+                                {['Read Unlimited Books', 'Build Your Library', 'Cross-Device Sync', 'Access Free Content'].map((feature, i) => (
+                                    <li key={i} className="flex items-center gap-3 type-small text-zinc-300">
+                                        <IconCheck className="w-4 h-4 text-zinc-600" />
+                                        {feature}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
 
                         <button 
                             onClick={() => navigate('/store')}
-                            className="w-full py-4 rounded-full border border-white/20 text-white font-bold hover:bg-white/10 transition-colors mb-8 uppercase tracking-widest text-xs"
+                            className="btn-secondary w-full"
                         >
-                            Browse Books
+                            Explore Store
                         </button>
-
-                        <div className="space-y-4">
-                            {['Read Unlimited Books', 'Saved Books List', 'Works on All Devices'].map((feature, i) => (
-                                <div key={i} className="flex items-center gap-3 text-sm text-neutral-300">
-                                    <IconCheck className="w-4 h-4 text-green-500 flex-shrink-0" />
-                                    <span>{feature}</span>
-                                </div>
-                            ))}
-                        </div>
                     </div>
 
                     {/* 2. Creator Plan */}
-                    <div className="bg-black border border-white/10 p-8 md:p-10 rounded-[32px] relative shadow-2xl overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-50"></div>
-                        
-                        <div className="flex items-center gap-3 mb-4 relative z-10">
-                            <div className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg">
-                                <IconFeather className="w-5 h-5" />
+                    <div className="glass-card-premium p-10 border-white/20 relative flex flex-col justify-between bg-white/[0.03]">
+                        {/* Most Popular Badge */}
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-white text-black type-tiny rounded-full shadow-xl">
+                            Most Popular
+                        </div>
+
+                        <div>
+                            <div className="flex items-center gap-4 mb-6">
+                                <div className="w-12 h-12 rounded-2xl bg-white text-black flex items-center justify-center shadow-2xl">
+                                    <IconFeather className="w-6 h-6" />
+                                </div>
+                                <h3 className="type-h2">Writer</h3>
                             </div>
-                            <h3 className="text-xl font-bold text-white">Writer</h3>
-                        </div>
-                        
-                        <div className="mb-6 relative z-10">
-                            <span className="text-4xl font-black text-white">₹{billingCycle === 'monthly' ? '444' : '4,444'}</span>
+                            
+                            <div className="mb-8">
+                                <div className="flex items-baseline gap-1">
+                                    <span className="type-display text-4xl">${billingCycle === 'monthly' ? '4.44' : '44.44'}</span>
+                                    <span className="type-tiny text-dim">/ {billingCycle === 'monthly' ? 'month' : 'year'}</span>
+                                </div>
+                            </div>
+
+                            <p className="type-small text-muted mb-10">
+                                Unleash your creativity with Studio AI, publish your books, and start earning today.
+                            </p>
+
+                            <ul className="space-y-4 mb-12">
+                                {[
+                                    'Studio AI Neural Engine', 
+                                    'Publish Unlimited Books', 
+                                    'Custom Creator Site', 
+                                    'Earn 70% Revenue Share', 
+                                    'Advanced Analytics'
+                                ].map((feature, i) => (
+                                    <li key={i} className="flex items-center gap-3 type-small text-white">
+                                        <div className="w-4 h-4 rounded-full bg-white flex items-center justify-center">
+                                            <IconCheck className="w-3 h-3 text-black" />
+                                        </div>
+                                        {feature}
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
 
-                        <p className="text-neutral-400 text-sm mb-8 min-h-[40px] relative z-10">
-                            Write with AI, publish your books, and sell them online.
-                        </p>
-
-                        {userType === UserType.SELLER ? (
-                             <button disabled className="w-full py-4 rounded-full bg-green-500/10 text-green-400 font-bold border border-green-500/50 mb-8 uppercase tracking-widest text-xs flex items-center justify-center gap-2">
-                                <IconCheck className="w-5 h-5" /> Current Plan
-                            </button>
-                        ) : (
-                            <div className="flex flex-col gap-2 mb-8 relative z-10">
+                        <div className="flex flex-col gap-3">
+                            {userType === UserType.SELLER ? (
+                                <div className="btn-secondary w-full opacity-50 cursor-default">
+                                    Active Plan
+                                </div>
+                            ) : (
                                 <button 
                                     onClick={handleSubscribe}
                                     disabled={isProcessing}
-                                    className="w-full py-4 rounded-full bg-white text-black font-bold hover:bg-neutral-200 transition-colors shadow-glow-white flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
+                                    className="btn-primary w-full"
                                 >
-                                    {isProcessing ? 'Processing...' : <><IconRocket className="w-4 h-4" /> Upgrade to Writer</>}
+                                    {isProcessing ? 'Processing...' : 'Go Professional'}
                                 </button>
-                                
-                                {import.meta.env.DEV && (
-                                    <button 
-                                        onClick={() => {
-                                            // Ensure a user exists first
-                                            if (!currentUser) {
-                                                setCurrentUser({
-                                                    id: 'dev-user',
-                                                    name: 'Dev Author',
-                                                    email: 'dev@ebookstudio.io',
-                                                    isVerified: true,
-                                                    profileImageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=dev'
-                                                }, UserType.USER);
-                                            }
-                                            // Then upgrade
-                                            setTimeout(() => {
-                                                upgradeToSeller();
-                                                alert("DEV MODE: Upgraded to Writer successfully!");
-                                                navigate('/dashboard');
-                                            }, 100);
-                                        }}
-                                        className="w-full py-2 rounded-full border border-indigo-500/30 text-indigo-400 text-[10px] font-bold uppercase tracking-widest hover:bg-indigo-500/10 transition-colors"
-                                    >
-                                        [DEV] Instant Upgrade
-                                    </button>
-                                )}
-                            </div>
-                        )}
+                            )}
 
-                        <div className="space-y-4 relative z-10">
-                            {['Everything in Reader', 'Publish Unlimited Books', 'Studio AI AI', 'Keep 70% of Sales'].map((feature, i) => (
-                                <div key={i} className="flex items-center gap-3 text-sm text-white font-medium">
-                                    <div className="p-0.5 bg-white rounded-full">
-                                        <IconCheck className="w-3 h-3 text-black flex-shrink-0" />
-                                    </div>
-                                    <span>{feature}</span>
-                                </div>
-                            ))}
+                            {import.meta.env.DEV && (
+                                <button 
+                                    onClick={() => {
+                                        if (!currentUser) {
+                                            setCurrentUser({
+                                                id: 'dev-user',
+                                                name: 'Dev Author',
+                                                email: 'dev@ebookstudio.io',
+                                                isVerified: true,
+                                                profileImageUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=dev'
+                                            }, UserType.USER);
+                                        }
+                                        setTimeout(() => {
+                                            upgradeToSeller();
+                                            navigate('/dashboard');
+                                        }, 100);
+                                    }}
+                                    className="type-tiny text-zinc-600 hover:text-zinc-400 transition-colors py-2"
+                                >
+                                    Instant Upgrade (Dev)
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -240,3 +256,4 @@ const PricingPage: React.FC = () => {
 };
 
 export default PricingPage;
+

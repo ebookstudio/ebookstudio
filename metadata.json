@@ -1,6 +1,6 @@
 {
   "name": "ebookstudio",
-  "description": "ebookstudio by OpenDev Labs: The professional platform for creating and selling books, powered by the Studio AI neural engine.",
+  "description": "ebookstudio by opendev-labs: The professional platform for creating and selling books, powered by the Studio AI neural engine.",
   "requestFramePermissions": [
     "microphone"
   ],

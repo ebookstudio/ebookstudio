@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAppContext } from '../../contexts/AppContext';
 import { Seller, EBook, CreatorSiteConfig, UserType } from '../../types';
@@ -88,14 +87,14 @@ export const SellerDashboardContent: React.FC = () => {
   const SidebarItem = ({ id, label, icon: Icon, onClick }: any) => (
     <button 
       onClick={onClick || (() => setActiveTab(id))}
-      className={`w-full flex items-center gap-4 px-6 py-3.5 text-sm font-medium rounded-r-full transition-all duration-200 group ${
+      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
           activeTab === id 
-          ? 'bg-[#34a853]/15 text-[#81c995] border-l-4 border-[#34a853]' 
-          : 'text-neutral-400 hover:bg-white/5 hover:text-white border-l-4 border-transparent'
+          ? 'bg-white/10 text-white shadow-sm' 
+          : 'text-zinc-500 hover:text-white hover:bg-white/5'
       }`}
     >
-        <Icon className={`w-5 h-5 ${activeTab === id ? 'text-[#81c995]' : 'text-neutral-500 group-hover:text-white'}`} />
-        {label}
+        <Icon className={`w-4 h-4 ${activeTab === id ? 'text-white' : 'text-zinc-500 group-hover:text-white'}`} />
+        <span className="type-tiny font-bold">{label}</span>
     </button>
   );
 
@@ -103,134 +102,146 @@ export const SellerDashboardContent: React.FC = () => {
     <button 
       onClick={() => setActiveTab(id)}
       className={`flex flex-col items-center justify-center py-2 px-4 flex-1 transition-colors ${
-          activeTab === id ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'
+          activeTab === id ? 'text-white' : 'text-zinc-500'
       }`}
     >
-        <Icon className={`w-6 h-6 mb-1 ${activeTab === id ? 'text-[#81c995]' : 'text-current'}`} />
-        <span className="text-[10px] font-bold uppercase tracking-wide">{label}</span>
+        <Icon className={`w-5 h-5 mb-1 ${activeTab === id ? 'text-white' : 'text-current'}`} />
+        <span className="type-tiny font-bold uppercase">{label}</span>
     </button>
   );
 
   const isOwner = seller.isAdmin === true || seller.email === 'subatomicerror@gmail.com';
 
   return (
-    <div className="h-screen w-full bg-[#0b0b0b] font-sans text-white pt-16 flex overflow-hidden">
+    <div className="h-screen w-full bg-black flex overflow-hidden">
         
-        {/* --- SIDEBAR (Desktop) --- */}
-        <aside className="w-64 flex-shrink-0 border-r border-white/5 hidden md:flex flex-col bg-[#0b0b0b] z-20 h-full overflow-y-auto">
-            
-            <nav className="flex-1 space-y-1 pr-4 mt-6">
-                {/* Back to Home Action */}
+        {/* --- SIDEBAR --- */}
+        <aside className="w-64 flex-shrink-0 border-r border-zinc-900 hidden md:flex flex-col bg-zinc-950 z-20 h-full">
+            <div className="p-6 border-b border-zinc-900">
+                <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
+                        <IconBook className="w-5 h-5 text-black" />
+                    </div>
+                    <span className="type-h3 font-black text-white tracking-tighter uppercase">Studio</span>
+                </div>
+            </div>
+
+            <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto custom-scrollbar">
                 <SidebarItem id="home" label="Back to Home" icon={IconHome} onClick={() => navigate('/')} />
-                <div className="my-4 border-t border-white/5 mx-6"></div>
+                <div className="h-px bg-zinc-900 my-4"></div>
                 
                 <SidebarItem id="overview" label="Overview" icon={IconActivity} />
-                <SidebarItem id="audience" label="Audience" icon={IconUser} />
-                <SidebarItem id="studio" label="Content Manager" icon={IconCloudUpload} />
-                <div className="my-4 border-t border-white/5 mx-6"></div>
-                <SidebarItem id="settings" label="Site Settings" icon={IconSettings} />
+                <SidebarItem id="audience" label="Live Feed" icon={IconUser} />
+                <SidebarItem id="studio" label="Manuscripts" icon={IconCloudUpload} />
+                
+                <div className="h-px bg-zinc-900 my-4"></div>
+                <SidebarItem id="settings" label="Site Config" icon={IconSettings} />
                 
                 {isOwner && (
                     <>
-                        <div className="my-4 border-t border-white/5 mx-6"></div>
+                        <div className="h-px bg-zinc-900 my-4"></div>
                         <SidebarItem id="admin" label="System Admin" icon={IconDashboard} />
                     </>
                 )}
             </nav>
 
-            <div className="p-6 border-t border-white/5">
-                 <button 
-                    onClick={() => setCurrentUser(currentUser, UserType.USER)}
-                    className="text-xs font-medium text-neutral-500 hover:text-white transition-colors mb-4 block"
-                 >
-                    Switch to Reading Mode
-                 </button>
-                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-neutral-800 overflow-hidden border border-white/10">
+            <div className="p-4 border-t border-zinc-900">
+                 <div className="glass-card-premium p-4 rounded-2xl flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-zinc-800 overflow-hidden border border-zinc-700">
                         {seller.profileImageUrl ? (
                             <img src={seller.profileImageUrl} alt="" className="w-full h-full object-cover" />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center text-neutral-500 font-bold">{seller.name[0]}</div>
+                            <div className="w-full h-full flex items-center justify-center text-zinc-500 font-bold">{seller.name[0]}</div>
                         )}
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold truncate flex items-center gap-2">
+                        <p className="type-tiny font-black text-white truncate flex items-center gap-1">
                             {seller.name}
-                            {seller.isVerified && <IconCheck className="w-3 h-3 text-[#34a853]" />}
+                            {seller.isVerified && <IconCheck className="w-3 h-3 text-emerald-500" />}
                         </p>
-                        <p className="text-xs text-neutral-500 truncate">
-                            {isOwner ? 'System Owner' : 'Writer Account'}
+                        <p className="type-tiny text-zinc-500 truncate">
+                            {isOwner ? 'System Owner' : 'Writer'}
                         </p>
                     </div>
                  </div>
+                 <button 
+                    onClick={() => setCurrentUser(currentUser, UserType.USER)}
+                    className="w-full mt-4 py-2 text-[10px] font-bold text-zinc-500 hover:text-white uppercase tracking-widest transition-colors"
+                 >
+                    Reader Mode
+                 </button>
             </div>
         </aside>
 
         {/* --- MAIN CONTENT --- */}
-        <main className="flex-1 h-full overflow-y-auto bg-[#0b0b0b] relative scroll-smooth">
-            <div className="p-4 md:p-8 pb-32">
+        <main className="flex-1 h-full overflow-y-auto bg-black relative scroll-smooth bg-dot-matrix">
+            <div className="p-6 md:p-12 pb-32 max-w-7xl mx-auto">
             
-                 <div className="mb-8 flex justify-between items-center">
-                    <h1 className="text-xl md:text-2xl font-normal text-white">
-                        {activeTab === 'overview' && (isOwner ? 'Global Overview' : 'Dashboard Overview')}
-                        {activeTab === 'audience' && 'Live Audience'}
-                        {activeTab === 'studio' && 'Content Manager'}
+                 <div className="mb-10 flex justify-between items-center">
+                    <h1 className="type-h2 text-white">
+                        {activeTab === 'overview' && (isOwner ? 'Platform Hub' : 'Writer Dashboard')}
+                        {activeTab === 'audience' && 'Live Audience Feed'}
+                        {activeTab === 'studio' && 'Manuscript Manager'}
                         {activeTab === 'settings' && 'Site Configuration'}
-                        {activeTab === 'admin' && 'System Administration'}
+                        {activeTab === 'admin' && 'Global Administration'}
                     </h1>
                 </div>
 
                 {/* --- OVERVIEW TAB --- */}
                 {activeTab === 'overview' && (
-                    <div className="space-y-6 animate-fade-in">
+                    <div className="space-y-8 animate-fade-in">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {[
-                                { label: "Revenue", value: isOwner ? "₹1,240,500" : "₹24,500", icon: IconWallet, color: "text-[#81c995]" },
-                                { label: "Total Visitors", value: isOwner ? "84,320" : "1,240", icon: IconActivity, color: "text-[#a8c7fa]" },
-                                { label: isOwner ? "Total Books" : "Active Books", value: isOwner ? "342" : myUploadedBooks.length.toString(), icon: IconBook, color: "text-[#fdd663]" }
+                                { label: "Revenue", value: isOwner ? "$12,405" : "$245.00", icon: IconWallet, color: "text-emerald-400" },
+                                { label: "Total Visitors", value: isOwner ? "84,320" : "1,240", icon: IconActivity, color: "text-sky-400" },
+                                { label: isOwner ? "Total Books" : "Active Books", value: isOwner ? "342" : myUploadedBooks.length.toString(), icon: IconBook, color: "text-amber-400" }
                             ].map((stat, i) => (
-                                <div key={i} className="bg-[#1e1e1e] p-6 rounded-3xl border border-white/5">
-                                    <div className="flex items-start justify-between mb-4">
-                                        <div className={`p-3 rounded-full bg-white/5 ${stat.color}`}>
+                                <div key={i} className="glass-card-premium p-8 rounded-3xl group">
+                                    <div className="flex items-start justify-between mb-6">
+                                        <div className={`p-4 rounded-2xl bg-zinc-900 border border-zinc-800 ${stat.color}`}>
                                             <stat.icon className="w-6 h-6" />
                                         </div>
-                                        <span className="text-xs font-bold bg-green-900/30 text-green-400 px-2 py-1 rounded-full">+12%</span>
+                                        <span className="type-tiny font-bold text-emerald-400">+12.5%</span>
                                     </div>
-                                    <h3 className="text-3xl font-normal text-white mb-1">{stat.value}</h3>
-                                    <p className="text-sm text-neutral-500">{stat.label}</p>
+                                    <h3 className="type-display text-3xl text-white mb-2">{stat.value}</h3>
+                                    <p className="type-tiny text-zinc-500 uppercase tracking-widest">{stat.label}</p>
                                 </div>
                             ))}
                         </div>
 
-                        <div className="bg-[#1e1e1e] rounded-3xl p-8 border border-white/5 h-[300px] md:h-[400px]">
-                            <AnalyticsChart className="w-full h-full" title={isOwner ? "Platform Revenue" : "Revenue Trend"} />
+                        <div className="glass-card-premium rounded-3xl p-8 h-[400px]">
+                            <AnalyticsChart className="w-full h-full" title={isOwner ? "Platform Revenue (USD)" : "Revenue Performance"} />
                         </div>
 
                         {!isOwner && (
-                            <div className="bg-[#1e1e1e] rounded-3xl overflow-hidden border border-white/5">
-                                <div className="px-6 md:px-8 py-6 border-b border-white/5 flex justify-between items-center">
-                                    <h3 className="text-lg font-medium">Recent Uploads</h3>
-                                    <button onClick={() => setActiveTab('studio')} className="text-sm text-[#81c995] font-bold hover:underline">View All</button>
+                            <div className="glass-card-premium rounded-3xl overflow-hidden">
+                                <div className="px-8 py-6 border-b border-zinc-900 flex justify-between items-center bg-zinc-950/50">
+                                    <h3 className="type-h3">Recent Manuscripts</h3>
+                                    <button onClick={() => setActiveTab('studio')} className="type-tiny text-white font-bold hover:underline underline-offset-4">View All</button>
                                 </div>
-                                <div className="divide-y divide-white/5">
+                                <div className="divide-y divide-zinc-900">
                                     {myUploadedBooks.slice(0, 5).map(book => (
-                                        <div key={book.id} className="px-6 md:px-8 py-4 flex items-center justify-between hover:bg-white/5 transition-colors group">
-                                            <div className="flex items-center gap-4">
-                                                <img src={book.coverImageUrl} className="w-10 h-14 object-cover rounded bg-black" alt="" />
+                                        <div key={book.id} className="px-8 py-5 flex items-center justify-between hover:bg-white/[0.02] transition-colors group">
+                                            <div className="flex items-center gap-5">
+                                                <img src={book.coverImageUrl} className="w-10 h-14 object-cover rounded shadow-lg bg-black border border-zinc-800" alt="" />
                                                 <div>
-                                                    <p className="font-bold text-sm text-white group-hover:text-[#a8c7fa] transition-colors line-clamp-1">{book.title}</p>
-                                                    <p className="text-xs text-neutral-500">₹{book.price}</p>
+                                                    <p className="type-tiny font-bold text-white group-hover:text-emerald-400 transition-colors">{book.title}</p>
+                                                    <p className="type-tiny text-zinc-500">${(book.price / 100).toFixed(2)}</p>
                                                 </div>
                                             </div>
-                                            <div className="flex items-center gap-4">
-                                                <span className="text-xs text-neutral-500 hidden sm:block">{new Date(book.publicationDate).toLocaleDateString()}</span>
-                                                <button onClick={() => navigate(`/edit-ebook/${book.id}`)} className="p-2 hover:bg-white/10 rounded-full text-neutral-400 hover:text-white">
+                                            <div className="flex items-center gap-6">
+                                                <span className="type-tiny text-zinc-600 hidden sm:block">{new Date(book.publicationDate).toLocaleDateString()}</span>
+                                                <button onClick={() => navigate(`/edit-ebook/${book.id}`)} className="p-2 hover:bg-zinc-800 rounded-lg text-zinc-500 hover:text-white transition-colors">
                                                     <IconEdit className="w-4 h-4" />
                                                 </button>
                                             </div>
                                         </div>
                                     ))}
-                                    {myUploadedBooks.length === 0 && <p className="p-8 text-center text-neutral-500 text-sm">No books uploaded yet.</p>}
+                                    {myUploadedBooks.length === 0 && (
+                                        <div className="p-12 text-center">
+                                            <p className="type-body text-zinc-600">No manuscripts uploaded yet.</p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -240,53 +251,52 @@ export const SellerDashboardContent: React.FC = () => {
                 {/* --- AUDIENCE TAB --- */}
                 {activeTab === 'audience' && (
                     <div className="animate-fade-in max-w-5xl mx-auto">
-                        <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center justify-between mb-8">
                             <div>
-                                <h2 className="text-sm font-bold uppercase tracking-widest text-neutral-500 mb-1">Live Feed</h2>
-                                <p className="text-neutral-400 text-xs">Real-time visitor tracking</p>
+                                <h2 className="type-tiny font-bold uppercase tracking-widest text-zinc-500 mb-1">Live Connection Feed</h2>
+                                <p className="type-tiny text-zinc-600">Real-time engagement tracking</p>
                             </div>
-                            <div className="flex items-center gap-2 bg-[#34a853]/10 px-3 py-1.5 rounded-full border border-[#34a853]/20">
+                            <div className="flex items-center gap-2 bg-emerald-500/10 px-4 py-2 rounded-full border border-emerald-500/20">
                                 <span className="relative flex h-2 w-2">
-                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#34a853] opacity-75"></span>
-                                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#34a853]"></span>
+                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
+                                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                                 </span>
-                                <span className="text-[10px] font-bold text-[#81c995] uppercase tracking-widest">Active</span>
+                                <span className="type-tiny font-bold text-emerald-400 tracking-widest">STREAMING LIVE</span>
                             </div>
                         </div>
 
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                             {mockVisitors.map((visitor) => (
-                                <div key={visitor.id} className="group bg-[#1e1e1e] hover:bg-[#252525] border border-white/5 hover:border-white/10 rounded-2xl p-4 flex flex-col md:flex-row md:items-center gap-4 transition-all duration-300">
-                                    <div className="flex items-center gap-4 flex-1 min-w-[200px]">
-                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-neutral-800 to-neutral-900 border border-white/10 flex items-center justify-center font-bold text-sm text-white shadow-inner">
+                                <div key={visitor.id} className="glass-card-premium hover:bg-zinc-900/50 p-5 flex flex-col md:flex-row md:items-center gap-6 transition-all duration-300">
+                                    <div className="flex items-center gap-4 flex-1">
+                                        <div className="w-12 h-12 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-bold text-sm text-zinc-400">
                                             {visitor.avatar}
                                         </div>
                                         <div>
-                                            <div className="font-medium text-white text-sm">{visitor.name}</div>
-                                            <div className="text-xs text-neutral-500">{visitor.email}</div>
+                                            <div className="type-tiny font-bold text-white">{visitor.name}</div>
+                                            <div className="type-tiny text-zinc-600">{visitor.email}</div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-2 md:w-[150px] text-neutral-400 text-sm">
-                                        <IconGlobe className="w-4 h-4 text-neutral-600" />
+                                    <div className="flex items-center gap-2 text-zinc-500 type-tiny">
+                                        <IconGlobe className="w-3 h-3" />
                                         <span>{visitor.location}</span>
                                     </div>
-                                    <div className="flex-1 md:w-[250px]">
-                                         <div className="flex items-center gap-2 text-white text-sm mb-0.5">
-                                            <IconActivity className="w-3 h-3 text-[#a8c7fa]" />
+                                    <div className="flex-1 md:max-w-[250px]">
+                                         <div className="flex items-center gap-2 text-white type-tiny mb-1">
+                                            <IconActivity className="w-3 h-3 text-sky-400" />
                                             <span className="truncate">{visitor.action}</span>
                                          </div>
-                                         <div className="text-[10px] text-neutral-500 font-mono flex items-center gap-1">
+                                         <div className="type-tiny text-zinc-600 flex items-center gap-1 font-mono">
                                             <IconClock className="w-3 h-3" /> {visitor.time}
                                          </div>
                                     </div>
-                                    <div className="md:w-[120px] flex justify-end">
-                                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5 ${
+                                    <div className="flex justify-end min-w-[100px]">
+                                        <span className={`px-3 py-1 rounded-full type-tiny font-bold tracking-widest ${
                                             visitor.status === 'Signed In' 
-                                            ? 'bg-[#34a853]/10 text-[#81c995] border border-[#34a853]/20' 
-                                            : 'bg-white/5 text-neutral-500 border border-white/5'
+                                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
+                                            : 'bg-zinc-900 text-zinc-600'
                                         }`}>
-                                            <span className={`w-1.5 h-1.5 rounded-full ${visitor.status === 'Signed In' ? 'bg-[#34a853]' : 'bg-neutral-500'}`}></span>
-                                            {visitor.status === 'Signed In' ? 'User' : 'Guest'}
+                                            {visitor.status === 'Signed In' ? 'USER' : 'GUEST'}
                                         </span>
                                     </div>
                                 </div>
@@ -298,41 +308,41 @@ export const SellerDashboardContent: React.FC = () => {
                 {/* --- STUDIO TAB --- */}
                 {activeTab === 'studio' && (
                     <div className="animate-fade-in max-w-5xl mx-auto space-y-12">
-                        <div className="bg-[#1e1e1e] border border-white/5 rounded-3xl overflow-hidden">
-                            <div className="p-8 border-b border-white/5 bg-white/[0.02]">
-                                <h2 className="text-xl font-bold text-white mb-1">Your Manuscripts</h2>
-                                <p className="text-sm text-neutral-500">Edit content, update pricing, or manage visual assets.</p>
+                        <div className="glass-card-premium rounded-3xl overflow-hidden">
+                            <div className="p-10 border-b border-zinc-900 bg-zinc-950/50">
+                                <h2 className="type-h3 mb-2">Your Manuscripts</h2>
+                                <p className="type-small text-muted">Refine your content, adjust distribution, and track performance.</p>
                             </div>
                             
-                            <div className="divide-y divide-white/5 max-h-[400px] overflow-y-auto custom-scrollbar">
+                            <div className="divide-y divide-zinc-900 max-h-[500px] overflow-y-auto custom-scrollbar">
                                 {myUploadedBooks.length > 0 ? (
                                     myUploadedBooks.map(book => (
-                                        <div key={book.id} className="p-6 flex flex-col sm:flex-row items-center gap-6 hover:bg-white/[0.02] transition-colors group">
+                                        <div key={book.id} className="p-8 flex flex-col sm:flex-row items-center gap-8 hover:bg-white/[0.01] transition-colors group">
                                             <img 
                                                 src={book.coverImageUrl} 
                                                 alt={book.title} 
-                                                className="w-16 h-24 object-cover rounded-lg shadow-lg bg-[#0b0b0b] border border-white/10"
+                                                className="w-20 h-28 object-cover rounded-xl shadow-2xl bg-black border border-zinc-800 group-hover:scale-105 transition-transform"
                                             />
                                             <div className="flex-1 text-center sm:text-left">
-                                                <h3 className="font-bold text-white text-lg mb-1 group-hover:text-blue-400 transition-colors">{book.title}</h3>
-                                                <div className="flex items-center justify-center sm:justify-start gap-3 text-xs text-neutral-500 mb-2">
-                                                    <span className="uppercase tracking-wider font-bold">{book.genre}</span>
+                                                <h3 className="type-h3 text-white mb-2 group-hover:text-sky-400 transition-colors">{book.title}</h3>
+                                                <div className="flex items-center justify-center sm:justify-start gap-4 type-tiny text-zinc-500 mb-4">
+                                                    <span className="font-bold uppercase tracking-widest">{book.genre}</span>
                                                     <span>•</span>
-                                                    <span className="font-mono">₹{book.price}</span>
+                                                    <span className="font-mono text-white">${(book.price / 100).toFixed(2)}</span>
                                                 </div>
-                                                <p className="text-xs text-neutral-600 line-clamp-1 max-w-md">{book.description}</p>
+                                                <p className="type-tiny text-zinc-600 line-clamp-2 max-w-xl">{book.description}</p>
                                             </div>
-                                            <div className="flex items-center gap-3">
+                                            <div className="flex items-center gap-4">
                                                 <button 
                                                     onClick={() => navigate(`/read/${book.id}`)}
-                                                    className="p-3 rounded-full border border-white/10 text-neutral-400 hover:text-white hover:bg-white/10 transition-all"
-                                                    title="Read Preview"
+                                                    className="p-3 rounded-xl border border-zinc-800 text-zinc-500 hover:text-white hover:bg-zinc-800 transition-all"
+                                                    title="Preview Content"
                                                 >
                                                     <IconEye className="w-5 h-5" />
                                                 </button>
                                                 <button 
                                                     onClick={() => navigate(`/edit-ebook/${book.id}`)}
-                                                    className="px-6 py-3 rounded-full bg-white text-black font-bold text-xs uppercase tracking-widest hover:bg-neutral-200 transition-all flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+                                                    className="btn-primary px-8 py-3"
                                                 >
                                                     <IconEdit className="w-4 h-4" /> Edit
                                                 </button>
@@ -340,89 +350,91 @@ export const SellerDashboardContent: React.FC = () => {
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="p-12 text-center text-neutral-500">
-                                        <IconBook className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                                        <p>You haven't uploaded any books yet.</p>
+                                    <div className="p-20 text-center text-zinc-600">
+                                        <IconBook className="w-16 h-16 mx-auto mb-6 opacity-10" />
+                                        <p className="type-body">You haven't uploaded any manuscripts yet.</p>
                                     </div>
                                 )}
                             </div>
                         </div>
 
                         <div>
-                            <div className="mb-6 flex items-center gap-4">
-                                <div className="h-px flex-1 bg-white/10"></div>
-                                <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest">Create New</span>
-                                <div className="h-px flex-1 bg-white/10"></div>
+                            <div className="mb-10 flex items-center gap-6">
+                                <div className="h-px flex-1 bg-zinc-900"></div>
+                                <span className="type-tiny font-bold text-zinc-500 uppercase tracking-[0.3em]">Launch New Volume</span>
+                                <div className="h-px flex-1 bg-zinc-900"></div>
                             </div>
-                            <BookUploadForm onBookUploaded={handleBookUploaded} />
+                            <div className="glass-card-premium p-10 rounded-3xl">
+                                <BookUploadForm onBookUploaded={handleBookUploaded} />
+                            </div>
                         </div>
                     </div>
                 )}
 
                 {/* --- SETTINGS TAB --- */}
                 {activeTab === 'settings' && (
-                    <div className="animate-fade-in grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div className="bg-[#1e1e1e] rounded-3xl p-6 md:p-8 border border-white/5">
-                            <div className="mb-6 flex items-center justify-between">
-                                <h2 className="text-xl font-medium">Public Profile</h2>
+                    <div className="animate-fade-in grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                        <div className="glass-card-premium p-10 rounded-3xl">
+                            <div className="mb-10 flex items-center justify-between">
+                                <h2 className="type-h3">Digital Presence</h2>
                                 {deploymentUrl && (
-                                    <a href={deploymentUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-xs font-bold text-[#81c995] bg-[#34a853]/10 px-3 py-1 rounded-full">
-                                        <span className="w-2 h-2 rounded-full bg-[#34a853] animate-pulse"></span> Live
+                                    <a href={deploymentUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 type-tiny font-bold text-emerald-400 bg-emerald-500/10 px-4 py-1.5 rounded-full border border-emerald-500/20">
+                                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> SITE LIVE
                                     </a>
                                 )}
                             </div>
 
-                            <div className="space-y-6">
-                                <div>
-                                    <label className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2">Display Name</label>
-                                    <input name="displayName" value={creatorSiteForm.displayName} onChange={handleCreatorSiteFormChange} className="w-full bg-[#0b0b0b] border border-white/10 rounded-lg p-3 text-sm focus:outline-none focus:border-white/30 text-white" />
+                            <div className="space-y-8">
+                                <div className="space-y-2">
+                                    <label className="type-tiny font-bold text-zinc-500 uppercase tracking-widest ml-1">Display Identity</label>
+                                    <input name="displayName" value={creatorSiteForm.displayName} onChange={handleCreatorSiteFormChange} className="input-premium py-4" placeholder="Your Professional Name" />
                                 </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2">Tagline</label>
-                                    <textarea name="tagline" value={creatorSiteForm.tagline} onChange={handleCreatorSiteFormChange} rows={3} className="w-full bg-[#0b0b0b] border border-white/10 rounded-lg p-3 text-sm focus:outline-none focus:border-white/30 text-white resize-none" />
+                                <div className="space-y-2">
+                                    <label className="type-tiny font-bold text-zinc-500 uppercase tracking-widest ml-1">Creator Manifesto</label>
+                                    <textarea name="tagline" value={creatorSiteForm.tagline} onChange={handleCreatorSiteFormChange} rows={3} className="input-premium py-4 resize-none" placeholder="A brief statement of your creative vision..." />
                                 </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2">Username (Slug)</label>
-                                    <div className="flex">
-                                        <span className="bg-[#151515] border border-r-0 border-white/10 text-neutral-500 px-3 py-3 text-sm rounded-l-lg hidden sm:block">ebook-engine.github.io/</span>
-                                        <input name="slug" value={creatorSiteForm.slug} onChange={handleCreatorSiteFormChange} className="flex-1 bg-[#0b0b0b] border border-white/10 rounded-lg sm:rounded-l-none p-3 text-sm focus:outline-none focus:border-white/30 text-white" />
+                                <div className="space-y-2">
+                                    <label className="type-tiny font-bold text-zinc-500 uppercase tracking-widest ml-1">Custom Endpoint (Slug)</label>
+                                    <div className="flex gap-1">
+                                        <div className="bg-zinc-900 border border-zinc-800 text-zinc-600 px-4 flex items-center type-tiny font-mono rounded-l-xl">ebooks/</div>
+                                        <input name="slug" value={creatorSiteForm.slug} onChange={handleCreatorSiteFormChange} className="input-premium rounded-l-none py-4" placeholder="username" />
                                     </div>
                                 </div>
                                 
                                 <button 
                                     onClick={handleDeployToGitHub} 
                                     disabled={isDeploying}
-                                    className="w-full py-4 bg-white text-black font-bold rounded-xl hover:bg-neutral-200 transition-colors flex items-center justify-center gap-2 mt-4"
+                                    className="btn-primary w-full py-5 text-[11px]"
                                 >
-                                    {isDeploying ? 'Deploying...' : <><IconCloudUpload className="w-5 h-5"/> Publish Site</>}
+                                    {isDeploying ? 'Deploying to Cloud...' : <><IconCloudUpload className="w-5 h-5"/> SYNC TO GITHUB PAGES</>}
                                 </button>
                             </div>
                         </div>
                         
-                        <div className="flex flex-col gap-6">
-                            <div className="bg-[#1e1e1e] rounded-3xl p-8 border border-white/5 flex flex-col items-center justify-center text-center">
-                                <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-4">
-                                    <IconGithub className="w-10 h-10 text-white" />
+                        <div className="flex flex-col gap-8">
+                            <div className="glass-card-premium p-10 rounded-3xl text-center">
+                                <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-8 border border-white/10">
+                                    <IconGithub className="w-8 h-8 text-white" />
                                 </div>
-                                <h3 className="text-lg font-bold text-white mb-2">GitHub Integration</h3>
-                                <p className="text-sm text-neutral-400 max-w-xs mb-6">
-                                    Your creator site is hosted for free on GitHub Pages. Changes may take up to 2 minutes to propagate globally.
+                                <h3 className="type-h3 mb-4">Architecture & Hosting</h3>
+                                <p className="type-tiny text-zinc-500 mb-8 leading-relaxed">
+                                    Your creator site is automatically compiled and distributed via GitHub's global edge network. Latency is minimal.
                                 </p>
                                 {deploymentUrl ? (
-                                    <div className="bg-[#0b0b0b] p-4 rounded-xl border border-white/10 w-full flex justify-between items-center">
-                                        <span className="text-xs text-neutral-500 truncate">{deploymentUrl}</span>
-                                        <a href={deploymentUrl} target="_blank" className="text-[#81c995] hover:text-white"><IconLink className="w-4 h-4"/></a>
+                                    <div className="bg-black/50 p-4 rounded-xl border border-zinc-900 w-full flex justify-between items-center group cursor-pointer hover:border-zinc-700 transition-colors">
+                                        <span className="type-tiny text-zinc-400 truncate font-mono">{deploymentUrl}</span>
+                                        <IconLink className="w-4 h-4 text-zinc-600 group-hover:text-white"/>
                                     </div>
                                 ) : (
-                                    <div className="bg-[#0b0b0b] p-4 rounded-xl border border-white/10 w-full text-xs text-neutral-600">
-                                        Not deployed yet.
+                                    <div className="type-tiny text-zinc-700 italic">
+                                        Awaiting first deployment...
                                     </div>
                                 )}
                             </div>
 
-                             <div className="bg-[#1e1e1e] rounded-3xl p-6 border border-white/5">
-                                 <button onClick={() => setCurrentUser(seller, UserType.USER)} className="w-full py-3 bg-white/5 hover:bg-white/10 text-white font-medium rounded-xl transition-colors text-sm">
-                                    Switch to Reader Mode
+                             <div className="glass-card-premium p-8 rounded-3xl border-rose-500/10">
+                                 <button onClick={() => setCurrentUser(seller, UserType.USER)} className="btn-secondary w-full py-4 text-rose-200 border-rose-500/10 hover:bg-rose-500/5">
+                                    EXIT STUDIO MODE
                                  </button>
                              </div>
                         </div>
@@ -431,40 +443,46 @@ export const SellerDashboardContent: React.FC = () => {
 
                 {/* --- ADMIN TAB --- */}
                 {activeTab === 'admin' && isOwner && (
-                    <div className="animate-fade-in space-y-6">
-                        <div className="bg-[#1e1e1e] border border-white/5 rounded-3xl p-8">
-                            <h2 className="text-xl font-bold text-white mb-6">Registered Users</h2>
+                    <div className="animate-fade-in space-y-8 max-w-6xl mx-auto">
+                        <div className="glass-card-premium rounded-3xl overflow-hidden">
+                            <div className="p-10 border-b border-zinc-900 bg-zinc-950/50">
+                                <h2 className="type-h3">Global User Registry</h2>
+                                <p className="type-small text-muted">Platform-wide oversight and permission management.</p>
+                            </div>
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left border-collapse">
                                     <thead>
-                                        <tr className="border-b border-white/10 text-neutral-500 text-xs uppercase tracking-widest">
-                                            <th className="py-4 px-2 font-bold">User</th>
-                                            <th className="py-4 px-2 font-bold">Email</th>
-                                            <th className="py-4 px-2 font-bold">Role</th>
-                                            <th className="py-4 px-2 font-bold text-right">Action</th>
+                                        <tr className="border-b border-zinc-900 type-tiny text-zinc-500 uppercase tracking-[0.2em]">
+                                            <th className="p-8 font-bold">Identity</th>
+                                            <th className="p-8 font-bold">Role</th>
+                                            <th className="p-8 font-bold text-right">Access</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="text-sm">
+                                    <tbody className="type-tiny">
                                         {Object.values(mockUsers).filter(u => u.id !== 'guest').map((user) => (
-                                            <tr key={user.id} className="border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors">
-                                                <td className="py-4 px-2 font-medium text-white flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-xs">
-                                                        {user.profileImageUrl ? <img src={user.profileImageUrl} alt="" className="w-full h-full rounded-full"/> : user.name[0]}
+                                            <tr key={user.id} className="border-b border-zinc-900 last:border-0 hover:bg-white/[0.01] transition-colors">
+                                                <td className="p-8">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center font-bold">
+                                                            {user.profileImageUrl ? <img src={user.profileImageUrl} alt="" className="w-full h-full rounded-full"/> : user.name[0]}
+                                                        </div>
+                                                        <div>
+                                                            <div className="text-white font-bold mb-1">{user.name}</div>
+                                                            <div className="text-zinc-600 font-mono">{user.email}</div>
+                                                        </div>
                                                     </div>
-                                                    {user.name}
                                                 </td>
-                                                <td className="py-4 px-2 text-neutral-400">{user.email}</td>
-                                                <td className="py-4 px-2">
-                                                    <span className={`px-2 py-1 rounded-full text-[10px] uppercase font-bold ${
-                                                        (user as Seller).isAdmin ? 'bg-purple-900/30 text-purple-400 border border-purple-500/20' : 
-                                                        'uploadedBooks' in user ? 'bg-blue-900/30 text-blue-400 border border-blue-500/20' : 
-                                                        'bg-white/5 text-neutral-500'
+                                                <td className="p-8">
+                                                    <span className={`px-3 py-1 rounded-full font-bold tracking-widest border ${
+                                                        (user as Seller).isAdmin ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' : 
+                                                        'uploadedBooks' in user ? 'bg-sky-500/10 text-sky-400 border-sky-500/20' : 
+                                                        'bg-zinc-900 text-zinc-600 border-transparent'
                                                     }`}>
-                                                        {(user as Seller).isAdmin ? 'Admin' : 'uploadedBooks' in user ? 'Writer' : 'Reader'}
+                                                        {(user as Seller).isAdmin ? 'ADMIN' : 'uploadedBooks' in user ? 'WRITER' : 'READER'}
                                                     </span>
                                                 </td>
-                                                <td className="py-4 px-2 text-right">
-                                                    <button className="text-xs text-neutral-500 hover:text-white underline">Manage</button>
+                                                <td className="p-8 text-right">
+                                                    <button className="text-zinc-500 hover:text-white underline underline-offset-4 font-bold">MANAGE</button>
                                                 </td>
                                             </tr>
                                         ))}
@@ -478,24 +496,20 @@ export const SellerDashboardContent: React.FC = () => {
             </div>
         </main>
 
-        {/* --- FLOATING ACTION BUTTON (FAB) --- */}
+        {/* --- FLOATING ACTION BUTTON --- */}
         {!isOwner && (
             <button 
                 onClick={() => navigate('/ebook-studio')}
-                className="fixed bottom-24 right-8 z-50 w-16 h-16 bg-white text-black rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.4)] hover:scale-110 active:scale-95 transition-all group"
-                aria-label="Create New Story"
+                className="fixed bottom-10 right-10 z-50 w-14 h-14 bg-white text-black rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all group"
             >
-                <IconRocket className="w-8 h-8 group-hover:-translate-y-1 transition-transform" />
-                <span className="absolute right-full mr-4 px-3 py-1.5 bg-[#1a1a1a] border border-white/10 rounded-lg text-white text-[10px] font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                    Start New Manuscript
-                </span>
+                <IconRocket className="w-6 h-6 group-hover:-translate-y-1 transition-transform" />
             </button>
         )}
 
-        {/* --- MOBILE BOTTOM NAVIGATION --- */}
-        <div className="md:hidden fixed bottom-0 left-0 right-0 h-20 bg-[#0b0b0b]/90 backdrop-blur-xl border-t border-white/10 flex items-center justify-around z-50 pb-safe">
+        {/* --- MOBILE NAVIGATION --- */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 h-20 bg-zinc-950/90 backdrop-blur-xl border-t border-zinc-900 flex items-center justify-around z-50 pb-safe px-4">
             <MobileNavItem id="overview" label="Stats" icon={IconActivity} />
-            <MobileNavItem id="audience" label="Visitors" icon={IconUser} />
+            <MobileNavItem id="audience" label="Live" icon={IconUser} />
             <MobileNavItem id="studio" label="Content" icon={IconCloudUpload} />
             <MobileNavItem id="settings" label="Config" icon={IconSettings} />
             {isOwner && <MobileNavItem id="admin" label="Admin" icon={IconDashboard} />}

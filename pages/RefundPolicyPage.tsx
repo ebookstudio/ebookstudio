@@ -1,52 +1,51 @@
-
 import React from 'react';
 import { APP_NAME, IconWallet } from '../constants';
 
 const RefundPolicyPage: React.FC = () => {
   return (
-    <div className="min-h-screen w-full relative bg-transparent font-sans pt-32 pb-20">
-      <div className="container mx-auto px-6 max-w-4xl relative z-10 animate-slide-up">
+    <div className="min-h-screen w-full relative bg-black pt-32 pb-20 bg-dot-matrix">
+      <div className="container mx-auto px-6 max-w-4xl relative z-10 animate-fade-in">
         
-        <div className="text-center mb-16">
-            <div className="w-16 h-16 mx-auto bg-[#1e1e1e] rounded-2xl flex items-center justify-center border border-white/10 mb-6 shadow-lg">
-                <IconWallet className="w-8 h-8 text-white" />
+        <div className="text-center mb-20">
+            <div className="w-16 h-16 mx-auto bg-white rounded-2xl flex items-center justify-center border border-white/10 mb-8 shadow-2xl">
+                <IconWallet className="w-8 h-8 text-black" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-4">Refund Policy</h1>
-            <p className="text-neutral-400 text-sm font-mono uppercase tracking-widest">
-                Digital Goods & Services
+            <h1 className="type-display text-white mb-4">Refund Protocol</h1>
+            <p className="type-tiny text-zinc-500 font-mono uppercase tracking-[0.3em]">
+                Digital Assets & Liquidations
             </p>
         </div>
 
-        <div className="bg-[#0b0b0b] border border-white/10 rounded-[32px] p-8 md:p-12 shadow-2xl">
-             <div className="space-y-8 text-neutral-300 leading-relaxed">
-                 <div className="p-6 bg-red-900/10 border border-red-500/20 rounded-2xl">
-                     <h3 className="text-red-400 font-bold mb-2 uppercase tracking-widest text-xs">Important Notice</h3>
-                     <p className="text-sm text-neutral-300">
-                        Due to the nature of digital goods (eBooks), which can be downloaded instantly, orders are generally <strong>non-refundable</strong> once processed.
-                     </p>
-                 </div>
+        <div className="glass-card-premium rounded-[40px] p-8 md:p-16">
+             <div className="space-y-12 text-zinc-400 leading-relaxed">
+                  <div className="p-8 bg-rose-500/10 border border-rose-500/20 rounded-3xl">
+                      <h3 className="type-tiny font-black text-rose-400 mb-3 uppercase tracking-[0.2em]">Mandatory Disclosure</h3>
+                      <p className="type-body text-zinc-300">
+                         Given the instantaneous nature of digital manuscripts, acquisitions are generally <strong className="text-white">final and non-refundable</strong> once the secure access token is generated.
+                      </p>
+                  </div>
 
                 <section>
-                    <h3 className="text-xl font-bold text-white mb-2">1. Cancellations</h3>
-                    <p>
-                        As our products are instant digital downloads, orders cannot be cancelled once the payment is processed and the download link has been generated.
+                    <h3 className="type-h3 text-white mb-4">1. Acquisition Cancellation</h3>
+                    <p className="type-body">
+                        Orders cannot be terminated once the payment sequence is completed and the manuscript is injected into your library.
                     </p>
                 </section>
 
                 <section>
-                    <h3 className="text-xl font-bold text-white mb-2">2. Eligibility for Refunds</h3>
-                    <p>We may consider a refund request under these exceptional circumstances:</p>
-                    <ul className="list-disc list-inside ml-4 mt-2 space-y-1 text-neutral-400">
-                        <li>The eBook file is corrupt or technically defective.</li>
-                        <li>Duplicate payment for the same item.</li>
+                    <h3 className="type-h3 text-white mb-4">2. Anomaly Resolution</h3>
+                    <p className="type-body mb-6">We may authorize a credit reversal under the following critical failures:</p>
+                    <ul className="space-y-3 type-tiny text-zinc-500">
+                        <li className="flex items-center gap-3"><div className="w-1 h-1 rounded-full bg-zinc-700"></div> Systemic corruption of the eBook file.</li>
+                        <li className="flex items-center gap-3"><div className="w-1 h-1 rounded-full bg-zinc-700"></div> Duplicate transaction logs for identical items.</li>
                     </ul>
-                    <p className="mt-2 text-sm text-neutral-500">Requests must be made within 7 days of purchase.</p>
+                    <p className="mt-8 type-tiny text-zinc-600 italic">Anomalies must be reported within 168 hours (7 days) of acquisition.</p>
                 </section>
 
                 <section>
-                    <h3 className="text-xl font-bold text-white mb-2">3. Processing Timeline</h3>
-                    <p>
-                        Approved refunds are processed within 5-7 working days. The amount will be credited back to your original payment method.
+                    <h3 className="type-h3 text-white mb-4">3. Reconciliation Timeline</h3>
+                    <p className="type-body">
+                        Authorized reversals are finalized within 5-7 terrestrial business days. Credits will be returned via the original gateway.
                     </p>
                 </section>
              </div>

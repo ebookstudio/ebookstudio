@@ -116,7 +116,7 @@ export const createStudioSession = (initialContext: string): Chat | null => {
         return ai.chats.create({
             model: GEMINI_TEXT_MODEL,
             config: {
-                systemInstruction: `IDENTITY: You are Studio AI, the advanced neural engine for ebookstudio by OpenDev Labs.
+                systemInstruction: `IDENTITY: You are Studio AI, the advanced neural engine for ebookstudio by opendev-labs.
                 
 MISSION: Write immersive, deeply intelligent, and market-ready books.
 Blend spirituality, science, and narrative clarity into a seamless flow.

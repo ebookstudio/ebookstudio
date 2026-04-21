@@ -30,28 +30,28 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className={`fixed top-0 left-0 right-0 w-full z-[100] transition-all duration-700 px-6 ${scrolled ? 'pt-4' : 'pt-8'}`}>
-        <div className={`max-w-7xl mx-auto glass-panel rounded-[30px] px-8 h-20 flex items-center justify-between transition-all duration-700 ${scrolled ? 'bg-black/60 shadow-2xl scale-[0.98]' : 'bg-transparent border-transparent shadow-none'}`}>
+        <div className={`max-w-7xl mx-auto glass-panel rounded-[24px] px-8 h-20 flex items-center justify-between transition-all duration-700 ${scrolled ? 'bg-black/80 shadow-2xl scale-[0.98]' : 'bg-transparent border-transparent shadow-none'}`}>
             
             {/* Logo */}
             <Link to="/" className="flex items-center gap-4 group">
-                <MorphicEye className="w-10 h-10 bg-black border border-white/20 rounded-full transition-transform group-hover:scale-110" />
-                <span className="text-xl font-black tracking-tighter uppercase title-neural">EbookStudio</span>
+                <MorphicEye className="w-10 h-10 bg-black border border-white/10 rounded-full transition-transform group-hover:scale-110" />
+                <span className="type-h3 tracking-tighter uppercase">EbookStudio</span>
             </Link>
 
-            {/* Links */}
+            {/* Desktop Links */}
             {!isStudio && (
-                <div className="hidden md:flex items-center gap-12">
-                    <Link to="/store" className="text-[10px] font-bold uppercase tracking-[0.4em] text-neutral-400 hover:text-white transition-colors">Store</Link>
-                    <Link to="/pricing" className="text-[10px] font-bold uppercase tracking-[0.4em] text-neutral-400 hover:text-white transition-colors">Pricing</Link>
+                <div className="hidden md:flex items-center gap-10">
+                    <Link to="/store" className="type-tiny text-zinc-400 hover:text-white transition-colors">Store</Link>
+                    <Link to="/pricing" className="type-tiny text-zinc-400 hover:text-white transition-colors">Pricing</Link>
                     
                     {currentUser ? (
-                        <div className="flex items-center gap-10">
-                            <Link to="/dashboard" className="text-[10px] font-bold uppercase tracking-[0.4em] text-neutral-400 hover:text-white transition-colors">Dashboard</Link>
-                            <Link to="/ebook-studio" className="btn-premium py-2 px-8 text-[9px]">Write</Link>
-                            <button onClick={handleLogout} className="btn-premium-outline py-2 px-8 text-[9px]">Logout</button>
+                        <div className="flex items-center gap-6">
+                            <Link to="/dashboard" className="type-tiny text-zinc-400 hover:text-white transition-colors">Dashboard</Link>
+                            <Link to="/ebook-studio" className="btn-primary py-2 px-6">Write</Link>
+                            <button onClick={handleLogout} className="btn-secondary py-2 px-6">Logout</button>
                         </div>
                     ) : (
-                        <Link to="/login" className="btn-premium py-2 px-10 text-[9px]">Sign In</Link>
+                        <Link to="/login" className="btn-primary py-2 px-8">Sign In</Link>
                     )}
                 </div>
             )}
@@ -60,7 +60,7 @@ const Navbar: React.FC = () => {
             {isStudio && (
                 <button 
                     onClick={() => navigate('/dashboard')}
-                    className="btn-premium-outline py-2 px-8 text-[9px]"
+                    className="btn-secondary py-2 px-6"
                 >
                     <IconArrowLeft className="w-4 h-4" /> Dashboard
                 </button>
@@ -69,7 +69,7 @@ const Navbar: React.FC = () => {
             {/* Mobile Menu Button */}
             {!isLogin && (
                 <button 
-                    className="md:hidden p-2 text-neutral-400 hover:text-white transition-transform active:scale-90"
+                    className="md:hidden p-2 text-zinc-400 hover:text-white transition-transform active:scale-90"
                     onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 >
                     {mobileMenuOpen ? <IconX className="w-6 h-6"/> : <IconMenu className="w-6 h-6"/>}
@@ -79,16 +79,19 @@ const Navbar: React.FC = () => {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-            <div className="fixed inset-0 z-[90] bg-black/95 backdrop-blur-2xl flex flex-col items-center justify-center gap-12 p-6 animate-fade-in">
-                <Link to="/" onClick={() => setMobileMenuOpen(false)} className="text-4xl font-black title-neural uppercase">Home</Link>
-                <Link to="/store" onClick={() => setMobileMenuOpen(false)} className="text-4xl font-black title-neural uppercase">Store</Link>
-                <Link to="/pricing" onClick={() => setMobileMenuOpen(false)} className="text-4xl font-black title-neural uppercase">Pricing</Link>
+            <div className="fixed inset-0 z-[90] bg-black/98 backdrop-blur-2xl flex flex-col items-center justify-center gap-8 p-6 animate-fade-in">
+                <Link to="/" onClick={() => setMobileMenuOpen(false)} className="type-display text-3xl uppercase">Home</Link>
+                <Link to="/store" onClick={() => setMobileMenuOpen(false)} className="type-display text-3xl uppercase">Store</Link>
+                <Link to="/pricing" onClick={() => setMobileMenuOpen(false)} className="type-display text-3xl uppercase">Pricing</Link>
                 {currentUser ? (
-                    <button onClick={handleLogout} className="text-red-500 text-2xl font-bold uppercase tracking-widest">Sign Out</button>
+                    <>
+                        <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} className="type-display text-3xl uppercase">Dashboard</Link>
+                        <button onClick={handleLogout} className="text-red-500 type-h2 uppercase mt-8">Sign Out</button>
+                    </>
                 ) : (
-                    <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="btn-premium px-20 py-6">Sign In</Link>
+                    <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="btn-primary px-20 py-5 mt-8">Sign In</Link>
                 )}
-                <button onClick={() => setMobileMenuOpen(false)} className="absolute top-10 right-10 text-white"><IconX className="w-10 h-10"/></button>
+                <button onClick={() => setMobileMenuOpen(false)} className="absolute top-10 right-10 text-white"><IconX className="w-8 h-8"/></button>
             </div>
         )}
     </nav>
@@ -96,3 +99,4 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
+

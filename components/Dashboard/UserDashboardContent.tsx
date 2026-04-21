@@ -1,8 +1,7 @@
-
 import React, { useState, useRef } from 'react';
 import { useAppContext } from '../../contexts/AppContext';
 import { EBook, User } from '../../types';
-import { IconBook, IconHeart, IconSettings, IconSearch, IconLogout, IconUser } from '../../constants'; 
+import { IconBook, IconHeart, IconSettings, IconSearch, IconLogout, IconUser, IconHome, IconStore } from '../../constants'; 
 import * as ReactRouterDOM from 'react-router-dom';
 import BookCard from '../BookCard';
 
@@ -39,14 +38,14 @@ const UserDashboardContent: React.FC = () => {
   const SidebarItem = ({ id, label, icon: Icon }: any) => (
       <button 
         onClick={() => setActiveTab(id)}
-        className={`w-full flex items-center gap-4 px-6 py-3.5 text-sm font-medium rounded-r-full transition-all duration-200 group ${
+        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
             activeTab === id 
-            ? 'bg-[#4285f4]/15 text-[#a8c7fa] border-l-4 border-[#4285f4]' 
-            : 'text-neutral-400 hover:bg-white/5 hover:text-white border-l-4 border-transparent'
+            ? 'bg-white/10 text-white shadow-sm' 
+            : 'text-zinc-500 hover:text-white hover:bg-white/5'
         }`}
       >
-          <Icon className={`w-5 h-5 ${activeTab === id ? 'text-[#a8c7fa]' : 'text-neutral-500 group-hover:text-white'}`} />
-          {label}
+          <Icon className={`w-4 h-4 ${activeTab === id ? 'text-white' : 'text-zinc-500 group-hover:text-white'}`} />
+          <span className="type-tiny font-bold">{label}</span>
       </button>
   );
 
@@ -54,11 +53,11 @@ const UserDashboardContent: React.FC = () => {
     <button 
       onClick={() => setActiveTab(id)}
       className={`flex flex-col items-center justify-center py-2 px-4 flex-1 transition-colors ${
-          activeTab === id ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'
+          activeTab === id ? 'text-white' : 'text-zinc-500'
       }`}
     >
-        <Icon className={`w-6 h-6 mb-1 ${activeTab === id ? 'text-[#a8c7fa]' : 'text-current'}`} />
-        <span className="text-[10px] font-bold uppercase tracking-wide">{label}</span>
+        <Icon className={`w-5 h-5 mb-1 ${activeTab === id ? 'text-white' : 'text-current'}`} />
+        <span className="type-tiny font-bold uppercase">{label}</span>
     </button>
   );
 
@@ -66,68 +65,82 @@ const UserDashboardContent: React.FC = () => {
   const filteredBooks = booksToDisplay?.filter(b => b.title.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
-    <div className="h-screen w-full bg-[#0b0b0b] font-sans text-white pt-16 flex overflow-hidden">
+    <div className="h-screen w-full bg-black flex overflow-hidden">
         
-        {/* --- SIDEBAR (Desktop) --- */}
-        <aside className="w-64 flex-shrink-0 border-r border-white/5 hidden md:flex flex-col bg-[#0b0b0b] z-20 h-full overflow-y-auto">
-            <div className="p-6">
-                <button 
-                    onClick={() => navigate('/store')}
-                    className="w-full py-4 bg-white text-black font-bold rounded-2xl shadow-lg hover:shadow-xl hover:bg-neutral-200 transition-all flex items-center justify-center gap-2"
-                >
-                    <IconBook className="w-5 h-5" /> Store
-                </button>
+        {/* --- SIDEBAR --- */}
+        <aside className="w-64 flex-shrink-0 border-r border-zinc-900 hidden md:flex flex-col bg-zinc-950 z-20 h-full">
+            <div className="p-6 border-b border-zinc-900">
+                <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
+                        <IconBook className="w-5 h-5 text-black" />
+                    </div>
+                    <span className="type-h3 font-black text-white tracking-tighter uppercase">Reader</span>
+                </div>
             </div>
 
-            <nav className="flex-1 space-y-1 pr-4">
+            <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto custom-scrollbar">
+                <SidebarItem id="home" label="Back to Home" icon={IconHome} />
+                <button 
+                    onClick={() => navigate('/store')}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-500 hover:text-white hover:bg-white/5 transition-all"
+                >
+                    <IconStore className="w-4 h-4" />
+                    <span className="type-tiny font-bold">Marketplace</span>
+                </button>
+                <div className="h-px bg-zinc-900 my-4"></div>
+                
                 <SidebarItem id="library" label="My Library" icon={IconBook} />
                 <SidebarItem id="wishlist" label="Wishlist" icon={IconHeart} />
-                <div className="my-4 border-t border-white/5 mx-6"></div>
+                
+                <div className="h-px bg-zinc-900 my-4"></div>
                 <SidebarItem id="settings" label="Profile Settings" icon={IconSettings} />
             </nav>
 
-            <div className="p-6 border-t border-white/5">
-                 <button onClick={upgradeToSeller} className="text-xs font-medium text-neutral-500 hover:text-white transition-colors mb-4 block">
-                    Switch to Writer Mode
-                 </button>
-                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-neutral-800 overflow-hidden border border-white/10">
+            <div className="p-4 border-t border-zinc-900">
+                 <div className="glass-card-premium p-4 rounded-2xl flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-zinc-800 overflow-hidden border border-zinc-700">
                         {user.profileImageUrl ? (
                             <img src={user.profileImageUrl} alt="" className="w-full h-full object-cover" />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center text-neutral-500 font-bold">{user.name[0]}</div>
+                            <div className="w-full h-full flex items-center justify-center text-zinc-500 font-bold">{user.name[0]}</div>
                         )}
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold truncate">{user.name}</p>
-                        <p className="text-xs text-neutral-500 truncate">{user.email}</p>
+                        <p className="type-tiny font-black text-white truncate">{user.name}</p>
+                        <p className="type-tiny text-zinc-500 truncate">{user.email}</p>
                     </div>
                  </div>
+                 <button 
+                    onClick={upgradeToSeller}
+                    className="w-full mt-4 py-2 text-[10px] font-bold text-zinc-500 hover:text-white uppercase tracking-widest transition-colors"
+                 >
+                    Upgrade to Writer
+                 </button>
             </div>
         </aside>
 
         {/* --- MAIN CONTENT --- */}
-        <main className="flex-1 h-full overflow-y-auto bg-[#0b0b0b] relative scroll-smooth">
-            <div className="p-4 md:p-8 pb-32"> {/* Extra padding for mobile bottom nav */}
+        <main className="flex-1 h-full overflow-y-auto bg-black relative scroll-smooth bg-dot-matrix">
+            <div className="p-6 md:p-12 pb-32 max-w-7xl mx-auto">
                 
                 {/* Top Bar */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                    <h1 className="text-2xl font-normal text-white">
-                        {activeTab === 'library' && 'My Library'}
-                        {activeTab === 'wishlist' && 'My Wishlist'}
-                        {activeTab === 'settings' && 'Settings'}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+                    <h1 className="type-h2 text-white">
+                        {activeTab === 'library' && 'My Collection'}
+                        {activeTab === 'wishlist' && 'Saved for Later'}
+                        {activeTab === 'settings' && 'Account Settings'}
                     </h1>
 
                     {/* Search Bar */}
                     {(activeTab === 'library' || activeTab === 'wishlist') && (
-                        <div className="relative w-full md:w-96 group">
-                            <IconSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500 group-focus-within:text-white transition-colors" />
+                        <div className="relative w-full md:w-96">
+                            <IconSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
                             <input 
                                 type="text" 
-                                placeholder="Search your books..." 
+                                placeholder="Search your library..." 
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-[#1e1e1e] border-none rounded-full py-3 pl-12 pr-6 text-sm text-white placeholder-neutral-500 focus:ring-2 focus:ring-[#4285f4]/50 focus:bg-[#252525] transition-all outline-none"
+                                className="input-premium pl-12 py-3"
                             />
                         </div>
                     )}
@@ -135,38 +148,38 @@ const UserDashboardContent: React.FC = () => {
 
                 {/* Content Area */}
                 {activeTab === 'settings' ? (
-                    <div className="max-w-2xl animate-fade-in mx-auto md:mx-0">
-                        <div className="bg-[#1e1e1e] rounded-3xl p-6 md:p-8 mb-6">
-                            <h2 className="text-lg font-medium mb-6">Profile Details</h2>
-                            <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-8 text-center md:text-left">
-                                <div className="relative group">
-                                    <div className="w-24 h-24 rounded-full bg-neutral-800 border-4 border-[#0b0b0b] overflow-hidden">
+                    <div className="max-w-xl animate-fade-in">
+                        <div className="glass-card-premium rounded-3xl p-8 md:p-10 mb-8">
+                            <h2 className="type-h3 mb-10">Profile Identity</h2>
+                            <div className="flex flex-col sm:flex-row items-center gap-8 mb-10 text-center sm:text-left">
+                                <div className="relative">
+                                    <div className="w-24 h-24 rounded-3xl bg-zinc-900 border border-zinc-800 overflow-hidden shadow-2xl">
                                         {user.profileImageUrl ? (
                                             <img src={user.profileImageUrl} alt="" className="w-full h-full object-cover" />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-3xl text-neutral-600"><IconUser className="w-10 h-10"/></div>
+                                            <div className="w-full h-full flex items-center justify-center text-3xl text-zinc-700 bg-zinc-900"><IconUser className="w-10 h-10"/></div>
                                         )}
                                     </div>
                                     <button 
                                         onClick={() => profileInputRef.current?.click()}
-                                        className="absolute bottom-0 right-0 p-2 bg-[#4285f4] rounded-full text-white shadow-lg hover:scale-110 transition-transform"
+                                        className="absolute -bottom-2 -right-2 p-2.5 bg-white text-black rounded-xl shadow-2xl hover:scale-110 transition-transform"
                                     >
                                         <IconSettings className="w-4 h-4" />
                                     </button>
                                     <input type="file" ref={profileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-bold">{user.name}</h3>
-                                    <p className="text-neutral-400">{user.email}</p>
-                                    <span className="inline-block mt-2 px-3 py-1 bg-[#4285f4]/10 text-[#a8c7fa] text-xs font-bold rounded-full">Reader Account</span>
+                                    <h3 className="type-h2 text-white mb-1">{user.name}</h3>
+                                    <p className="type-body text-zinc-500 mb-4">{user.email}</p>
+                                    <span className="type-tiny px-3 py-1 bg-white/5 text-zinc-400 font-bold rounded-full border border-white/5">READER ACCOUNT</span>
                                 </div>
                             </div>
                             
-                            <div className="flex flex-col gap-3">
-                                <button onClick={upgradeToSeller} className="w-full py-3 border border-white/10 rounded-xl hover:bg-white/5 transition-colors text-sm font-medium">
-                                    Become a Writer
+                            <div className="flex flex-col gap-4">
+                                <button onClick={upgradeToSeller} className="btn-primary w-full py-4">
+                                    Unlock Writer Studio
                                 </button>
-                                <button onClick={handleLogout} className="w-full py-3 flex items-center justify-center gap-2 text-red-400 hover:bg-red-500/10 rounded-xl transition-colors font-medium text-sm">
+                                <button onClick={handleLogout} className="btn-secondary w-full py-4 text-rose-400 border-rose-500/10 hover:bg-rose-500/5">
                                     <IconLogout className="w-4 h-4" /> Sign Out
                                 </button>
                             </div>
@@ -175,29 +188,27 @@ const UserDashboardContent: React.FC = () => {
                 ) : (
                     <div className="animate-fade-in">
                         {filteredBooks && filteredBooks.length > 0 ? (
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-8">
                                 {filteredBooks.map(book => (
-                                    <div key={book.id} className="group">
-                                        <BookCard book={book} />
-                                    </div>
+                                    <BookCard key={book.id} book={book} />
                                 ))}
                             </div>
                         ) : (
-                            <div className="flex flex-col items-center justify-center py-20 md:py-32 text-center">
-                                <div className="w-20 h-20 md:w-24 md:h-24 bg-[#1e1e1e] rounded-full flex items-center justify-center mb-6">
-                                    <IconBook className="w-8 h-8 text-neutral-600" />
+                            <div className="glass-card-premium py-24 md:py-32 text-center rounded-[40px]">
+                                <div className="w-20 h-20 bg-zinc-900 rounded-3xl flex items-center justify-center mx-auto mb-8 border border-zinc-800">
+                                    <IconBook className="w-8 h-8 text-zinc-700" />
                                 </div>
-                                <h3 className="text-lg md:text-xl font-medium text-white mb-2">
-                                    {activeTab === 'wishlist' ? 'Your wishlist is empty' : 'No books in library'}
+                                <h3 className="type-h2 text-white mb-4">
+                                    {activeTab === 'wishlist' ? 'Your wishlist is empty' : 'Empty Library'}
                                 </h3>
-                                <p className="text-neutral-500 mb-8 max-w-xs mx-auto text-sm">
-                                    {activeTab === 'wishlist' ? 'Save books you want to read later.' : 'Start your reading journey by exploring the store.'}
+                                <p className="type-body text-muted mb-12 max-w-xs mx-auto">
+                                    {activeTab === 'wishlist' ? 'Archive stories you plan to experience later.' : 'Your neural shelf awaits its first volume.'}
                                 </p>
                                 <button 
                                     onClick={() => navigate('/store')} 
-                                    className="px-8 py-3 bg-[#4285f4] text-black font-bold rounded-full hover:bg-[#5b96f5] transition-colors"
+                                    className="btn-primary px-12 py-4"
                                 >
-                                    Explore Books
+                                    Explore Library
                                 </button>
                             </div>
                         )}
@@ -206,10 +217,10 @@ const UserDashboardContent: React.FC = () => {
             </div>
         </main>
 
-        {/* --- MOBILE BOTTOM NAVIGATION --- */}
-        <div className="md:hidden fixed bottom-0 left-0 right-0 h-20 bg-[#0b0b0b]/90 backdrop-blur-xl border-t border-white/10 flex items-center justify-around z-50 pb-safe">
-            <MobileNavItem id="library" label="Library" icon={IconBook} />
-            <MobileNavItem id="wishlist" label="Wishlist" icon={IconHeart} />
+        {/* --- MOBILE NAVIGATION --- */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 h-20 bg-zinc-950/90 backdrop-blur-xl border-t border-zinc-900 flex items-center justify-around z-50 pb-safe px-4">
+            <MobileNavItem id="library" label="Books" icon={IconBook} />
+            <MobileNavItem id="wishlist" label="Saved" icon={IconHeart} />
             <MobileNavItem id="settings" label="Profile" icon={IconSettings} />
         </div>
     </div>
@@ -217,3 +228,4 @@ const UserDashboardContent: React.FC = () => {
 };
 
 export default UserDashboardContent;
+

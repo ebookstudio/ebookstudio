@@ -264,7 +264,7 @@ export const mockSeller: Seller = {
 // ROOT OWNER ADMIN
 export const mockOwner: Seller = {
     id: 'seller_opendev',
-    name: 'OpenDev Labs',
+    name: 'opendev-labs',
     username: '@opendev',
     email: 'opendev-labs', // Login Identifier
     payoutEmail: 'opendev-labs@gmail.com',
@@ -273,7 +273,7 @@ export const mockOwner: Seller = {
         isEnabled: true,
         slug: 'opendev',
         theme: 'tech-vibrant',
-        displayName: 'OpenDev Labs',
+        displayName: 'opendev-labs',
         tagline: 'System Architecture',
         showcasedBookIds: []
     },

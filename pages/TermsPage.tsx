@@ -1,80 +1,67 @@
-
 import React from 'react';
 import { APP_NAME, IconBook } from '../constants';
 
 const TermsPage: React.FC = () => {
   return (
-    <div className="min-h-screen w-full relative bg-transparent font-sans pt-32 pb-20">
+    <div className="min-h-screen w-full relative bg-black pt-32 pb-20 bg-dot-matrix">
       
-      {/* Background Decor */}
-      <div className="fixed inset-0 z-[-1] pointer-events-none">
-          <div className="absolute bottom-[20%] left-[10%] w-[400px] h-[400px] bg-white/5 rounded-full blur-[100px]"></div>
-      </div>
-
-      <div className="container mx-auto px-6 max-w-4xl relative z-10 animate-slide-up">
+      <div className="container mx-auto px-6 max-w-4xl relative z-10 animate-fade-in">
         
         {/* Header */}
-        <div className="text-center mb-16">
-            <div className="w-16 h-16 mx-auto bg-[#1e1e1e] rounded-2xl flex items-center justify-center border border-white/10 mb-6 shadow-lg">
-                <IconBook className="w-8 h-8 text-white" />
+        <div className="text-center mb-20">
+            <div className="w-16 h-16 mx-auto bg-white rounded-2xl flex items-center justify-center border border-white/10 mb-8 shadow-2xl">
+                <IconBook className="w-8 h-8 text-black" />
             </div>
-            <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-4">Terms of Service</h1>
-            <p className="text-neutral-400 text-sm font-mono uppercase tracking-widest">
-                Effective Date: {new Date().toLocaleDateString()}
+            <h1 className="type-display text-white mb-4">Terms of Service</h1>
+            <p className="type-tiny text-zinc-500 font-mono uppercase tracking-[0.3em]">
+                Protocol Established: {new Date().toLocaleDateString()}
             </p>
         </div>
 
         {/* Content Card */}
-        <div className="bg-[#0b0b0b] border border-white/10 rounded-[32px] p-8 md:p-12 shadow-2xl">
-             <div className="space-y-10 text-neutral-300 leading-relaxed">
+        <div className="glass-card-premium rounded-[40px] p-8 md:p-16">
+             <div className="space-y-16 text-zinc-400 leading-relaxed">
                 
                 <section>
-                    <h3 className="text-xl font-bold text-white mb-2">1. Agreement to Terms</h3>
-                    <p>
-                        By accessing <span className="text-white font-mono">ebook-engine.github.io</span>, you agree to be bound by these Terms of Service. If you do not agree to abide by the terms of this Agreement, you are not authorized to use or access the Website.
+                    <h3 className="type-h3 text-white mb-4">1. Neural Access Protocol</h3>
+                    <p className="type-body">
+                        By accessing <span className="text-white font-mono">ebook-engine.github.io</span>, you agree to be bound by these Terms of Service. If you do not agree to the operational parameters of this Agreement, you are not authorized to utilize this platform.
                     </p>
                 </section>
 
                 <section>
-                    <h3 className="text-xl font-bold text-white mb-2">2. Intellectual Property</h3>
-                    <p>
-                        The Platform and its original content, features, and functionality are owned by {APP_NAME} and are protected by international copyright, trademark, patent, trade secret, and other intellectual property or proprietary rights laws.
+                    <h3 className="type-h3 text-white mb-4">2. Intellectual Assets</h3>
+                    <p className="type-body">
+                        The Platform and its original architecture, features, and core functionality are owned by {APP_NAME} and are protected by international intellectual property laws.
                     </p>
-                    <p className="mt-2 text-sm text-neutral-500 bg-white/5 p-4 rounded-xl border border-white/5">
-                        <strong>Note on AI Content:</strong> Content generated via our AI tools belongs to the user (you), subject to the terms of the underlying model providers (Google Gemini).
+                    <p className="mt-6 type-tiny text-zinc-500 bg-white/[0.02] p-6 rounded-2xl border border-white/5 italic">
+                        <strong className="text-white">Note on Synthesized Content:</strong> Manuscripts generated via our AI-assisted studio belong to the user, subject to the limited use requirements of the underlying model providers.
                     </p>
                 </section>
 
                 <section>
-                    <h3 className="text-xl font-bold text-white mb-2">3. Google API Services</h3>
-                    <p>
-                        Our application integrates with Google API Services. By using these features, you acknowledge and agree to be bound by Google's Terms of Service.
+                    <h3 className="type-h3 text-white mb-4">3. External Synchronizations</h3>
+                    <p className="type-body">
+                        Our application integrates with Google API Services. Usage of these features constitutes acceptance of Google's Global Terms of Service.
                     </p>
-                    <ul className="list-disc list-inside ml-4 mt-2 text-neutral-400">
-                        <li>We do not transfer user data to third parties for surveillance.</li>
-                        <li>We do not sell user data sourced from Google APIs.</li>
-                        <li>We do not use user data for advertising purposes.</li>
+                    <ul className="space-y-3 mt-6 type-tiny text-zinc-500">
+                        <li className="flex items-center gap-3"><div className="w-1 h-1 rounded-full bg-zinc-700"></div> Data is never transferred for external surveillance.</li>
+                        <li className="flex items-center gap-3"><div className="w-1 h-1 rounded-full bg-zinc-700"></div> Data is never commercialized for third-party brokerage.</li>
+                        <li className="flex items-center gap-3"><div className="w-1 h-1 rounded-full bg-zinc-700"></div> No usage of data for cross-platform advertising.</li>
                     </ul>
                 </section>
 
                 <section>
-                    <h3 className="text-xl font-bold text-white mb-2">4. User Accounts</h3>
-                    <p>
-                        When you create an account with us, you must provide information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of your account on our Service.
+                    <h3 className="type-h3 text-white mb-4">4. Identity Integrity</h3>
+                    <p className="type-body">
+                        Upon account initiation, you must provide verified information. Failure to maintain identity integrity constitutes a breach of protocol, resulting in immediate suspension of access.
                     </p>
                 </section>
 
                 <section>
-                    <h3 className="text-xl font-bold text-white mb-2">5. Limitation of Liability</h3>
-                    <p>
-                        In no event shall {APP_NAME}, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses.
-                    </p>
-                </section>
-
-                <section>
-                    <h3 className="text-xl font-bold text-white mb-2">6. Governing Law</h3>
-                    <p>
-                        These Terms shall be governed and construed in accordance with the laws of India, without regard to its conflict of law provisions.
+                    <h3 className="type-h3 text-white mb-4">5. Liability Thresholds</h3>
+                    <p className="type-body">
+                        {APP_NAME} shall not be liable for any indirect, incidental, or systemic damages resulting from the use or inability to use our neural studio or marketplace.
                     </p>
                 </section>
 

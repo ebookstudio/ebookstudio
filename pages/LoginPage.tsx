@@ -1,21 +1,17 @@
-
 import React, { useState } from 'react';
 import { useAppContext } from '../contexts/AppContext';
 import { APP_NAME, IconSparkles, IconMail, IconLock, IconArrowRight, IconBook } from '../constants';
 import * as ReactRouterDOM from 'react-router-dom';
 import { UserType } from '../types';
+import MorphicEye from '../components/MorphicEye';
 
 const { useNavigate, Link } = ReactRouterDOM as any;
 
 const LoginPage: React.FC = () => {
-    const { handleEmailLogin, handleGoogleLogin, setCurrentUser } = useAppContext();
+    const { handleEmailLogin, handleGoogleLogin } = useAppContext();
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
-    const [otp, setOtp] = useState('');
-    const [isPhoneMode, setIsPhoneMode] = useState(false);
-    const [confirmationResult, setConfirmationResult] = useState<any>(null);
     const [isProcessing, setIsProcessing] = useState(false);
 
     const onEmailLogin = async (e: React.FormEvent) => {
@@ -34,52 +30,26 @@ const LoginPage: React.FC = () => {
         setIsProcessing(false);
     };
 
-    const { handlePhoneLogin, verifyOtp } = useAppContext();
-
-    const onPhoneSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsProcessing(true);
-        const res = await handlePhoneLogin(phoneNumber, 'recaptcha-container');
-        if (res.success) {
-            setConfirmationResult(res.confirmationResult);
-        } else {
-            alert('Failed to send OTP. Please check your phone number.');
-        }
-        setIsProcessing(false);
-    };
-
-    const onOtpSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsProcessing(true);
-        const res = await verifyOtp(confirmationResult, otp);
-        if (res.success) {
-            navigate('/dashboard');
-        } else {
-            alert('Invalid OTP');
-        }
-        setIsProcessing(false);
-    };
-
     return (
-        <div className="min-h-screen w-full relative bg-black flex items-center justify-center p-6">
+        <div className="min-h-screen w-full relative bg-black flex items-center justify-center p-6 bg-neural-mesh bg-dot-matrix">
             
             {/* Background Decor */}
             <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-                 <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white/5 rounded-full blur-[120px]"></div>
-                 <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-white/5 rounded-full blur-[120px]"></div>
+                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-[120px]"></div>
             </div>
 
             {/* Login Card */}
-            <div className="w-full max-w-md relative z-10">
-                <div className="card-studio text-center py-12 px-10">
+            <div className="w-full max-w-md relative z-10 animate-fade-in">
+                <div className="glass-card-premium p-10 md:p-12 text-center">
                     
                     {/* Header */}
                     <div className="mb-12">
-                        <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_0_40px_rgba(255,255,255,0.2)]">
-                            <IconBook className="w-10 h-10 text-black" />
+                        <div className="relative w-20 h-20 mx-auto mb-8">
+                            <div className="absolute inset-0 bg-white/10 blur-2xl rounded-full"></div>
+                            <MorphicEye className="w-20 h-20 bg-black border border-white/20 rounded-full relative z-10" />
                         </div>
-                        <h1 className="text-4xl title-neural mb-4 tracking-tighter">Welcome Back</h1>
-                        <p className="text-neural">Sign in to your Studio account</p>
+                        <h1 className="type-h1 tracking-tighter mb-4">Welcome Back</h1>
+                        <p className="type-small text-muted">Continue your literary journey.</p>
                     </div>
 
                     {/* Main Actions */}
@@ -87,9 +57,9 @@ const LoginPage: React.FC = () => {
                         <button 
                             onClick={onGoogleLogin}
                             disabled={isProcessing}
-                            className="btn-studio w-full py-5 text-sm"
+                            className="btn-secondary w-full py-4 text-[11px]"
                         >
-                            <svg className="w-5 h-5 mr-1" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4" viewBox="0 0 24 24">
                                 <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                                 <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
                                 <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
@@ -98,30 +68,30 @@ const LoginPage: React.FC = () => {
                             {isProcessing ? 'Connecting...' : 'Sign in with Google'}
                         </button>
 
-                        <div className="relative my-10">
+                        <div className="relative py-6">
                             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5"></div></div>
-                            <div className="relative flex justify-center text-[10px] uppercase tracking-[0.3em]"><span className="bg-[#0a0a0a] px-4 text-neutral-600">OR</span></div>
+                            <div className="relative flex justify-center"><span className="bg-transparent px-4 type-tiny text-zinc-600">OR</span></div>
                         </div>
 
-                        <form onSubmit={onEmailLogin} className="space-y-4 text-left">
-                            <div className="space-y-1">
-                                <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold ml-2">Email</label>
+                        <form onSubmit={onEmailLogin} className="space-y-5 text-left">
+                            <div className="space-y-2">
+                                <label className="type-tiny text-zinc-500 ml-1">Email Address</label>
                                 <input 
                                     type="email" 
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder-neutral-700 outline-none focus:border-white/30 transition-all"
-                                    placeholder="your@email.com"
+                                    className="input-premium"
+                                    placeholder="name@example.com"
                                     required
                                 />
                             </div>
-                            <div className="space-y-1">
-                                <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold ml-2">Password</label>
+                            <div className="space-y-2">
+                                <label className="type-tiny text-zinc-500 ml-1">Password</label>
                                 <input 
                                     type="password" 
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white placeholder-neutral-700 outline-none focus:border-white/30 transition-all"
+                                    className="input-premium"
                                     placeholder="••••••••"
                                     required
                                 />
@@ -129,16 +99,16 @@ const LoginPage: React.FC = () => {
                             <button 
                                 type="submit" 
                                 disabled={isProcessing}
-                                className="btn-studio-outline w-full mt-4 py-4 text-xs"
+                                className="btn-primary w-full mt-4 py-4"
                             >
-                                {isProcessing ? 'Wait...' : 'Sign In'}
+                                {isProcessing ? 'Authenticating...' : 'Sign In'}
                             </button>
                         </form>
                     </div>
                 </div>
 
-                <p className="mt-10 text-center text-neutral-600 text-[10px] uppercase tracking-[0.2em] font-bold">
-                    By entering, you agree to our <Link to="/terms-and-conditions" className="text-white hover:underline">Terms</Link>
+                <p className="mt-8 text-center type-tiny text-zinc-600">
+                    By signing in, you agree to our <Link to="/terms-and-conditions" className="text-zinc-400 hover:text-white underline-offset-4 hover:underline transition-colors">Terms of Service</Link>
                 </p>
             </div>
         </div>
@@ -146,3 +116,4 @@ const LoginPage: React.FC = () => {
 };
 
 export default LoginPage;
+

@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  // Set base to '/' for root domain hosting (ebookstudio.github.io)
+  // Set base to '/' for root domain hosting (ebookstudio)
   base: '/',
   build: {
     outDir: 'dist',
