@@ -33,3 +33,4 @@ dist-ssr
 dist/
 build_output.txt
 
+.vercel
