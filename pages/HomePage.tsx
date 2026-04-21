@@ -127,49 +127,45 @@ const HomePage: React.FC = () => {
         </section>
 
         {/* --- FEATURES GRID --- */}
-        <section className="py-24 px-6 border-b border-white/5 relative z-10">
+        <section className="py-32 px-6 border-b border-white/5 relative z-10">
             <div className="max-w-7xl mx-auto">
+                <div className="text-center mb-20">
+                    <h2 className="text-4xl md:text-5xl title-neural mb-6">Built For Modern Authors</h2>
+                    <p className="text-neural max-w-2xl mx-auto">Everything you need to create, publish, and sell your books in one place.</p>
+                </div>
+                
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     
                     {/* Feature 1: AI Studio AI */}
-                    <div className="p-8 rounded-[32px] bg-black/40 backdrop-blur-xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] hover:border-white/20 hover:scale-105 transition-all duration-300 group relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        
-                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 text-white group-hover:scale-110 transition-transform border border-indigo-500/30 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 shadow-[0_0_20px_rgba(99,102,241,0.2)]">
-                            <IconBrain className="w-7 h-7 text-indigo-400 drop-shadow-[0_0_8px_rgba(129,140,248,0.5)]" />
+                    <div className="card-studio group">
+                        <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-8 border border-indigo-500/30 bg-indigo-500/10 shadow-[0_0_20px_rgba(99,102,241,0.1)] transition-transform group-hover:scale-110">
+                            <IconBrain className="w-8 h-8 text-indigo-400" />
                         </div>
-                        
-                        <h3 className="text-2xl font-bold text-white mb-3">AI Studio AI</h3>
-                        <p className="text-neutral-400 leading-relaxed text-sm">
-                            Write with AI. Plan your chapters, write full pages, and fix grammar easily with our writing tools.
+                        <h3 className="text-2xl title-neural mb-4">AI Studio AI</h3>
+                        <p className="text-neural">
+                            Write with AI help. Plan your chapters, write full pages, and fix mistakes easily with our smart writing tools.
                         </p>
                     </div>
 
                     {/* Feature 2: Sell Your Books */}
-                    <div className="p-8 rounded-[32px] bg-black/40 backdrop-blur-xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] hover:border-white/20 hover:scale-110 transition-all duration-300 group relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        
-                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 text-white group-hover:scale-110 transition-transform border border-emerald-500/30 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
-                            <IconRocket className="w-7 h-7 text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
+                    <div className="card-studio group">
+                        <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-8 border border-emerald-500/30 bg-emerald-500/10 shadow-[0_0_20px_rgba(16,185,129,0.1)] transition-transform group-hover:scale-110">
+                            <IconRocket className="w-8 h-8 text-emerald-400" />
                         </div>
-
-                        <h3 className="text-2xl font-bold text-white mb-3">Sell Your Books</h3>
-                        <p className="text-neutral-400 leading-relaxed text-sm">
+                        <h3 className="text-2xl title-neural mb-4">Sell Your Books</h3>
+                        <p className="text-neural">
                             Publish your book instantly. Get your own profile link and keep 70% of every sale you make.
                         </p>
                     </div>
 
                     {/* Feature 3: Easy Reading */}
-                    <div className="p-8 rounded-[32px] bg-black/40 backdrop-blur-xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.5)] hover:border-white/20 hover:scale-110 transition-all duration-300 group relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        
-                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 text-white group-hover:scale-110 transition-transform border border-amber-500/30 bg-gradient-to-br from-amber-500/20 to-orange-500/20 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
-                            <IconBook className="w-7 h-7 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]" />
+                    <div className="card-studio group">
+                        <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-8 border border-amber-500/30 bg-amber-500/10 shadow-[0_0_20px_rgba(245,158,11,0.1)] transition-transform group-hover:scale-110">
+                            <IconBook className="w-8 h-8 text-amber-400" />
                         </div>
-
-                        <h3 className="text-2xl font-bold text-white mb-3">Easy Reading</h3>
-                        <p className="text-neutral-400 leading-relaxed text-sm">
-                            Read comfortably on any device. Support for PDF uploads and a distraction-free reading mode.
+                        <h3 className="text-2xl title-neural mb-4">Easy Reading</h3>
+                        <p className="text-neural">
+                            Read on any device. Upload your own PDFs or read books from our store with a clean, focus-mode reader.
                         </p>
                     </div>
 
@@ -178,30 +174,32 @@ const HomePage: React.FC = () => {
         </section>
 
         {/* --- ABOUT --- */}
-        <section className="py-24 px-6 relative overflow-hidden z-10">
-             <div className="max-w-4xl mx-auto text-center bg-black/30 backdrop-blur-lg border border-white/5 p-12 rounded-[40px] shadow-2xl relative">
-                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+        <section className="py-32 px-6 relative overflow-hidden z-10">
+             <div className="max-w-5xl mx-auto text-center card-studio py-16 px-8 md:p-20 relative overflow-hidden">
+                 <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.05)_0%,transparent_70%)]"></div>
                  
-                 <h2 className="text-4xl md:text-5xl font-black text-white mb-8 tracking-tight">Built for Everyone</h2>
-                 <p className="text-lg md:text-xl text-neutral-400 leading-relaxed mb-12 font-light">
-                     EbookStudio isn't just a tool; it's a partner. We believe that everyone has a story worth telling, 
-                     and with the right help, anyone can become an author.
-                 </p>
-                 <Link to="/store" className="inline-flex items-center gap-2 text-white font-bold border-b border-white pb-1 hover:opacity-70 transition-opacity tracking-widest uppercase text-sm">
-                     Browse the Library &rarr;
-                 </Link>
+                 <div className="relative z-10">
+                    <h2 className="text-4xl md:text-6xl title-neural mb-8">Built for Everyone</h2>
+                    <p className="text-xl text-neural mb-12 max-w-3xl mx-auto font-light">
+                        EbookStudio is your creative partner. We believe everyone has a story worth telling. 
+                        With the right tools, anyone can become a professional author.
+                    </p>
+                    <Link to="/store" className="btn-studio">
+                        Browse the Library <IconRocket className="w-4 h-4" />
+                    </Link>
+                 </div>
              </div>
         </section>
 
         {/* --- TECH STACK SHOWCASE --- */}
-        <section className="py-20 border-t border-b border-white/5 bg-black/40 backdrop-blur relative z-20">
+        <section className="py-24 bg-black/40 backdrop-blur relative z-20">
             <div className="max-w-7xl mx-auto px-6">
-                <p className="text-center text-xs font-bold uppercase tracking-[0.3em] text-neutral-500 mb-12">Built With Modern Architecture</p>
-                <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
+                <p className="text-center text-xs font-bold uppercase tracking-[0.4em] text-neutral-500 mb-16">Powered by Modern Technology</p>
+                <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
                     <TechIcon label="Google Gemini" icon={<LogoGoogle />} />
-                    <TechIcon label="React 18" icon={<LogoReact />} />
+                    <TechIcon label="React" icon={<LogoReact />} />
                     <TechIcon label="TypeScript" icon={<LogoTS />} />
-                    <TechIcon label="Tailwind CSS" icon={<LogoTailwind />} />
+                    <TechIcon label="Tailwind" icon={<LogoTailwind />} />
                     <TechIcon label="Vite" icon={<LogoVite />} />
                 </div>
             </div>

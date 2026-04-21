@@ -48,158 +48,56 @@ const Navbar: React.FC = () => {
 
   return (
     <>
-    <nav className={`fixed top-0 left-0 right-0 w-full z-50 h-16 border-b transition-all duration-300 ease-obsidian animate-slide-down will-change-transform ${
+    <nav className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-500 ${
         isStudio 
-        ? 'border-white/5 bg-[#000000]/80 backdrop-blur-2xl' 
-        : 'border-white/5 bg-[#000000]/60 backdrop-blur-xl shadow-[0_4px_30px_rgba(0,0,0,0.1)]'
+        ? 'border-b border-white/5 bg-black/80 backdrop-blur-2xl' 
+        : 'glass-navbar py-4'
     }`}>
-        <div className="max-w-[1400px] mx-auto px-6 h-full flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
             
-            {/* Logo / Breadcrumb */}
-            <div className="flex items-center gap-4 group z-50 relative">
-                <Link to="/" className="flex items-center gap-3">
-                   <MorphicEye className="w-9 h-9 border border-white/20 bg-[#111] shadow-[0_0_10px_rgba(255,255,255,0.1)] rounded-full transition-transform duration-300 group-hover:scale-110 will-change-transform" />
-                   <span className="font-bold tracking-tighter text-lg text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:via-neutral-300 group-hover:to-white group-hover:animate-shine transition-all">ebookstudio</span>
-                </Link>
-                {isStudio && (
-                    <div className="hidden sm:flex items-center gap-2 text-neutral-500 font-mono text-[10px] uppercase tracking-widest">
-                        <span className="opacity-30">/</span>
-                        <span className="text-white bg-white/5 px-2 py-0.5 rounded border border-white/10 flex items-center gap-1.5">
-                            <IconRocket className="w-3 h-3 text-indigo-400" /> Neural Studio
-                        </span>
-                    </div>
-                )}
-            </div>
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-3 group">
+                <MorphicEye className="w-10 h-10 bg-black shadow-[0_0_20px_rgba(255,255,255,0.1)] border border-white/20 rounded-full transition-transform duration-300 group-hover:scale-110" />
+                <span className="text-xl font-black tracking-tighter uppercase title-neural">EbookStudio</span>
+            </Link>
 
-            {/* Desktop Navigation (Hide on Studio & Login) */}
+            {/* Desktop Links */}
             {!isStudio && !isLogin && (
-                <div className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
-                    {navLinks.map(link => (
-                        <Link 
-                            key={link.path} 
-                            to={link.path} 
-                            className={`text-sm font-medium transition-all duration-300 ease-obsidian flex items-center gap-2 hover:scale-105 ${location.pathname === link.path ? 'text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]' : 'text-neutral-400 hover:text-white'}`}
-                        >
-                            {link.icon}
-                            {link.label}
-                        </Link>
-                    ))}
+                <div className="hidden md:flex items-center gap-10">
+                    <Link to="/store" className="text-sm font-bold uppercase tracking-widest text-neutral-400 hover:text-white transition-colors">Store</Link>
+                    <Link to="/pricing" className="text-sm font-bold uppercase tracking-widest text-neutral-400 hover:text-white transition-colors">Pricing</Link>
+                    
+                    {currentUser ? (
+                        <div className="flex items-center gap-8">
+                            <Link to="/dashboard" className="text-sm font-bold uppercase tracking-widest text-neutral-400 hover:text-white transition-colors">Dashboard</Link>
+                            <Link to="/ebook-studio" className="btn-studio py-2 px-6 text-[10px]">Start Writing</Link>
+                            <button onClick={handleLogout} className="btn-studio-outline py-2 px-6 text-[10px]">Logout</button>
+                        </div>
+                    ) : (
+                        <Link to="/login" className="btn-studio py-2 px-8 text-[10px]">Sign In</Link>
+                    )}
                 </div>
             )}
 
-            {/* Right Actions */}
-            <div className="flex items-center gap-4 z-50">
-                {isStudio ? (
-                     <button 
-                        onClick={() => navigate('/dashboard')}
-                        className="px-4 py-2 bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-bold uppercase tracking-widest rounded-full transition-all flex items-center gap-2"
-                    >
-                        <IconArrowLeft className="w-3 h-3" /> Dashboard
-                    </button>
-                ) : (
-                    <>
-                        {isHomePage && (
-                            <Link 
-                                to="/store" 
-                                className="relative w-10 h-10 flex md:hidden items-center justify-center text-neutral-400 hover:text-white transition-all hover:scale-110 active:scale-95 duration-200 ease-obsidian flex-shrink-0 overflow-visible group"
-                                aria-label="Go to Store"
-                            >
-                                <IconStore className="w-5 h-5 group-hover:drop-shadow-[0_0_5px_rgba(255,255,255,0.5)] transition-all" />
-                            </Link>
-                        )}
+            {/* Right Side for Studio Mode */}
+            {isStudio && (
+                <button 
+                    onClick={() => navigate('/dashboard')}
+                    className="btn-studio-outline py-2 px-6 text-[10px]"
+                >
+                    Back to Dashboard
+                </button>
+            )}
 
-                        {!isLogin && (
-                            <Link 
-                                to="/checkout" 
-                                className={`relative w-10 h-10 items-center justify-center text-neutral-400 hover:text-white transition-all hover:scale-110 active:scale-95 duration-200 ease-obsidian flex-shrink-0 overflow-visible group ${isHomePage ? 'hidden md:flex' : 'flex'}`}
-                                aria-label="View Cart"
-                            >
-                                <IconShoppingCart className="w-5 h-5 group-hover:drop-shadow-[0_0_5px_rgba(255,255,255,0.5)] transition-all" />
-                                {totalCartItems > 0 && (
-                                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-black text-[9px] font-bold border border-black animate-pulse-square shadow-sm z-10">
-                                        {totalCartItems}
-                                    </span>
-                                )}
-                            </Link>
-                        )}
-
-                        <div className="h-6 w-px bg-white/10 mx-2 hidden sm:block"></div>
-
-                        {/* Profile / Login */}
-                        <div className="relative hidden md:block">
-                            {currentUser && userType !== UserType.GUEST ? (
-                            <div className="flex items-center gap-4">
-                                <Link 
-                                    to="/ebook-studio" 
-                                    className="hidden lg:flex px-4 py-1.5 bg-white text-black hover:bg-neutral-200 text-xs font-bold uppercase tracking-widest rounded-full transition-all duration-300 ease-obsidian hover:scale-105 active:scale-95 items-center gap-2 shadow-[0_0_15px_rgba(255,255,255,0.3)]"
-                                >
-                                    <IconRocket className="w-3 h-3" /> Write
-                                </Link>
-                                
-                                <button
-                                    onClick={() => setDropdownOpen(!dropdownOpen)}
-                                    className="flex items-center gap-2"
-                                >
-                                    <div className="w-8 h-8 rounded-full bg-neutral-900 border border-white/20 flex items-center justify-center text-xs font-bold text-white hover:border-white transition-all duration-300 hover:shadow-[0_0_10px_rgba(255,255,255,0.2)]">
-                                        {currentUser.profileImageUrl ? (
-                                            <img src={currentUser.profileImageUrl} alt="" className="w-full h-full object-cover rounded-full" />
-                                        ) : (
-                                            currentUser.name.charAt(0)
-                                        )}
-                                    </div>
-                                </button>
-
-                                {/* Dropdown */}
-                                {dropdownOpen && (
-                                    <>
-                                        <div className="fixed inset-0 z-10" onClick={() => setDropdownOpen(false)}></div>
-                                        <div className="absolute right-0 top-12 mt-2 w-56 bg-[#0a0a0a] border border-white/10 shadow-2xl py-1 z-20 origin-top-right rounded-lg animate-slide-up-stagger">
-                                            <div className="px-4 py-3 border-b border-white/5 mb-1">
-                                                <p className="text-sm font-bold text-white truncate">{currentUser.name}</p>
-                                                <p className="text-[10px] text-neutral-500 uppercase font-mono">{userType === 'seller' ? 'Writer Account' : 'Reader Account'}</p>
-                                            </div>
-                                            <Link to="/dashboard" onClick={() => setDropdownOpen(false)} className="block px-4 py-2 text-sm text-neutral-300 hover:bg-white/5 hover:text-white transition-colors">
-                                                My Profile
-                                            </Link>
-                                            <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-white/5 transition-colors">
-                                                Sign out
-                                            </button>
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                            ) : (
-                                <div className="flex items-center gap-3">
-                                    {!isLogin && (
-                                        <Link 
-                                            to="/login"
-                                            className="px-4 py-2 text-xs font-bold uppercase tracking-widest text-neutral-400 hover:text-white transition-colors hover:scale-105 duration-200"
-                                        >
-                                            Login
-                                        </Link>
-                                    )}
-                                    <Link 
-                                        to="/pricing" 
-                                        className="px-5 py-2 text-xs font-bold uppercase tracking-widest text-black bg-white hover:bg-neutral-200 transition-all duration-300 ease-obsidian rounded-full hover:shadow-[0_0_15px_rgba(255,255,255,0.3)] hover:scale-105"
-                                    >
-                                        Start Free
-                                    </Link>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Mobile Menu Toggle */}
-                        {!isLogin && (
-                            <button 
-                                className="md:hidden p-2 text-neutral-400 hover:text-white relative z-50 transition-transform active:scale-90"
-                                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                            >
-                                {mobileMenuOpen ? <IconX className="w-6 h-6"/> : <IconMenu className="w-6 h-6"/>}
-                            </button>
-                        )}
-                    </>
-                )}
-            </div>
+            {/* Mobile Menu Button */}
+            {!isLogin && (
+                <button 
+                    className="md:hidden p-2 text-neutral-400 hover:text-white transition-transform active:scale-90"
+                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                >
+                    {mobileMenuOpen ? <IconX className="w-6 h-6"/> : <IconMenu className="w-6 h-6"/>}
+                </button>
+            )}
         </div>
     </nav>
 
