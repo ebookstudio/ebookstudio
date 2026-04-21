@@ -272,7 +272,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         return { success: false, error };
     }
   };
-  };
 
   // ADDED: Email Login for Admin/Owner and Paid Writers
   const handleEmailLogin = async (inputEmail: string, inputPass: string): Promise<{success: boolean, message?: string}> => {
