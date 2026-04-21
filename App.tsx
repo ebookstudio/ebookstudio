@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
@@ -70,7 +70,7 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <HashRouter>
+    <BrowserRouter>
       <div className="flex flex-col min-h-screen bg-black font-sans text-foreground overflow-x-hidden relative">
         
         {/* === Foreground Content === */}
@@ -83,7 +83,7 @@ const AppContent: React.FC = () => {
         </div>
         
       </div>
-    </HashRouter>
+    </BrowserRouter>
   );
 };
 

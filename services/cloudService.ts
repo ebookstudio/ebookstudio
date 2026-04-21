@@ -27,8 +27,8 @@ export const saveUserDataToGitHub = async (username: string, data: any): Promise
       
       return { 
           success: true, 
-          message: "Deployed to GitHub Pages",
-          url: `https://ebookstudio.github.io/${username}`
+          message: "Synchronized to Vercel Protocol",
+          url: `https://ebookstudio.vercel.app/site/${username}`
       };
   } catch (e) {
       console.error("Deployment failed", e);

@@ -87,7 +87,7 @@ const HostingPreviewPage: React.FC = () => {
       return (
           <div className="min-h-screen flex flex-col items-center justify-center bg-black text-white font-mono">
               <div className="w-16 h-16 border-4 border-white/20 border-t-white rounded-full animate-spin mb-4"></div>
-              <p className="uppercase tracking-widest text-xs">Resolving host: ebook-engine.github.io...</p>
+              <p className="uppercase tracking-widest text-xs">Resolving host: ebookstudio.vercel.app...</p>
           </div>
       );
   }
@@ -97,7 +97,7 @@ const HostingPreviewPage: React.FC = () => {
           <div className="min-h-screen flex flex-col items-center justify-center bg-black text-neutral-500 font-mono text-center p-6">
               <div className="mb-4">404</div>
               <h1 className="text-xl text-white mb-2">Site Not Found</h1>
-              <p className="text-sm">The GitHub Pages site for "{username}" does not exist.</p>
+              <p className="text-sm">The Vercel site for "{username}" does not exist.</p>
           </div>
       );
   }
@@ -116,7 +116,7 @@ const HostingPreviewPage: React.FC = () => {
              </div>
              <div className="flex-1 bg-[#000] rounded px-3 py-0.5 flex items-center gap-2">
                  <IconGithub className="w-3 h-3 text-neutral-500"/>
-                 <span>https://ebook-engine.github.io/{siteConfig.slug}</span>
+                 <span>https://ebookstudio.vercel.app/site/{siteConfig.slug}</span>
              </div>
         </div>
 
@@ -176,7 +176,7 @@ const HostingPreviewPage: React.FC = () => {
                                     </div>
                                     <div className="flex items-center justify-between mt-4">
                                         <span className="font-mono text-lg font-medium">
-                                            {book.price === 0 ? 'Free' : `₹${book.price}`}
+                                            {book.price === 0 ? 'Free' : `$${book.price}`}
                                         </span>
                                         <Link 
                                             to={`/store?bookId=${book.id}`}

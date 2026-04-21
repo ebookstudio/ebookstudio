@@ -25,7 +25,7 @@ const TermsPage: React.FC = () => {
                 <section>
                     <h3 className="type-h3 text-white mb-4">1. Neural Access Protocol</h3>
                     <p className="type-body">
-                        By accessing <span className="text-white font-mono">ebook-engine.github.io</span>, you agree to be bound by these Terms of Service. If you do not agree to the operational parameters of this Agreement, you are not authorized to utilize this platform.
+                        By accessing <span className="text-white font-mono">ebookstudio.vercel.app</span>, you agree to be bound by these Terms of Service. If you do not agree to the operational parameters of this Agreement, you are not authorized to utilize this platform.
                     </p>
                 </section>
 

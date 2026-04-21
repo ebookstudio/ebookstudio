@@ -52,7 +52,7 @@ const ContactPage: React.FC = () => {
                                 </div>
                                 <div>
                                     <p className="type-tiny text-zinc-500 uppercase font-bold tracking-widest">Network</p>
-                                    <a href="https://opendev-labs.github.io" target="_blank" rel="noopener noreferrer" className="type-tiny font-bold text-white group-hover:text-sky-400 transition-colors">opendev-labs.github.io</a>
+                                    <a href="https://ebookstudio.vercel.app" target="_blank" rel="noopener noreferrer" className="type-tiny font-bold text-white group-hover:text-sky-400 transition-colors">ebookstudio.vercel.app</a>
                                 </div>
                             </div>
                         </div>

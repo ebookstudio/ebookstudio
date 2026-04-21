@@ -48,8 +48,8 @@ The heart of **ebookstudio** is **Studio AI**, an advanced AI agent designed for
 To host your own instance of **ebookstudio**:
 
 1.  **Build**: `npm run build`
-2.  **Deploy**: Push the `dist` folder to your `gh-pages` branch.
-3.  **Access**: Visit `https://your-username.github.io/ebookstudio/`
+2.  **Deploy**: Connect your repository to Vercel for automatic deployments.
+3.  **Access**: Visit `https://ebookstudio.vercel.app/site/your-username`
 
 ---
 

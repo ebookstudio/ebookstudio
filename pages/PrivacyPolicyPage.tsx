@@ -38,7 +38,7 @@ const PrivacyPolicyPage: React.FC = () => {
                         Initiation
                     </h2>
                     <p className="type-body">
-                        At {APP_NAME}, accessible via <span className="text-white font-mono">ebook-engine.github.io</span>, the integrity of your neural assets and personal data is our primary directive. This Privacy Protocol outlines the parameters of data ingestion and retention.
+                        At {APP_NAME}, accessible via <span className="text-white font-mono">ebookstudio.vercel.app</span>, the integrity of your neural assets and personal data is our primary directive. This Privacy Protocol outlines the parameters of data ingestion and retention.
                     </p>
                 </section>
 
