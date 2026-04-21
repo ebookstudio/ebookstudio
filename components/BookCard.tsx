@@ -30,52 +30,54 @@ const BookCard: React.FC<BookCardProps> = ({ book, onViewDetails }) => {
 
   return (
     <motion.div 
-      whileHover={{ y: -8 }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -10 }}
       className="group relative cursor-pointer"
       onClick={handleCardClick}
     >
-      <div className="glass-card-premium rounded-3xl overflow-hidden flex flex-col h-full bg-white/[0.02] border border-white/5 hover:border-white/10 transition-all duration-500">
+      <div className="glass-card-premium rounded-[32px] overflow-hidden flex flex-col h-full bg-[#080808] border-white/5 group-hover:border-white/10 transition-all duration-700">
         
-        {/* Cover Image - Standard Book Ratio 2:3 */}
+        {/* Cover Canvas */}
         <div className="aspect-[2/3] overflow-hidden relative">
             <img 
                 src={book.coverImageUrl} 
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-[1500ms]" 
                 alt={book.title} 
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-transparent to-transparent opacity-80" />
             
-            {/* Genre Badge */}
-            <div className="absolute top-4 left-4">
-                <span className="glass-panel px-3 py-1 text-[9px] font-bold uppercase tracking-wider rounded-md border-white/5 backdrop-blur-md">
+            {/* Semantic Badge */}
+            <div className="absolute top-6 left-6">
+                <span className="bg-black/40 backdrop-blur-3xl px-4 py-1.5 text-[8px] font-black uppercase tracking-[0.3em] rounded-full border border-white/5 text-zinc-400">
                     {book.genre}
                 </span>
             </div>
         </div>
 
-        {/* Content Section */}
-        <div className="p-6 flex flex-col flex-grow">
-            <h3 className="type-h3 text-white mb-2 line-clamp-1 group-hover:text-white transition-colors">
+        {/* Intelligence Content */}
+        <div className="p-8 flex flex-col flex-grow">
+            <h3 className="text-white text-xl font-black mb-1 line-clamp-1 group-hover:text-white transition-colors tracking-tight">
                 {book.title}
             </h3>
-            <p className="type-tiny text-zinc-500 mb-6">
-                by {book.author}
+            <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-zinc-600 mb-8">
+                By {book.author}
             </p>
 
-            <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5">
-                <span className="type-h3 font-bold text-white">
+            <div className="mt-auto flex items-center justify-between pt-6 border-t border-white/5">
+                <span className="text-white text-lg font-black">
                     {isFree ? 'FREE' : `$${(book.price / 100).toFixed(2)}`}
                 </span>
                 
                 <button 
                     onClick={handleAction}
-                    className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-500 ${
+                    className={`w-11 h-11 rounded-full flex items-center justify-center transition-all duration-700 ${
                         isFree 
-                        ? 'bg-white/5 text-zinc-400 border border-white/10 hover:bg-white hover:text-black hover:border-white' 
-                        : 'bg-white text-black hover:scale-110 shadow-lg'
+                        ? 'bg-white/5 text-zinc-500 border border-white/5 hover:bg-white hover:text-black shadow-xl' 
+                        : 'bg-white text-black hover:scale-110 shadow-[0_10px_30px_rgba(255,255,255,0.2)]'
                     }`}
                 >
-                    {isFree ? <IconBook className="w-4 h-4" /> : <IconShoppingCart className="w-4 h-4" />}
+                    {isFree ? <IconBook className="w-5 h-5" /> : <IconShoppingCart className="w-5 h-5" />}
                 </button>
             </div>
         </div>

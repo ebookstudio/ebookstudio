@@ -1,4 +1,3 @@
-
 import React, { ReactNode, useLayoutEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { IconX } from '../constants';
@@ -14,8 +13,6 @@ interface ModalProps {
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, size = 'md' }) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Reset scroll position when modal opens
-  // Using useLayoutEffect to ensure it happens before paint
   useLayoutEffect(() => {
     if (isOpen && contentRef.current) {
         contentRef.current.scrollTop = 0;
@@ -32,30 +29,28 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, size = 
     full: 'max-w-[95vw] h-[95vh]'
   };
 
-  // Use Portal to render modal at document body level
-  // This bypasses parent transforms (like animate-page-enter) that break fixed positioning
   return ReactDOM.createPortal(
     <div 
-      className="fixed inset-0 bg-black/90 backdrop-blur-xl flex items-center justify-center z-[100] p-4 transition-opacity duration-300 ease-in-out animate-fade-in" 
+      className="fixed inset-0 bg-black/95 backdrop-blur-[40px] flex items-center justify-center z-[9999] p-4 animate-fade-in" 
       onClick={onClose}
       role="dialog"
       aria-modal="true"
     >
       <div 
-        className={`bg-black rounded-[32px] shadow-[0_0_100px_rgba(0,0,0,1)] relative w-full ${sizeClasses[size]} border border-white/15 flex flex-col max-h-[90vh] overflow-hidden animate-slide-up ring-1 ring-white/5`}
+        className={`bg-[#050505] rounded-[48px] shadow-[0_40px_100px_rgba(0,0,0,1)] relative w-full ${sizeClasses[size]} border border-white/5 flex flex-col max-h-[92vh] overflow-hidden animate-slide-up`}
         onClick={e => e.stopPropagation()} 
       >
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-black/50 border border-white/10 text-neutral-400 hover:text-white hover:bg-white/10 hover:border-white/30 transition-all hover:rotate-90 backdrop-blur-md"
+          className="absolute top-8 right-8 z-[100] w-12 h-12 flex items-center justify-center rounded-full bg-white/5 border border-white/5 text-zinc-500 hover:text-white hover:bg-white/10 transition-all hover:scale-110 active:scale-95"
           aria-label="Close modal"
         >
           <IconX className="w-5 h-5" />
         </button>
 
         {title && (
-            <div className="px-8 py-6 border-b border-white/5 bg-white/[0.02] flex-shrink-0">
-                <h2 className="text-xl font-bold text-white tracking-tight">{title}</h2>
+            <div className="px-12 py-10 border-b border-white/5 flex-shrink-0">
+                <h2 className="text-2xl font-black text-white tracking-tighter uppercase tracking-[0.1em]">{title}</h2>
             </div>
         )}
         

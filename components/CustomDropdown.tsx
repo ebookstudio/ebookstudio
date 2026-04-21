@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { IconChevronDown } from '../constants';
 
@@ -44,24 +43,24 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center justify-between gap-3 w-full px-4 py-3 rounded-full border transition-all duration-200 h-full ${
+        className={`flex items-center justify-between gap-4 w-full px-6 py-4 rounded-full border transition-all duration-700 h-full ${
           isOpen 
-            ? 'bg-white text-black border-white' 
-            : 'bg-white/5 text-white border-transparent hover:bg-white/10 hover:border-white/10'
+            ? 'bg-white text-black border-white shadow-2xl scale-[1.02]' 
+            : 'bg-white/5 text-zinc-400 border-white/5 hover:bg-white/10 hover:border-white/10'
         }`}
       >
-        <div className="flex items-center gap-2 truncate min-w-0">
-            {icon && <span className={isOpen ? 'text-black' : 'text-neutral-400'}>{icon}</span>}
-            <span className="text-sm font-bold truncate">
+        <div className="flex items-center gap-3 truncate min-w-0">
+            {icon && <span className={isOpen ? 'text-black' : 'text-zinc-600'}>{icon}</span>}
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] truncate">
                 {selectedOption ? selectedOption.label : placeholder || 'Select'}
             </span>
         </div>
-        <IconChevronDown className={`w-3 h-3 transition-transform duration-300 flex-shrink-0 ${isOpen ? 'rotate-180 text-black' : 'text-neutral-500'}`} />
+        <IconChevronDown className={`w-3.5 h-3.5 transition-transform duration-700 flex-shrink-0 ${isOpen ? 'rotate-180 text-black' : 'text-zinc-700'}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full mt-2 left-0 w-full min-w-[180px] bg-[#1a1a1a] border border-white/10 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] overflow-hidden z-[60] animate-slide-down origin-top p-1">
-          <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
+        <div className="absolute top-full mt-4 left-0 w-full min-w-[240px] bg-[#080808] border border-white/10 rounded-[32px] shadow-[0_30px_60px_rgba(0,0,0,1)] overflow-hidden z-[999] p-2 animate-fade-in origin-top">
+          <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
             {options.map((option) => (
                 <button
                 key={option.value}
@@ -69,10 +68,10 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
                     onChange(option.value);
                     setIsOpen(false);
                 }}
-                className={`w-full text-left px-4 py-2.5 text-sm rounded-xl transition-all mb-0.5 last:mb-0 ${
+                className={`w-full text-left px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl transition-all mb-1 last:mb-0 ${
                     value === option.value 
-                    ? 'bg-white text-black font-bold' 
-                    : 'text-neutral-400 hover:bg-white/5 hover:text-white font-medium'
+                    ? 'bg-white text-black' 
+                    : 'text-zinc-600 hover:bg-white/5 hover:text-white'
                 }`}
                 >
                 {option.label}

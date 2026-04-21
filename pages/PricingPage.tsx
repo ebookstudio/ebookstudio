@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { useAppContext } from '../contexts/AppContext';
-import { IconCheck, IconSparkles, RAZORPAY_KEY_ID, APP_NAME, IconStar, IconBook, IconRocket, IconFeather } from '../constants';
+import { IconCheck, RAZORPAY_KEY_ID, IconBook, IconFeather } from '../constants';
 import { UserType } from '../types';
+import MorphicEye from '../components/MorphicEye';
 
 const { useNavigate } = ReactRouterDOM as any;
 
@@ -24,7 +25,6 @@ const PricingPage: React.FC = () => {
             return;
         }
 
-        // Load Razorpay Script
         const loadRazorpay = () => {
             return new Promise((resolve) => {
                 if (window.Razorpay) {
@@ -41,13 +41,11 @@ const PricingPage: React.FC = () => {
 
         const isLoaded = await loadRazorpay();
         if (!isLoaded) {
-            alert('Could not load payment gateway. Please try again.');
+            alert('Payment system synchronization failed.');
             return;
         }
 
         setIsProcessing(true);
-
-        // Note: Amount remains for Razorpay logic but UI shows USD for global appeal
         const amount = billingCycle === 'monthly' ? 444 : 4444;
         
         const options = {
@@ -55,11 +53,10 @@ const PricingPage: React.FC = () => {
             amount: amount * 100, 
             currency: "INR",
             name: "EbookStudio",
-            description: `Pro Creator Subscription (${billingCycle})`,
-            image: "https://raw.githubusercontent.com/atherosai/OpenStore.io/main/vite.svg",
+            description: `Pro Access (${billingCycle})`,
+            image: "https://ebookstudio.vercel.app/logo.png",
             handler: function (response: any) {
                 upgradeToSeller();
-                alert(`Welcome to the Writer Dashboard! Payment ID: ${response.razorpay_payment_id}`);
                 navigate('/dashboard');
                 setIsProcessing(false);
             },
@@ -75,7 +72,7 @@ const PricingPage: React.FC = () => {
         try {
             const rzp = new window.Razorpay(options);
             rzp.on('payment.failed', function (response: any) {
-                alert(`Payment Failed: ${response.error.description}`);
+                alert(`Transaction Failed: ${response.error.description}`);
                 setIsProcessing(false);
             });
             rzp.open();
@@ -86,72 +83,73 @@ const PricingPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen w-full relative bg-black font-sans">
+        <div className="min-h-screen w-full relative bg-[#000000] font-sans overflow-hidden">
             
-            {/* === Background Effects === */}
-            <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-500/5 rounded-full blur-[120px]"></div>
-                 <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05]"></div>
-                 <div className="absolute inset-0 bg-dot-matrix opacity-20"></div>
+            {/* Background Ambience */}
+            <div className="absolute inset-0 z-0">
+                <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-white/[0.02] rounded-full blur-[140px]" />
+                <div className="absolute inset-0 bg-dot-matrix opacity-[0.3]" />
             </div>
 
-            <div className="container mx-auto px-6 pt-32 pb-24 animate-fade-in max-w-7xl relative z-10">
-                {/* Header */}
-                <div className="text-center mb-20">
-                    <h1 className="type-display text-gradient mb-6">
-                        Choose Your Plan
+            <div className="container mx-auto px-6 pt-48 pb-32 max-w-7xl relative z-10">
+                {/* Header Section */}
+                <div className="text-center mb-32 max-w-3xl mx-auto">
+                    <div className="flex justify-center mb-10">
+                        <MorphicEye variant="logo" className="w-12 h-12 opacity-50" />
+                    </div>
+                    <h1 className="type-display text-white text-6xl md:text-8xl font-black tracking-tight mb-8">
+                        The Creator <br /> Protocol.
                     </h1>
-                    <p className="type-body text-muted max-w-2xl mx-auto">
-                        Start for free or upgrade to sell your own books and unlock professional AI-powered tools.
+                    <p className="type-body text-zinc-500 text-xl leading-relaxed">
+                        Secure your sovereignty as a creator. Access professional neural tools and monetize your vision globally.
                     </p>
 
                     {/* Billing Toggle */}
-                    <div className="flex items-center justify-center mt-12">
-                        <div className="bg-white/5 p-1.5 rounded-2xl border border-white/10 flex items-center backdrop-blur-md">
+                    <div className="flex items-center justify-center mt-16">
+                        <div className="bg-white/5 p-1 rounded-full border border-white/5 backdrop-blur-3xl flex items-center shadow-2xl">
                             <button 
                                 onClick={() => setBillingCycle('monthly')}
-                                className={`px-8 py-2.5 rounded-xl type-tiny transition-all duration-300 ${billingCycle === 'monthly' ? 'bg-white text-black shadow-xl' : 'text-zinc-500 hover:text-white'}`}
+                                className={`px-10 py-3 rounded-full type-tiny transition-all duration-700 ${billingCycle === 'monthly' ? 'bg-white text-black font-black' : 'text-zinc-500 hover:text-white'}`}
                             >
                                 Monthly
                             </button>
                             <button 
                                 onClick={() => setBillingCycle('yearly')}
-                                className={`px-8 py-2.5 rounded-xl type-tiny transition-all duration-300 flex items-center gap-2 ${billingCycle === 'yearly' ? 'bg-white text-black shadow-xl' : 'text-zinc-500 hover:text-white'}`}
+                                className={`px-10 py-3 rounded-full type-tiny transition-all duration-700 flex items-center gap-2 ${billingCycle === 'yearly' ? 'bg-white text-black font-black' : 'text-zinc-500 hover:text-white'}`}
                             >
-                                Yearly <span className="bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-md text-[9px] font-bold">SAVE 15%</span>
+                                Yearly <span className="bg-white/10 text-white/50 px-3 py-1 rounded-full text-[8px] font-black tracking-[0.2em] uppercase">Save 15%</span>
                             </button>
                         </div>
                     </div>
                 </div>
 
-                {/* Pricing Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                {/* Pricing Architecture */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto">
                     
-                    {/* 1. Reader Plan */}
-                    <div className="glass-card-premium p-10 flex flex-col justify-between">
+                    {/* Reader Tier */}
+                    <div className="glass-card-premium p-16 flex flex-col justify-between group">
                         <div>
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-white border border-white/10">
-                                    <IconBook className="w-6 h-6" />
+                            <div className="flex items-center gap-6 mb-12">
+                                <div className="w-16 h-16 rounded-[24px] bg-white/5 flex items-center justify-center text-white border border-white/10 transition-transform group-hover:scale-110">
+                                    <IconBook className="w-8 h-8" />
                                 </div>
-                                <h3 className="type-h2">Reader</h3>
+                                <div>
+                                    <h3 className="type-h3 text-white text-sm uppercase tracking-[0.3em] font-black mb-1">Protocol</h3>
+                                    <h4 className="type-h2 text-white text-3xl font-black">Reader</h4>
+                                </div>
                             </div>
                             
-                            <div className="mb-8">
-                                <div className="flex items-baseline gap-1">
-                                    <span className="type-display text-4xl">$0</span>
-                                    <span className="type-tiny text-dim">/ forever</span>
+                            <div className="mb-12">
+                                <div className="flex items-baseline gap-2">
+                                    <span className="type-display text-5xl text-white font-black">$0</span>
+                                    <span className="type-tiny text-zinc-600 font-bold tracking-widest uppercase">/ Synchronized</span>
                                 </div>
                             </div>
 
-                            <p className="type-small text-muted mb-10">
-                                Discover unlimited stories, read free books, and build your personal digital library.
-                            </p>
-
-                            <ul className="space-y-4 mb-12">
-                                {['Read Unlimited Books', 'Build Your Library', 'Cross-Device Sync', 'Access Free Content'].map((feature, i) => (
-                                    <li key={i} className="flex items-center gap-3 type-small text-zinc-300">
-                                        <IconCheck className="w-4 h-4 text-zinc-600" />
+                            <ul className="space-y-6 mb-16">
+                                {['Unlimited Reader Access', 'Cross-Device Library', 'Neutral Interface', 'Global Sync'].map((feature, i) => (
+                                    <li key={i} className="flex items-center gap-4 text-zinc-500 text-sm font-medium">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-zinc-800" />
                                         {feature}
                                     </li>
                                 ))}
@@ -160,49 +158,48 @@ const PricingPage: React.FC = () => {
 
                         <button 
                             onClick={() => navigate('/store')}
-                            className="btn-secondary w-full"
+                            className="btn-secondary w-full rounded-full py-6 text-xs"
                         >
                             Explore Store
                         </button>
                     </div>
 
-                    {/* 2. Creator Plan */}
-                    <div className="glass-card-premium p-10 border-white/20 relative flex flex-col justify-between bg-white/[0.03]">
-                        {/* Most Popular Badge */}
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-white text-black type-tiny rounded-full shadow-xl">
-                            Most Popular
+                    {/* Writer Tier */}
+                    <div className="glass-card-premium p-16 border-white/20 relative flex flex-col justify-between bg-white/[0.04] group">
+                        {/* Elite Badge */}
+                        <div className="absolute -top-4 right-12 px-6 py-2 bg-white text-black type-tiny font-black text-[9px] tracking-[0.3em] rounded-full shadow-[0_0_30px_rgba(255,255,255,0.3)]">
+                            Premium Access
                         </div>
 
                         <div>
-                            <div className="flex items-center gap-4 mb-6">
-                                <div className="w-12 h-12 rounded-2xl bg-white text-black flex items-center justify-center shadow-2xl">
-                                    <IconFeather className="w-6 h-6" />
+                            <div className="flex items-center gap-6 mb-12">
+                                <div className="w-16 h-16 rounded-[24px] bg-white text-black flex items-center justify-center shadow-2xl transition-transform group-hover:scale-110">
+                                    <IconFeather className="w-8 h-8" />
                                 </div>
-                                <h3 className="type-h2">Writer</h3>
+                                <div>
+                                    <h3 className="type-h3 text-zinc-400 text-sm uppercase tracking-[0.3em] font-black mb-1">Protocol</h3>
+                                    <h4 className="type-h2 text-white text-3xl font-black">Writer</h4>
+                                </div>
                             </div>
                             
-                            <div className="mb-8">
-                                <div className="flex items-baseline gap-1">
-                                    <span className="type-display text-4xl">${billingCycle === 'monthly' ? '4.44' : '44.44'}</span>
-                                    <span className="type-tiny text-dim">/ {billingCycle === 'monthly' ? 'month' : 'year'}</span>
+                            <div className="mb-12">
+                                <div className="flex items-baseline gap-2">
+                                    <span className="type-display text-5xl text-white font-black">${billingCycle === 'monthly' ? '4.44' : '44.44'}</span>
+                                    <span className="type-tiny text-zinc-400 font-bold tracking-widest uppercase">/ {billingCycle === 'monthly' ? 'Cycle' : 'Year'}</span>
                                 </div>
                             </div>
 
-                            <p className="type-small text-muted mb-10">
-                                Unleash your creativity with Studio AI, publish your books, and start earning today.
-                            </p>
-
-                            <ul className="space-y-4 mb-12">
+                            <ul className="space-y-6 mb-16">
                                 {[
-                                    'Studio AI Neural Engine', 
-                                    'Publish Unlimited Books', 
-                                    'Custom Creator Site', 
-                                    'Earn 70% Revenue Share', 
-                                    'Advanced Analytics'
+                                    'Studio AI Neural Drafting', 
+                                    'Unlimited Book Deployment', 
+                                    'Custom Sovereign Domain', 
+                                    '70% Revenue Accrual', 
+                                    'Neural Content Analytics'
                                 ].map((feature, i) => (
-                                    <li key={i} className="flex items-center gap-3 type-small text-white">
-                                        <div className="w-4 h-4 rounded-full bg-white flex items-center justify-center">
-                                            <IconCheck className="w-3 h-3 text-black" />
+                                    <li key={i} className="flex items-center gap-4 text-white text-sm font-bold">
+                                        <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center">
+                                            <IconCheck className="w-3.5 h-3.5 text-black" />
                                         </div>
                                         {feature}
                                     </li>
@@ -210,18 +207,18 @@ const PricingPage: React.FC = () => {
                             </ul>
                         </div>
 
-                        <div className="flex flex-col gap-3">
+                        <div className="flex flex-col gap-4">
                             {userType === UserType.SELLER ? (
-                                <div className="btn-secondary w-full opacity-50 cursor-default">
-                                    Active Plan
+                                <div className="btn-secondary w-full py-6 rounded-full opacity-50 cursor-default text-xs uppercase tracking-widest">
+                                    Sovereignty Active
                                 </div>
                             ) : (
                                 <button 
                                     onClick={handleSubscribe}
                                     disabled={isProcessing}
-                                    className="btn-primary w-full"
+                                    className="btn-primary w-full py-6 rounded-full text-xs font-black shadow-[0_20px_50px_rgba(255,255,255,0.1)]"
                                 >
-                                    {isProcessing ? 'Processing...' : 'Go Professional'}
+                                    {isProcessing ? 'Synchronizing...' : 'Initialize Creator Access'}
                                 </button>
                             )}
 
@@ -242,9 +239,9 @@ const PricingPage: React.FC = () => {
                                             navigate('/dashboard');
                                         }, 100);
                                     }}
-                                    className="type-tiny text-zinc-600 hover:text-zinc-400 transition-colors py-2"
+                                    className="type-tiny text-zinc-600 hover:text-white transition-colors py-2 tracking-[0.3em] font-black"
                                 >
-                                    Instant Upgrade (Dev)
+                                    [ Override System ]
                                 </button>
                             )}
                         </div>

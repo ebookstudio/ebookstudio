@@ -1,17 +1,16 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 
 interface MorphicEyeProps {
   className?: string;
   isActive?: boolean;
+  variant?: 'hero' | 'logo';
 }
 
-const MorphicEye: React.FC<MorphicEyeProps> = ({ className = "w-14 h-14", isActive = true }) => {
+const MorphicEye: React.FC<MorphicEyeProps> = ({ className = "w-20 h-20", isActive = true, variant = 'hero' }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [pupilPos, setPupilPos] = useState({ x: 0, y: 0 });
   const [isBlinking, setIsBlinking] = useState(false);
 
-  // Mouse & Touch Tracking Logic
   useEffect(() => {
     if (!isActive) {
         setPupilPos({ x: 0, y: 0 });
@@ -24,96 +23,95 @@ const MorphicEye: React.FC<MorphicEyeProps> = ({ className = "w-14 h-14", isActi
       const rect = containerRef.current.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
-
-      // Calculate distance from center of the eye to the input
-      const deltaX = clientX - centerX;
-      const deltaY = clientY - centerY;
-
-      // Constraint the movement within the eye socket
-      const maxRadius = rect.width * 0.15; 
       
-      const angle = Math.atan2(deltaY, deltaX);
-      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      const dx = clientX - centerX;
+      const dy = clientY - centerY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      const maxDistance = variant === 'logo' ? 4 : 15;
       
-      // Smooth clamping
-      const moveDistance = Math.min(distance / 5, maxRadius); 
-
-      const x = Math.cos(angle) * moveDistance;
-      const y = Math.sin(angle) * moveDistance;
-
-      setPupilPos({ x, y });
+      const angle = Math.atan2(dy, dx);
+      const moveDistance = Math.min(distance / 20, maxDistance);
+      
+      setPupilPos({
+        x: Math.cos(angle) * moveDistance,
+        y: Math.sin(angle) * moveDistance
+      });
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
-        calculateGaze(e.clientX, e.clientY);
-    };
-
+    const handleMouseMove = (e: MouseEvent) => calculateGaze(e.clientX, e.clientY);
     const handleTouchMove = (e: TouchEvent) => {
-        if (e.touches.length > 0) {
-            calculateGaze(e.touches[0].clientX, e.touches[0].clientY);
-        }
+      if (e.touches[0]) calculateGaze(e.touches[0].clientX, e.touches[0].clientY);
     };
 
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('touchmove', handleTouchMove);
-    window.addEventListener('touchstart', handleTouchMove); // React to initial tap
 
     return () => {
-        window.removeEventListener('mousemove', handleMouseMove);
-        window.removeEventListener('touchmove', handleTouchMove);
-        window.removeEventListener('touchstart', handleTouchMove);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleTouchMove);
     };
-  }, [isActive]);
+  }, [isActive, variant]);
 
-  // Blinking Logic
   useEffect(() => {
     let blinkTimeout: ReturnType<typeof setTimeout>;
-
     const triggerBlink = () => {
       setIsBlinking(true);
-      
-      // Close eyes
-      setTimeout(() => {
-        setIsBlinking(false);
-        // Schedule next blink randomly between 2s and 6s
-        const nextBlink = 2000 + Math.random() * 4000;
-        blinkTimeout = setTimeout(triggerBlink, nextBlink);
-      }, 150); // Blink duration
+      setTimeout(() => setIsBlinking(false), 150);
+      const nextBlink = 2000 + Math.random() * 5000;
+      blinkTimeout = setTimeout(triggerBlink, nextBlink);
     };
-
-    // Initial start
-    blinkTimeout = setTimeout(triggerBlink, 1000);
-
+    blinkTimeout = setTimeout(triggerBlink, 3000);
     return () => clearTimeout(blinkTimeout);
   }, []);
+
+  const isLogo = variant === 'logo';
 
   return (
     <div 
       ref={containerRef}
-      className={`rounded-full aspect-square bg-[#1a1a1a] flex items-center justify-center relative shadow-2xl border border-white/5 overflow-hidden flex-shrink-0 group ${className}`}
+      className={`relative flex items-center justify-center select-none transition-all duration-700 ${className}`}
     >
-      {/* Eyes Container - Moves with Cursor/Touch */}
-      <div 
-        className="w-full h-full flex items-center justify-center gap-[10%] transition-transform duration-100 ease-out will-change-transform"
-        style={{ transform: `translate(${pupilPos.x}px, ${pupilPos.y}px)` }}
-      >
-        {/* Left Eye - Bigger & Oval */}
-        <div className="relative w-[24%] h-[32%]">
-            <div 
-                className={`w-full bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.6)] transition-all duration-150 ease-in-out absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${
-                    isBlinking ? 'h-[10%] scale-x-125 mt-[10%]' : 'h-full'
-                }`}
-            ></div>
+      {/* Outer Glow Ring (Hero Only) */}
+      {!isLogo && (
+        <div className="absolute inset-[-20%] rounded-full bg-white/[0.03] blur-2xl animate-pulse" />
+      )}
+
+      {/* Main Socket */}
+      <div className={`relative w-full h-full rounded-full bg-[#080808] border ${isLogo ? 'border-white/10' : 'border-white/20'} overflow-hidden shadow-2xl`}>
+        
+        {/* Internal Gradient Depth */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_0%,transparent_70%)]" />
+
+        {/* Eyelid / Blink */}
+        <div 
+          className={`absolute inset-0 bg-black z-40 transition-all duration-200 ease-in-out origin-top ${isBlinking ? 'scale-y-100' : 'scale-y-0'}`}
+          style={{ borderBottom: '1px solid rgba(255,255,255,0.2)' }}
+        />
+
+        {/* Gaze Container */}
+        <div 
+          className="absolute inset-0 flex items-center justify-center z-30 transition-transform duration-200 ease-out"
+          style={{ transform: `translate(${pupilPos.x}px, ${pupilPos.y}px)` }}
+        >
+          {/* Main Pupil / Light Core */}
+          <div className={`${isLogo ? 'w-[40%] h-[40%]' : 'w-[50%] h-[50%]'} rounded-full bg-white relative shadow-[0_0_20px_rgba(255,255,255,0.5)]`}>
+             {/* Dynamic Highlight */}
+             <div className="absolute top-[20%] left-[20%] w-[30%] h-[30%] bg-white rounded-full blur-[1px] opacity-90" />
+             
+             {/* Neural Ring (Hero Only) */}
+             {!isLogo && (
+               <div className="absolute inset-[-8px] rounded-full border border-white/20 animate-pulse-slow" />
+             )}
+          </div>
         </div>
 
-        {/* Right Eye - Bigger & Oval */}
-        <div className="relative w-[24%] h-[32%]">
-            <div 
-                className={`w-full bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.6)] transition-all duration-150 ease-in-out absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${
-                    isBlinking ? 'h-[10%] scale-x-125 mt-[10%]' : 'h-full'
-                }`}
-            ></div>
-        </div>
+        {/* Scanline Interface (Hero Only) */}
+        {!isLogo && (
+          <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden opacity-30">
+            <div className="w-full h-full bg-[repeating-linear-gradient(0deg,rgba(255,255,255,0.03)_0px,rgba(255,255,255,0.03)_1px,transparent_1px,transparent_2px)]" />
+            <div className="w-full h-[2px] bg-white absolute top-0 animate-scanline shadow-[0_0_10px_white]" />
+          </div>
+        )}
       </div>
     </div>
   );

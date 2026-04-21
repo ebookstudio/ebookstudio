@@ -6,25 +6,26 @@
 
 :root {
   --bg-obsidian: #000000;
-  --bg-dark-grey: #0a0a0a;
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --neural-glow: rgba(99, 102, 241, 0.15);
+  --bg-darker: #050505;
+  --bg-card: rgba(255, 255, 255, 0.02);
   --accent-primary: #ffffff;
-  --text-main: #ffffff;
-  --text-muted: #a1a1aa;
-  --text-dim: #71717a;
+  --accent-secondary: #a1a1aa;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-active: rgba(255, 255, 255, 0.2);
+  --shadow-premium: 0 20px 50px rgba(0, 0, 0, 0.5);
   
-  /* Spacing Scale */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-12: 3rem;
-  --space-16: 4rem;
-  --space-24: 6rem;
+  /* Refined Spacing */
+  --s-unit: 4px;
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-12: 48px;
+  --s-16: 64px;
+  --s-24: 96px;
+  --s-32: 128px;
 }
 
 * {
@@ -108,59 +109,64 @@ html, body, #root {
   background-size: 40px 40px;
 }
 
-/* --- Glassmorphism 2.0 --- */
-.glass-panel {
-  background: var(--glass-bg);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+/* --- Glassmorphism 3.0 --- */
+.glass-navbar {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .glass-card-premium {
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  border-radius: 1.5rem;
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+  transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  border-radius: 2rem;
 }
 
 .glass-card-premium:hover {
   background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.15);
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  border-color: var(--border-active);
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: var(--shadow-premium);
 }
 
 /* --- Premium Inputs --- */
 .input-premium {
-  @apply bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-500 transition-all duration-300 w-full;
+  @apply bg-white/5 border border-white/5 rounded-2xl px-6 py-4 text-sm text-white placeholder:text-zinc-600 transition-all duration-500 w-full;
+  font-family: 'Inter', sans-serif;
 }
 
 .input-premium:focus {
-  @apply outline-none border-white/40 ring-4 ring-white/5 bg-white/[0.08];
+  @apply outline-none border-white/20 ring-4 ring-white/5 bg-white/[0.08];
 }
 
 /* --- Premium Buttons --- */
 .btn-primary {
-  @apply relative overflow-hidden px-8 py-4 rounded-xl font-bold uppercase tracking-[0.15em] text-[11px] transition-all duration-500 flex items-center justify-center gap-2;
+  @apply relative overflow-hidden px-10 py-5 rounded-2xl font-bold uppercase tracking-[0.2em] text-[10px] transition-all duration-500 flex items-center justify-center gap-3;
   background: white;
   color: black;
 }
 
 .btn-primary:hover {
-  @apply scale-[1.02] shadow-[0_0_30px_rgba(255,255,255,0.2)];
-  background: #f4f4f5;
+  @apply scale-[1.05] shadow-[0_0_40px_rgba(255,255,255,0.3)];
+  background: #ffffff;
 }
 
 .btn-secondary {
-  @apply relative overflow-hidden px-8 py-4 rounded-xl font-bold uppercase tracking-[0.15em] text-[11px] transition-all duration-500 border border-white/10 flex items-center justify-center gap-2;
-  background: rgba(255, 255, 255, 0.03);
+  @apply relative overflow-hidden px-10 py-5 rounded-2xl font-bold uppercase tracking-[0.2em] text-[10px] transition-all duration-500 border border-white/10 flex items-center justify-center gap-3;
+  background: rgba(255, 255, 255, 0.02);
   color: white;
 }
 
 .btn-secondary:hover {
-  @apply border-white/30 bg-white/5;
+  @apply border-white/40 bg-white/5;
+}
+
+.btn-google {
+  @apply flex items-center justify-center gap-4 bg-white text-black font-bold text-xs uppercase tracking-widest px-8 py-5 rounded-2xl transition-all duration-500 hover:scale-[1.02] hover:shadow-xl active:scale-95;
 }
 
 /* --- Focus Rings for Accessibility --- */

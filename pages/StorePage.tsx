@@ -2,11 +2,12 @@ import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import BookCard from '../components/BookCard';
 import { EBook } from '../types';
-import { IconShoppingCart, IconSearch, IconBook, IconStar, IconArrowRight } from '../constants';
+import { IconSearch, IconStar, IconArrowRight } from '../constants';
 import Modal from '../components/Modal'; 
 import CustomDropdown, { DropdownOption } from '../components/CustomDropdown';
 import { useAppContext } from '../contexts/AppContext';
 import * as ReactRouterDOM from 'react-router-dom';
+import MorphicEye from '../components/MorphicEye';
 
 const { useNavigate } = ReactRouterDOM as any;
 
@@ -16,7 +17,7 @@ const StorePage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('All');
   const [selectedPriceFilter, setSelectedPriceFilter] = useState<'All' | 'Free' | 'Paid'>('All');
-  const [sortBy, setSortBy] = useState('publicationDate'); 
+  const [sortBy] = useState('publicationDate'); 
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBook, setSelectedBook] = useState<EBook | null>(null);
@@ -42,11 +43,9 @@ const StorePage: React.FC = () => {
     else if (selectedPriceFilter === 'Paid') books = books.filter(book => book.price > 0);
 
     return books.sort((a, b) => {
-      if (sortBy === 'title') return a.title.localeCompare(b.title);
-      if (sortBy === 'price') return a.price - b.price;
       return new Date(b.publicationDate).getTime() - new Date(a.publicationDate).getTime();
     });
-  }, [searchTerm, selectedGenre, selectedPriceFilter, sortBy, allBooks]);
+  }, [searchTerm, selectedGenre, selectedPriceFilter, allBooks]);
 
   const featuredBook = useMemo(() => {
       return allBooks.find(b => b.title.includes("Manual")) || allBooks.find(b => b.price > 0) || allBooks[0];
@@ -69,115 +68,147 @@ const StorePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black pt-32 pb-24 px-6 bg-neural-mesh bg-dot-matrix">
+    <div className="min-h-screen bg-[#000000] overflow-hidden">
       
-      {/* --- FEATURED RELEASE --- */}
-      {featuredBook && !searchTerm && selectedGenre === 'All' && (
-        <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-7xl mx-auto mb-32 relative overflow-hidden glass-card-premium p-12 md:p-20 flex items-center min-h-[500px]"
-        >
-             <div className="absolute inset-0 z-0">
-                <img src={featuredBook.coverImageUrl} className="w-full h-full object-cover opacity-10 blur-3xl scale-110" alt="" />
-                <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent"></div>
-             </div>
+      {/* Ambient Background */}
+      <div className="fixed inset-0 z-0">
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[1000px] h-[1000px] bg-white/[0.01] rounded-full blur-[160px]" />
+          <div className="absolute inset-0 bg-dot-matrix opacity-[0.2]" />
+      </div>
 
-             <div className="relative z-10 flex flex-col md:flex-row gap-12 md:gap-20 items-center w-full">
-                <div className="w-full md:w-4/12 max-w-[320px]">
-                    <div className="relative group">
-                        <div className="absolute -inset-4 bg-white/5 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <img 
-                            src={featuredBook.coverImageUrl} 
-                            className="w-full aspect-[2/3] object-cover rounded-2xl shadow-2xl border border-white/10 relative z-10" 
-                            alt={featuredBook.title} 
-                        />
+      {/* --- FEATURED SECTION --- */}
+      <section className="relative pt-48 px-6 pb-20 z-10">
+          {featuredBook && !searchTerm && selectedGenre === 'All' && (
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1.5 }}
+                className="max-w-screen-xl mx-auto relative group"
+            >
+                <div className="glass-card-premium p-10 md:p-24 overflow-hidden relative min-h-[600px] flex items-center rounded-[60px] border-white/5 shadow-2xl">
+                    <div className="absolute inset-0 z-0">
+                        <img src={featuredBook.coverImageUrl} className="w-full h-full object-cover opacity-20 scale-110 transition-transform duration-[3000ms] group-hover:scale-100" alt="" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/40 to-transparent" />
+                    </div>
+
+                    <div className="relative z-10 flex flex-col md:flex-row gap-16 md:gap-24 items-center w-full">
+                        <div className="w-full md:w-[320px] flex-shrink-0">
+                            <motion.div 
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.5, duration: 1 }}
+                                className="relative shadow-[0_50px_100px_rgba(0,0,0,0.8)]"
+                            >
+                                <img 
+                                    src={featuredBook.coverImageUrl} 
+                                    className="w-full aspect-[2/3] object-cover rounded-3xl border border-white/10" 
+                                    alt={featuredBook.title} 
+                                />
+                            </motion.div>
+                        </div>
+
+                        <div className="flex-1">
+                            <div className="flex items-center gap-4 mb-10">
+                                <IconStar className="w-5 h-5 text-white animate-pulse" />
+                                <span className="text-[10px] uppercase tracking-[0.4em] font-black text-white/50">Neural Spotlight</span>
+                            </div>
+                            <h1 className="type-display text-white text-6xl md:text-8xl font-black mb-10 tracking-tighter leading-none">
+                                {featuredBook.title}
+                            </h1>
+                            <p className="type-body text-zinc-400 text-xl max-w-xl mb-12 leading-relaxed font-medium">
+                                {featuredBook.description}
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-6">
+                                <button onClick={() => handleViewDetails(featuredBook.id)} className="btn-primary rounded-full px-12 py-5 text-xs">
+                                    Analyze Details <IconArrowRight className="w-4 h-4" />
+                                </button>
+                                <button 
+                                    onClick={() => featuredBook.price === 0 ? navigate(`/read/${featuredBook.id}`) : addToCart(featuredBook)}
+                                    className="btn-secondary rounded-full px-12 py-5 text-xs"
+                                >
+                                    {featuredBook.price === 0 ? 'Synchronize' : `Sync Protocol — $${(featuredBook.price/100).toFixed(2)}`}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </motion.div>
+          )}
+      </section>
 
-                <div className="w-full md:w-8/12">
-                    <div className="flex items-center gap-2 mb-6">
-                        <IconStar className="w-4 h-4 text-white" />
-                        <span className="type-tiny text-white tracking-widest">Featured Release</span>
-                    </div>
-                    <h1 className="type-display text-gradient mb-6 leading-none">
-                        {featuredBook.title}
-                    </h1>
-                    <p className="type-body text-muted mb-10 max-w-xl">
-                        {featuredBook.description}
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        <button onClick={() => handleViewDetails(featuredBook.id)} className="btn-primary px-12">
-                            Details <IconArrowRight className="w-4 h-4" />
-                        </button>
-                        <button 
-                            onClick={() => featuredBook.price === 0 ? navigate(`/read/${featuredBook.id}`) : addToCart(featuredBook)}
-                            className="btn-secondary px-12"
+      {/* --- FILTER ARCHITECTURE --- */}
+      <section className="sticky top-24 z-50 px-6 py-6 pointer-events-none">
+          <div className="max-w-screen-xl mx-auto pointer-events-auto">
+            <div className="glass-navbar p-3 rounded-[32px] border border-white/5 shadow-2xl flex flex-col md:flex-row gap-4 items-center">
+                <div className="relative flex-grow w-full">
+                    <IconSearch className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                    <input 
+                        type="text"
+                        placeholder="Search the Neural Archive..."
+                        className="bg-transparent border-none focus:ring-0 w-full pl-14 py-3 text-sm text-white placeholder:text-zinc-600"
+                        value={searchTerm}
+                        onChange={e => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                <div className="flex gap-3 w-full md:w-auto">
+                    <CustomDropdown options={genreOptions} value={selectedGenre} onChange={setSelectedGenre} className="flex-1 md:w-48 bg-white/5 rounded-2xl border-white/5 text-[10px]" />
+                    <CustomDropdown options={priceOptions} value={selectedPriceFilter} onChange={(val) => setSelectedPriceFilter(val as any)} className="flex-1 md:w-40 bg-white/5 rounded-2xl border-white/5 text-[10px]" />
+                </div>
+            </div>
+          </div>
+      </section>
+
+      {/* --- REPOSITORY GRID --- */}
+      <section className="relative z-10 px-6 pt-10 pb-48">
+          <div className="max-w-screen-xl mx-auto">
+            {filteredAndSortedBooks.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+                    {filteredAndSortedBooks.map((book, idx) => (
+                        <motion.div
+                            key={book.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ delay: (idx % 4) * 0.1 }}
+                            viewport={{ once: true }}
                         >
-                            {featuredBook.price === 0 ? 'Read Now' : `Add to Cart — $${(featuredBook.price/100).toFixed(2)}`}
-                        </button>
-                    </div>
+                            <BookCard book={book} onViewDetails={handleViewDetails} />
+                        </motion.div>
+                    ))}
                 </div>
-             </div>
-        </motion.div>
-      )}
+            ) : (
+                <div className="py-64 text-center glass-card-premium rounded-[60px] border-dashed border-white/10">
+                    <div className="flex justify-center mb-10 opacity-20">
+                        <MorphicEye variant="logo" className="w-20 h-20" />
+                    </div>
+                    <h3 className="type-h2 text-zinc-500 mb-4 tracking-widest uppercase text-sm">No neural fragments found.</h3>
+                    <p className="type-body text-zinc-700">Adjust your synchronization parameters.</p>
+                </div>
+            )}
+          </div>
+      </section>
 
-      {/* --- FILTER BAR --- */}
-      <div className="max-w-7xl mx-auto mb-16">
-        <div className="glass-panel p-4 rounded-3xl flex flex-col lg:flex-row gap-4 items-center">
-            <div className="relative flex-grow w-full">
-                <IconSearch className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
-                <input 
-                    type="text"
-                    placeholder="Search the neural library..."
-                    className="input-premium pl-14 py-4"
-                    value={searchTerm}
-                    onChange={e => setSearchTerm(e.target.value)}
-                />
-            </div>
-            <div className="flex gap-4 w-full lg:w-auto">
-                <CustomDropdown options={genreOptions} value={selectedGenre} onChange={setSelectedGenre} className="flex-1 lg:w-56" />
-                <CustomDropdown options={priceOptions} value={selectedPriceFilter} onChange={(val) => setSelectedPriceFilter(val as any)} className="flex-1 lg:w-48" />
-            </div>
-        </div>
-      </div>
-
-      {/* --- GRID OF BOOKS --- */}
-      <div className="max-w-7xl mx-auto">
-        {filteredAndSortedBooks.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                {filteredAndSortedBooks.map(book => (
-                    <BookCard key={book.id} book={book} onViewDetails={handleViewDetails} />
-                ))}
-            </div>
-        ) : (
-            <div className="py-40 text-center glass-card-premium">
-                <IconSearch className="w-16 h-16 text-zinc-800 mx-auto mb-8" />
-                <h3 className="type-h2 mb-4">No volumes found.</h3>
-                <p className="type-body text-muted">Try adjusting your search or filters.</p>
-            </div>
-        )}
-      </div>
-
-      {/* --- PREVIEW MODAL --- */}
+      {/* --- PREVIEW ARCHITECTURE --- */}
       {selectedBook && (
         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="" size="lg">
-            <div className="flex flex-col md:flex-row h-full bg-zinc-950 overflow-hidden rounded-3xl">
-                <div className="w-full md:w-1/2 relative min-h-[400px]">
+            <div className="flex flex-col md:flex-row min-h-[600px] bg-[#050505] overflow-hidden rounded-[40px] border border-white/10">
+                <div className="w-full md:w-1/2 relative min-h-[400px] border-b md:border-b-0 md:border-r border-white/5">
                     <img src={selectedBook.coverImageUrl} className="w-full h-full object-cover" alt="" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-transparent to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-transparent opacity-60" />
                 </div>
-                <div className="w-full md:w-1/2 p-10 md:p-16 flex flex-col justify-center">
-                    <span className="type-tiny text-zinc-500 mb-6">{selectedBook.genre}</span>
-                    <h2 className="type-h1 mb-4 leading-tight">{selectedBook.title}</h2>
-                    <p className="type-body text-zinc-400 mb-8">by {selectedBook.author}</p>
-                    <p className="type-small text-muted mb-12 line-clamp-6 leading-relaxed">
+                <div className="w-full md:w-1/2 p-12 md:p-20 flex flex-col">
+                    <div className="flex items-center gap-3 mb-10">
+                        <span className="text-[10px] uppercase tracking-[0.4em] font-black text-zinc-500">{selectedBook.genre}</span>
+                        <div className="h-[1px] flex-grow bg-white/5" />
+                    </div>
+                    <h2 className="type-h1 text-white text-4xl md:text-5xl font-black mb-6 leading-tight">{selectedBook.title}</h2>
+                    <p className="type-body text-zinc-400 text-lg mb-12">By <span className="text-white font-bold">{selectedBook.author}</span></p>
+                    <p className="type-small text-zinc-500 mb-16 leading-relaxed line-clamp-8">
                         {selectedBook.description}
                     </p>
-                    <div className="flex items-center justify-between pt-10 border-t border-white/5 mt-auto">
-                        <span className="type-h2">{selectedBook.price === 0 ? 'FREE' : `$${(selectedBook.price/100).toFixed(2)}`}</span>
-                        <button onClick={handleModalAction} className="btn-primary px-10">
-                            {selectedBook.price === 0 ? 'Read Now' : 'Add to Cart'}
+                    <div className="flex items-center justify-between pt-12 border-t border-white/5 mt-auto">
+                        <span className="type-h2 text-white text-3xl font-black">{selectedBook.price === 0 ? 'FREE' : `$${(selectedBook.price/100).toFixed(2)}`}</span>
+                        <button onClick={handleModalAction} className="btn-primary rounded-full px-12 py-5 text-xs">
+                            {selectedBook.price === 0 ? 'Initialize Sync' : 'Add to Protocol'}
                         </button>
                     </div>
                 </div>
