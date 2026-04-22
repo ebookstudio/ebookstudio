@@ -344,7 +344,7 @@ const EbookStudioPage: React.FC = () => {
                     className="group p-0 text-zinc-500 hover:text-white transition-colors"
                 >
                     <IconArrowLeft className="w-4 h-4 mr-3 group-hover:-translate-x-1 transition-transform" /> 
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] italic">Sanctuary</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] italic">Dashboard</span>
                 </Button>
                 <Separator orientation="vertical" className="h-6 bg-white/10" />
                 <div className="flex items-center gap-4">
