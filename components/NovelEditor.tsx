@@ -203,15 +203,8 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
   return (
     <div className="editor-container w-full max-w-3xl mx-auto min-h-screen relative flex flex-col pt-16 pb-64 font-sans">
         
-        <div className="mb-12">
-             <input 
-                type="text" 
-                value={title}
-                onChange={(e) => onTitleChange(e.target.value)}
-                className="w-full bg-transparent text-4xl font-bold text-zinc-100 border-none outline-none placeholder-zinc-800 tracking-tight"
-                placeholder="Document Title"
-            />
-        </div>
+        {/* Title managed by parent EbookStudioPage */}
+
 
         <div className="relative flex-1">
              {blocks.map((block, index) => (
