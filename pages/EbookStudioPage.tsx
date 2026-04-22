@@ -4,7 +4,7 @@ import { EBook, EBookPage } from '../types';
 import * as ReactRouterDOM from 'react-router-dom';
 import {
     IconSparkles, IconSend, IconPlus, IconArrowLeft,
-    IconX, IconMic, IconStop, IconCheck, IconBrain
+    IconX, IconMic, IconStop, IconCheck, IconBrain, IconActivity
 } from '../constants';
 import {
     createStudioSession, generateBookCover, transcribeAudio
