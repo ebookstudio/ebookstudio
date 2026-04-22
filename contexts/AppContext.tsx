@@ -2,8 +2,7 @@
 import React, { createContext, useState, useContext, useEffect, useCallback, ReactNode } from 'react';
 import { User, Seller, UserType, EBook, CartItem, AppContextType, CreatorSiteConfig } from '../types';
 import { mockEBooks, mockUsers } from '../services/mockData';
-import { initializeGeminiChat } from '../services/geminiService';
-import { Chat } from '@google/genai';
+import { initializeGeminiChat } from '../services/aiService';
 import { auth, googleProvider, signInWithPopup, signOut, db } from '../services/firebase';
 import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -73,7 +72,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       } catch (e) { return mockEBooks; }
   });
 
-  const [geminiChat, setGeminiChat] = useState<Chat | null>(null);
+  const [geminiChat, setGeminiChat] = useState<any>(null);
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [isInitialAuthCheck, setIsInitialAuthCheck] = useState(true);
 

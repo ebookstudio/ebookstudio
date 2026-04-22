@@ -4,7 +4,7 @@ import AIPricingOptimizer from '../AI/AIPricingOptimizer';
 import AICoverGenerator from '../AI/AICoverGenerator';
 import { IconUpload, IconWallet, IconRocket, IconSparkles, IconCheck, IconBook } from '../../constants';
 import { useAppContext } from '../../contexts/AppContext';
-import { analyzePdfContent } from '../../services/geminiService';
+import { analyzePdfContent } from '../../services/aiService';
 import Spinner from '../Spinner';
 import { cn } from '../../lib/utils';
 

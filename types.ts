@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Chat } from "@google/genai";
 
 export interface EBookPage {
   id: string;
@@ -92,7 +91,7 @@ export interface AppContextType {
   removeFromCart: (bookId: string) => void;
   clearCart: () => void;
   theme: string; // 'dark' is default
-  geminiChat: Chat | null;
+  geminiChat: any;
   initializeChat: () => Promise<void>;
   isChatbotOpen: boolean;
   toggleChatbot: () => void;
@@ -101,11 +100,11 @@ export interface AppContextType {
   addCreatedBook: (book: EBook) => void; // For AI eBook creation
   updateEBook: (book: EBook) => void; // Added for editing eBooks
   handleGoogleLogin: () => Promise<boolean>; // Updated for Firebase SDK
-  handlePhoneLogin: (phoneNumber: string, recaptchaContainerId: string) => Promise<{success: boolean, confirmationResult?: any, error?: any}>;
-  verifyOtp: (confirmationResult: any, otp: string) => Promise<{success: boolean, error?: any}>;
   handleEmailLogin: (email: string, password: string) => Promise<{success: boolean, message?: string}>; // ADDED: Email Login
   upgradeToSeller: () => void; // Upgrade User to Seller
   verifyUser: () => void; // Added for Blue Tick Verification
+  isInitialAuthCheck: boolean; // Added
+  logout: () => Promise<void>; // Added
 }
 
 export interface GroundingChunkWeb {

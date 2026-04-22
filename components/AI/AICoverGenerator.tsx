@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { generateBookCover } from '../../services/geminiService';
+import { generateBookCover } from '../../services/aiService';
 import Spinner from '../Spinner';
 import { GeneratedImage } from '../../types';
 import { IconChevronDown, IconCheck, IconSparkles } from '../../constants';

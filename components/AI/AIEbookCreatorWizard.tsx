@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IconSparkles, IconWand, IconLink, IconCheck, IconX, IconBook } from '../../constants';
 import Spinner from '../Spinner';
-import { generateTitleSuggestions, generateBookOutline, generateFullChapterContent } from '../../services/geminiService';
+import { generateTitleSuggestions, generateBookOutline, generateFullChapterContent } from '../../services/aiService';
 import { ChapterOutline, AnalyzedStyle } from '../../types';
 import { cn } from '../../lib/utils';
 import { Button } from '../../components/ui/button';

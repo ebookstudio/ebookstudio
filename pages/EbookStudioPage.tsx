@@ -8,8 +8,7 @@ import {
 } from '../constants';
 import {
     createStudioSession, generateBookCover, transcribeAudio
-} from '../services/geminiService';
-import { Chat, Part } from '@google/genai';
+} from '../services/aiService';
 import CoAuthor from '../components/CoAuthor';
 import NovelEditor from '../components/NovelEditor';
 import CinematicWriterOverlay from '../components/CinematicWriterOverlay';
@@ -65,7 +64,7 @@ const EbookStudioPage: React.FC = () => {
   // Refs
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
-  const chatSessionRef = useRef<Chat | null>(null);
+  const chatSessionRef = useRef<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -137,7 +136,7 @@ const EbookStudioPage: React.FC = () => {
       }
   };
 
-  const fileToPart = async (file: File): Promise<Part> => {
+  const fileToPart = async (file: File): Promise<any> => {
       return new Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.onloadend = () => {
@@ -223,7 +222,7 @@ const EbookStudioPage: React.FC = () => {
 
       try {
           if (!chatSessionRef.current) throw new Error("Connection lost");
-          const parts: (string | Part)[] = [];
+          const parts: (string | any)[] = [];
           if (text.trim()) parts.push({ text });
           for (const file of currentAttachments) {
               parts.push(await fileToPart(file));
@@ -243,7 +242,7 @@ const EbookStudioPage: React.FC = () => {
 
           if (finalFunctionCalls && finalFunctionCalls.length > 0) {
               setMessages(prev => prev.map(m => m.id === aiMsgId ? { ...m, isToolUse: true, text: m.text + "\n\n*Updating your book...*" } : m));
-              const responses: Part[] = [];
+              const responses: any[] = [];
               for (const call of finalFunctionCalls) {
                   responses.push({ functionResponse: { name: call.name, response: { result: await executeStudioTool(call.name, call.args) } } });
               }

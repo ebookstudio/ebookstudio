@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { suggestBookPrice } from '../../services/geminiService';
+import { suggestBookPrice } from '../../services/aiService';
 import Spinner from '../Spinner';
 import { EBook } from '../../types';
 import { IconTrendingUp, IconCheck, IconSparkles } from '../../constants';
