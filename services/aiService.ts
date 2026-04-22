@@ -3,14 +3,23 @@ import { ChapterOutline, GeneratedImage } from '../types';
 import { GEMINI_TEXT_MODEL, GEMINI_IMAGE_MODEL } from '../constants';
 
 // Configuration
-const OPENROUTER_MODEL = "anthropic/claude-3.5-sonnet:beta"; // Top tier creative model
+const OPENROUTER_MODEL = "anthropic/claude-3-5-sonnet"; // Stable ID
 const FALLBACK_MODEL = "google/gemini-2.0-flash-exp:free";
 
 // Lazy initialization for Gemini
 let genAI: any = null;
 
-const getOpenRouterKey = () => import.meta.env.VITE_OPENROUTER_API_KEY || "";
-const getGeminiKey = () => import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.VITE_API_KEY || "";
+const getOpenRouterKey = () => {
+    const key = import.meta.env.VITE_OPENROUTER_API_KEY || "";
+    if (!key) console.warn("AI SERVICE: VITE_OPENROUTER_API_KEY is missing in environment.");
+    return key;
+};
+
+const getGeminiKey = () => {
+    const key = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.VITE_API_KEY || "";
+    if (!key) console.warn("AI SERVICE: VITE_GEMINI_API_KEY is missing in environment.");
+    return key;
+};
 
 // Helper to clean JSON strings from Markdown code blocks
 const cleanJsonString = (text: string): string => {
@@ -38,6 +47,7 @@ const callAI = async (prompt: string, systemInstruction?: string, jsonMode: bool
     const openRouterKey = getOpenRouterKey();
     
     if (openRouterKey) {
+        console.log(`AI SERVICE: Attempting OpenRouter request [Model: ${OPENROUTER_MODEL}]`);
         try {
             const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
@@ -56,30 +66,41 @@ const callAI = async (prompt: string, systemInstruction?: string, jsonMode: bool
                     ...(jsonMode ? { "response_format": { "type": "json_object" } } : {})
                 })
             });
+            
             const data = await response.json();
-            return data.choices?.[0]?.message?.content || "";
-        } catch (e) {
-            console.error("OpenRouter Request Failed, falling back to Gemini if available...", e);
+            
+            if (data.error) {
+                console.error("AI SERVICE: OpenRouter Error Response", data.error);
+                throw new Error(data.error.message || "OpenRouter failed");
+            }
+            
+            const content = data.choices?.[0]?.message?.content || "";
+            if (!content) console.warn("AI SERVICE: OpenRouter returned empty content.");
+            return content;
+        } catch (e: any) {
+            console.error("AI SERVICE: OpenRouter Request Failed", e.message);
         }
     }
 
     // Fallback to Gemini
     const geminiKey = getGeminiKey();
     if (geminiKey) {
+        console.log(`AI SERVICE: Falling back to Gemini [Model: ${GEMINI_TEXT_MODEL}]`);
         try {
             if (!genAI) genAI = new GoogleGenAI(geminiKey);
-            const model = genAI.getGenerativeModel({ 
+            const model = (genAI as any).getGenerativeModel({ 
                 model: GEMINI_TEXT_MODEL,
                 systemInstruction: systemInstruction 
             });
             const result = await model.generateContent(prompt);
-            return result.response.text() || "";
-        } catch (e) {
-            console.error("Gemini Fallback Failed", e);
+            const response = await result.response;
+            return response.text() || "";
+        } catch (e: any) {
+            console.error("AI SERVICE: Gemini Fallback Failed", e.message);
         }
     }
 
-    throw new Error("No AI providers available. Check your API keys.");
+    throw new Error("EbookStudio AI is currently offline. Please check your API configuration (VITE_OPENROUTER_API_KEY).");
 };
 
 // --- CORE FUNCTIONS ---
@@ -169,32 +190,28 @@ export const generateBookCover = async (prompt: string, style: string = 'Cinemat
 };
 
 // Enhanced session mock for chat compatibility
-export const initializeGeminiChat = async (): Promise<any> => {
-    console.log("Chat initialized using OpenRouter/Gemini provider");
-    return {
-        sendMessageStream: async ({ message }: { message: any }) => {
-            const prompt = Array.isArray(message) ? message.map((m: any) => m.text || "").join("\n") : (message.text || message);
-            const response = await callAI(prompt, "You are a professional Co-Author assistant. Help the author write their book with professional markdown.");
-            
-            // Return an async generator to simulate streaming
-            return (async function* () {
-                // Return the response in one chunk for now (or split by words for effect)
-                yield { text: response };
-            })();
-        }
-    };
-};
-
 export const createStudioSession = (initialContext: string): any => {
     return {
         sendMessageStream: async ({ message }: { message: any }) => {
             const prompt = Array.isArray(message) ? message.map((m: any) => m.text || "").join("\n") : (message.text || message);
             const response = await callAI(prompt, initialContext);
+            
             return (async function* () {
-                yield { text: response };
+                // Split by small chunks to simulate streaming for better UX
+                const chunks = response.split(/(\s+)/);
+                for (const chunk of chunks) {
+                    yield { text: chunk };
+                    // Very slight delay for visual effect
+                    await new Promise(resolve => setTimeout(resolve, 5));
+                }
             })();
         }
     };
+};
+
+export const initializeGeminiChat = async (): Promise<any> => {
+    console.log("AI SERVICE: Chat session initialized.");
+    return createStudioSession("You are a professional Co-Author assistant. Help the author write their book with professional markdown.");
 };
 export const transcribeAudio = async (audioBase64: string, mimeType: string): Promise<string> => {
     console.log("Audio transcription requested", mimeType);

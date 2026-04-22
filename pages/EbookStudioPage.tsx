@@ -389,57 +389,69 @@ const EbookStudioPage: React.FC = () => {
                     </Tabs>
                 </div>
 
-                <div className="flex-1 overflow-hidden relative flex flex-col">
+                <div className="flex-1 overflow-hidden relative flex flex-col bg-[#050505]">
                     {leftTab === 'chat' && (
                         <>
                             <ScrollArea className="flex-1">
-                                <div className="space-y-0">
-                                    {messages.map((msg, idx) => (
-                                        <div key={msg.id} className="py-8 px-6 border-b border-zinc-900 last:border-0 hover:bg-zinc-900/20 transition-colors">
-                                            <div className="flex items-center gap-3 mb-4">
-                                                <Badge className={cn(
-                                                    "px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider rounded border-none",
-                                                    msg.role === 'user' ? 'bg-zinc-900 text-zinc-500' : 'bg-zinc-100/10 text-zinc-300'
-                                                )}>
-                                                    {msg.role === 'user' ? 'Author' : 'Co-Author'}
-                                                </Badge>
-                                            </div>
-                                            <div className={cn(
-                                                "text-xs leading-relaxed font-medium whitespace-pre-wrap",
-                                                msg.role === 'user' ? 'text-zinc-100' : 'text-zinc-400'
-                                            )}>
-                                                {msg.attachments?.map((src, i) => (
-                                                    <img key={i} src={src} className="h-32 w-auto rounded-xl mb-4 border border-zinc-800 shadow-xl" />
-                                                ))}
-                                                {msg.text}
-                                                {msg.isToolUse && (
-                                                    <div className="mt-4 flex items-center gap-2">
-                                                        <div className="w-1.5 h-1.5 rounded-full bg-zinc-100 animate-pulse" />
-                                                        <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-500">Processing Instructions...</span>
-                                                    </div>
-                                                )}
-                                                {msg.role === 'ai' && msg.isStreaming && idx === messages.length - 1 && (
-                                                    <span className="inline-block w-1 h-3 ml-1 bg-zinc-100 animate-pulse" />
-                                                )}
-                                            </div>
+                                <div className="p-6 space-y-8">
+                                    {messages.length === 0 ? (
+                                        <div className="h-full flex flex-col items-center justify-center pt-20 text-center opacity-40">
+                                            <IconBrain className="w-12 h-12 mb-4 text-zinc-500" />
+                                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Co-Author Initialized</p>
+                                            <p className="text-[9px] mt-2 text-zinc-600 max-w-[200px]">Send a message to begin your creative journey.</p>
                                         </div>
-                                    ))}
+                                    ) : (
+                                        messages.map((msg, idx) => (
+                                            <div key={msg.id} className="animate-fade-in">
+                                                <div className="flex items-center gap-3 mb-3">
+                                                    <Badge className={cn(
+                                                        "px-2 py-0.5 text-[8px] font-black uppercase tracking-widest rounded-sm border-none shadow-sm",
+                                                        msg.role === 'user' ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-100 text-zinc-950'
+                                                    )}>
+                                                        {msg.role === 'user' ? 'Author' : 'Co-Author'}
+                                                    </Badge>
+                                                    {msg.role === 'ai' && msg.isStreaming && (
+                                                        <div className="flex gap-1">
+                                                            <div className="w-1 h-1 rounded-full bg-zinc-500 animate-pulse" />
+                                                            <div className="w-1 h-1 rounded-full bg-zinc-500 animate-pulse delay-75" />
+                                                            <div className="w-1 h-1 rounded-full bg-zinc-500 animate-pulse delay-150" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className={cn(
+                                                    "text-[13px] leading-relaxed font-medium whitespace-pre-wrap selection:bg-zinc-100 selection:text-zinc-950",
+                                                    msg.role === 'user' ? 'text-zinc-100' : 'text-zinc-300'
+                                                )}>
+                                                    {msg.attachments?.map((src, i) => (
+                                                        <img key={i} src={src} className="h-40 w-auto rounded-lg mb-4 border border-zinc-800/50 shadow-2xl" />
+                                                    ))}
+                                                    {msg.text}
+                                                    {msg.isToolUse && (
+                                                        <div className="mt-4 flex items-center gap-2 p-3 bg-zinc-900/50 border border-zinc-800 rounded-xl">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-zinc-100 animate-pulse" />
+                                                            <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-500 italic">Synchronizing E-book Draft...</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
                                     <div ref={messagesEndRef} />
                                 </div>
                             </ScrollArea>
 
-                            {/* Chat Input Interface */}
-                            <div className="p-6 bg-zinc-950 border-t border-zinc-900">
+                            {/* --- PREMIUM INPUT INTERFACE --- */}
+                            <div className="p-6 bg-[#050505] border-t border-zinc-900/50">
                                 {attachmentPreviews.length > 0 && (
-                                    <div className="flex gap-3 mb-4 overflow-x-auto pb-2">
+                                    <div className="flex gap-3 mb-4 overflow-x-auto pb-2 scrollbar-hide">
                                         {attachmentPreviews.map((src, idx) => (
                                             <div key={idx} className="relative group shrink-0">
-                                                <img src={src} className="h-16 w-16 object-cover rounded-lg border border-zinc-800 shadow-lg" />
+                                                <img src={src} className="h-20 w-20 object-cover rounded-xl border border-zinc-800 shadow-2xl" />
                                                 <button 
                                                     onClick={() => removeAttachment(idx)} 
-                                                    className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-zinc-950 rounded-full text-zinc-500 border border-zinc-800 hover:text-zinc-100 transition-all flex items-center justify-center shadow-xl"
+                                                    className="absolute -top-2 -right-2 w-6 h-6 bg-zinc-950 rounded-full text-zinc-500 border border-zinc-800 hover:text-red-500 transition-all flex items-center justify-center shadow-2xl backdrop-blur-md"
                                                 >
-                                                    <IconX className="w-3 h-3" />
+                                                    <IconX className="w-3.5 h-3.5" />
                                                 </button>
                                             </div>
                                         ))}
@@ -447,46 +459,59 @@ const EbookStudioPage: React.FC = () => {
                                 )}
                                 
                                 <div className={cn(
-                                    "bg-zinc-900 border rounded-2xl p-4 flex items-end gap-3 transition-all duration-300",
-                                    isBusy ? 'border-zinc-700 ring-4 ring-zinc-100/5' : 'border-zinc-800 focus-within:border-zinc-700'
+                                    "bg-zinc-900/30 border border-zinc-800/80 rounded-2xl p-2 transition-all duration-500 relative group",
+                                    isBusy ? 'ring-2 ring-white/5 border-zinc-700 bg-zinc-900/50' : 'focus-within:border-zinc-600 focus-within:bg-zinc-900/40'
                                 )}>
-                                    <button 
-                                        onClick={() => fileInputRef.current?.click()} 
-                                        className="w-9 h-9 rounded-lg bg-zinc-950 hover:bg-zinc-800 flex items-center justify-center text-zinc-600 hover:text-zinc-300 transition-all shrink-0 border border-zinc-800"
-                                    >
-                                        <IconPlus className="w-5 h-5" />
-                                    </button>
-                                    <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileSelect} accept="image/*,application/pdf" multiple />
-                                    
-                                    <button
-                                        onMouseDown={startRecording} onMouseUp={stopRecording}
-                                        className={cn(
-                                            "w-9 h-9 rounded-lg flex items-center justify-center transition-all shrink-0",
-                                            isListening ? 'bg-red-500 text-zinc-100 scale-105 shadow-lg' : 'bg-zinc-950 text-zinc-600 hover:text-zinc-300 border border-zinc-800'
-                                        )}
-                                    >
-                                        {isListening ? <IconStop className="w-4 h-4" /> : <IconMic className="w-4 h-4" />}
-                                    </button>
+                                    <div className="flex items-end gap-2">
+                                        <button 
+                                            onClick={() => fileInputRef.current?.click()} 
+                                            className="w-10 h-10 rounded-xl bg-zinc-950/50 hover:bg-zinc-100 hover:text-zinc-950 flex items-center justify-center text-zinc-500 transition-all shrink-0 border border-zinc-800/50 active:scale-95"
+                                            title="Attach File"
+                                        >
+                                            <IconPlus className="w-5 h-5" />
+                                        </button>
+                                        <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileSelect} accept="image/*,application/pdf" multiple />
+                                        
+                                        <button
+                                            onMouseDown={startRecording} onMouseUp={stopRecording}
+                                            className={cn(
+                                                "w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0 border active:scale-95",
+                                                isListening ? 'bg-red-500/20 text-red-500 border-red-500/50 shadow-glow-red animate-pulse' : 'bg-zinc-950/50 text-zinc-500 hover:text-zinc-100 border-zinc-800/50'
+                                            )}
+                                            title="Voice Dictation"
+                                        >
+                                            {isListening ? <IconStop className="w-4 h-4" /> : <IconMic className="w-4 h-4" />}
+                                        </button>
 
-                                    <textarea
-                                        ref={textareaRef} value={input} onChange={e => setInput(e.target.value)}
-                                        placeholder={isListening ? "Listening..." : "Message Co-Author..."}
-                                        className="flex-1 bg-transparent border-none outline-none text-zinc-100 text-xs py-2 max-h-32 resize-none font-medium placeholder:text-zinc-700"
-                                        onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
-                                        disabled={isBusy}
-                                    />
-                                    
-                                    <button 
-                                        onClick={() => handleSendMessage()} 
-                                        disabled={isBusy || (!input.trim() && attachments.length === 0)}
-                                        className="w-9 h-9 rounded-lg bg-zinc-100 text-zinc-950 flex items-center justify-center hover:scale-105 transition-all disabled:opacity-30 shrink-0 shadow-lg"
-                                    >
-                                        {isBusy ? <div className="w-4 h-4 border-2 border-zinc-900/30 border-t-zinc-900 rounded-full animate-spin"></div> : <IconSend className="w-4 h-4" />}
-                                    </button>
+                                        <textarea
+                                            ref={textareaRef} value={input} onChange={e => setInput(e.target.value)}
+                                            placeholder={isListening ? "Listening to author..." : "Message Co-Author..."}
+                                            className="flex-1 bg-transparent border-none outline-none text-[13px] py-3 px-2 max-h-48 min-h-[40px] resize-none font-medium placeholder:text-zinc-600 text-zinc-100 scrollbar-hide"
+                                            onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
+                                            disabled={isBusy}
+                                        />
+                                        
+                                        <button 
+                                            onClick={() => handleSendMessage()} 
+                                            disabled={isBusy || (!input.trim() && attachments.length === 0)}
+                                            className={cn(
+                                                "w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0 shadow-2xl active:scale-90",
+                                                (input.trim() || attachments.length > 0) 
+                                                    ? 'bg-zinc-100 text-zinc-950 hover:bg-white hover:scale-105' 
+                                                    : 'bg-zinc-800 text-zinc-600 opacity-50'
+                                            )}
+                                        >
+                                            {isBusy ? <div className="w-4 h-4 border-2 border-zinc-900/30 border-t-zinc-900 rounded-full animate-spin"></div> : <IconSend className="w-4 h-4" />}
+                                        </button>
+                                    </div>
                                 </div>
-                                <div className="flex justify-between items-center mt-4 px-2">
-                                    <span className="text-[8px] font-bold uppercase tracking-widest text-zinc-600">Secure Environment</span>
-                                    <span className="text-[8px] font-bold uppercase tracking-widest text-zinc-700 tabular-nums">{activePage.content.length} chars</span>
+                                
+                                <div className="flex justify-between items-center mt-4 px-1">
+                                    <div className="flex items-center gap-2">
+                                        <span className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
+                                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-zinc-600">Secure Uplink</span>
+                                    </div>
+                                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-zinc-700 tabular-nums">{activePage.content.length} CHARS</span>
                                 </div>
                             </div>
                         </>
