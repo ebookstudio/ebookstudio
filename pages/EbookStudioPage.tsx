@@ -389,6 +389,29 @@ const EbookStudioPage: React.FC = () => {
                 </div>
 
                 <div className="flex-1 overflow-hidden relative flex flex-col bg-[#050505]">
+                    <div className="p-4 border-b border-zinc-900/30 flex justify-center">
+                        <div className="flex bg-zinc-900/50 p-1 rounded-lg border border-zinc-800/50">
+                            <button 
+                                onClick={() => setLeftTab('chat')}
+                                className={cn(
+                                    "px-4 py-1.5 rounded-md text-[9px] font-bold uppercase tracking-widest transition-all",
+                                    leftTab === 'chat' ? "bg-zinc-100 text-zinc-950 shadow-lg" : "text-zinc-500 hover:text-zinc-300"
+                                )}
+                            >
+                                Intelligence
+                            </button>
+                            <button 
+                                onClick={() => setLeftTab('outline')}
+                                className={cn(
+                                    "px-4 py-1.5 rounded-md text-[9px] font-bold uppercase tracking-widest transition-all",
+                                    leftTab === 'outline' ? "bg-zinc-100 text-zinc-950 shadow-lg" : "text-zinc-500 hover:text-zinc-300"
+                                )}
+                            >
+                                Structure
+                            </button>
+                        </div>
+                    </div>
+                    
                     {leftTab === 'chat' && (
                         <>
                             <ScrollArea className="flex-1">
