@@ -128,7 +128,7 @@ const StorePage: React.FC = () => {
         {/* --- PREMIUM BOOK DETAIL DIALOG --- */}
         <Dialog open={!!selectedBook} onOpenChange={(open) => !open && setSelectedBook(null)}>
             {selectedBook && (
-                <DialogContent className="max-w-6xl p-0 bg-zinc-950 border border-white/5 rounded-3xl overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.8)] outline-none">
+                <DialogContent className="max-w-6xl sm:max-w-6xl p-0 bg-zinc-950 border border-white/5 rounded-3xl overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.8)] outline-none">
                     <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[600px] lg:h-[750px]">
                         
                         {/* Left Column: Cinematic Visual Area */}
