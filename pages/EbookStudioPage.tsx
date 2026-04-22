@@ -412,168 +412,170 @@ const EbookStudioPage: React.FC = () => {
                         </div>
                     </div>
                     
-                    {leftTab === 'chat' && (
-                        <>
-                            <ScrollArea className="flex-1">
-                                <div className="p-6 space-y-8">
-                                    {messages.length === 0 ? (
-                                        <div className="h-full flex flex-col items-center justify-center pt-20 text-center opacity-40">
-                                            <IconBrain className="w-12 h-12 mb-4 text-zinc-500" />
-                                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Co-Author Initialized</p>
-                                            <p className="text-[9px] mt-2 text-zinc-600 max-w-[200px]">Send a message to begin your creative journey.</p>
-                                        </div>
-                                    ) : (
-                                        messages.map((msg, idx) => (
-                                            <div key={msg.id} className="animate-fade-in">
-                                                <div className="flex items-center gap-3 mb-3">
-                                                    <Badge className={cn(
-                                                        "px-2 py-0.5 text-[8px] font-black uppercase tracking-widest rounded-sm border-none shadow-sm",
-                                                        msg.role === 'user' ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-100 text-zinc-950'
-                                                    )}>
-                                                        {msg.role === 'user' ? 'Author' : 'Co-Author'}
-                                                    </Badge>
-                                                    {msg.role === 'ai' && msg.isStreaming && (
-                                                        <div className="flex gap-1">
-                                                            <div className="w-1 h-1 rounded-full bg-zinc-500 animate-pulse" />
-                                                            <div className="w-1 h-1 rounded-full bg-zinc-500 animate-pulse delay-75" />
-                                                            <div className="w-1 h-1 rounded-full bg-zinc-500 animate-pulse delay-150" />
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div className={cn(
-                                                    "text-[13px] leading-relaxed font-medium whitespace-pre-wrap selection:bg-zinc-100 selection:text-zinc-950",
-                                                    msg.role === 'user' ? 'text-zinc-100' : 'text-zinc-300'
-                                                )}>
-                                                    {msg.attachments?.map((src, i) => (
-                                                        <img key={i} src={src} className="h-40 w-auto rounded-lg mb-4 border border-zinc-800/50 shadow-2xl" />
-                                                    ))}
-                                                    {msg.text}
-                                                    {msg.isToolUse && (
-                                                        <div className="mt-4 flex items-center gap-2 p-3 bg-zinc-900/50 border border-zinc-800 rounded-xl">
-                                                            <div className="w-1.5 h-1.5 rounded-full bg-zinc-100 animate-pulse" />
-                                                            <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-500 italic">Synchronizing E-book Draft...</span>
-                                                        </div>
-                                                    )}
-                                                </div>
+                    <div className="flex-1 flex flex-col overflow-hidden">
+                        {leftTab === 'chat' && (
+                            <>
+                                <ScrollArea className="flex-1">
+                                    <div className="p-6 space-y-8">
+                                        {messages.length === 0 ? (
+                                            <div className="flex flex-col items-center justify-center py-20 text-center opacity-40">
+                                                <IconBrain className="w-12 h-12 mb-4 text-zinc-500" />
+                                                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Co-Author Initialized</p>
+                                                <p className="text-[9px] mt-2 text-zinc-600 max-w-[200px]">Send a message to begin your creative journey.</p>
                                             </div>
-                                        ))
+                                        ) : (
+                                            messages.map((msg, idx) => (
+                                                <div key={msg.id} className="animate-fade-in">
+                                                    <div className="flex items-center gap-3 mb-3">
+                                                        <Badge className={cn(
+                                                            "px-2 py-0.5 text-[8px] font-black uppercase tracking-widest rounded-sm border-none shadow-sm",
+                                                            msg.role === 'user' ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-100 text-zinc-950'
+                                                        )}>
+                                                            {msg.role === 'user' ? 'Author' : 'Co-Author'}
+                                                        </Badge>
+                                                        {msg.role === 'ai' && msg.isStreaming && (
+                                                            <div className="flex gap-1">
+                                                                <div className="w-1 h-1 rounded-full bg-zinc-500 animate-pulse" />
+                                                                <div className="w-1 h-1 rounded-full bg-zinc-500 animate-pulse delay-75" />
+                                                                <div className="w-1 h-1 rounded-full bg-zinc-500 animate-pulse delay-150" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className={cn(
+                                                        "text-[13px] leading-relaxed font-medium whitespace-pre-wrap selection:bg-zinc-100 selection:text-zinc-950",
+                                                        msg.role === 'user' ? 'text-zinc-100' : 'text-zinc-300'
+                                                    )}>
+                                                        {msg.attachments?.map((src, i) => (
+                                                            <img key={i} src={src} className="h-40 w-auto rounded-lg mb-4 border border-zinc-800/50 shadow-2xl" />
+                                                        ))}
+                                                        {msg.text}
+                                                        {msg.isToolUse && (
+                                                            <div className="mt-4 flex items-center gap-2 p-3 bg-zinc-900/50 border border-zinc-800 rounded-xl">
+                                                                <div className="w-1.5 h-1.5 rounded-full bg-zinc-100 animate-pulse" />
+                                                                <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-500 italic">Synchronizing E-book Draft...</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )}
+                                        <div ref={messagesEndRef} />
+                                    </div>
+                                </ScrollArea>
+
+                                {/* --- PREMIUM INPUT INTERFACE --- */}
+                                <div className="p-6 bg-[#050505] border-t border-zinc-900/50 mt-auto">
+                                    {attachmentPreviews.length > 0 && (
+                                        <div className="flex gap-3 mb-4 overflow-x-auto pb-2 scrollbar-hide">
+                                            {attachmentPreviews.map((src, idx) => (
+                                                <div key={idx} className="relative group shrink-0">
+                                                    <img src={src} className="h-20 w-20 object-cover rounded-xl border border-zinc-800 shadow-2xl" />
+                                                    <button 
+                                                        onClick={() => removeAttachment(idx)} 
+                                                        className="absolute -top-2 -right-2 w-6 h-6 bg-zinc-950 rounded-full text-zinc-500 border border-zinc-800 hover:text-red-500 transition-all flex items-center justify-center shadow-2xl backdrop-blur-md"
+                                                    >
+                                                        <IconX className="w-3.5 h-3.5" />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
                                     )}
-                                    <div ref={messagesEndRef} />
+                                    
+                                    <div className={cn(
+                                        "bg-zinc-900/30 border border-zinc-800/80 rounded-2xl p-2 transition-all duration-500 relative group",
+                                        isBusy ? 'ring-2 ring-white/5 border-zinc-700 bg-zinc-900/50' : 'focus-within:border-zinc-600 focus-within:bg-zinc-900/40'
+                                    )}>
+                                        <div className="flex items-end gap-2">
+                                            <button 
+                                                onClick={() => fileInputRef.current?.click()} 
+                                                className="w-10 h-10 rounded-xl bg-zinc-950/50 hover:bg-zinc-100 hover:text-zinc-950 flex items-center justify-center text-zinc-500 transition-all shrink-0 border border-zinc-800/50 active:scale-95"
+                                                title="Attach File"
+                                            >
+                                                <IconPlus className="w-5 h-5" />
+                                            </button>
+                                            <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileSelect} accept="image/*,application/pdf" multiple />
+                                            
+                                            <button
+                                                onMouseDown={startRecording} onMouseUp={stopRecording}
+                                                className={cn(
+                                                    "w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0 border active:scale-95",
+                                                    isListening ? 'bg-red-500/20 text-red-500 border-red-500/50 shadow-glow-red animate-pulse' : 'bg-zinc-950/50 text-zinc-500 hover:text-zinc-100 border-zinc-800/50'
+                                                )}
+                                                title="Voice Dictation"
+                                            >
+                                                {isListening ? <IconStop className="w-4 h-4" /> : <IconMic className="w-4 h-4" />}
+                                            </button>
+
+                                            <textarea
+                                                ref={textareaRef} value={input} onChange={e => setInput(e.target.value)}
+                                                placeholder={isListening ? "Listening to author..." : "Message Co-Author..."}
+                                                className="flex-1 bg-transparent border-none outline-none text-[13px] py-3 px-2 max-h-48 min-h-[40px] resize-none font-medium placeholder:text-zinc-600 text-zinc-100 scrollbar-hide"
+                                                onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
+                                                disabled={isBusy}
+                                            />
+                                            
+                                            <button 
+                                                onClick={() => handleSendMessage()} 
+                                                disabled={isBusy || (!input.trim() && attachments.length === 0)}
+                                                className={cn(
+                                                    "w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0 shadow-2xl active:scale-90",
+                                                    (input.trim() || attachments.length > 0) 
+                                                        ? 'bg-zinc-100 text-zinc-950 hover:bg-white hover:scale-105' 
+                                                        : 'bg-zinc-800 text-zinc-600 opacity-50'
+                                                )}
+                                            >
+                                                {isBusy ? <div className="w-4 h-4 border-2 border-zinc-900/30 border-t-zinc-900 rounded-full animate-spin"></div> : <IconSend className="w-4 h-4" />}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="flex justify-between items-center mt-4 px-1">
+                                        <div className="flex items-center gap-2">
+                                            <span className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
+                                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-zinc-600">Secure Uplink</span>
+                                        </div>
+                                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-zinc-700 tabular-nums">{activePage.content.length} CHARS</span>
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
+                        {leftTab === 'outline' && (
+                            <ScrollArea className="flex-1 p-6">
+                                <div className="space-y-4">
+                                    {pages.map((p, idx) => (
+                                        <button
+                                            key={p.id} onClick={() => setActivePageId(p.id)}
+                                            className={cn(
+                                                "w-full text-left p-6 rounded-2xl border transition-all group relative overflow-hidden",
+                                                activePageId === p.id 
+                                                    ? "bg-zinc-900 border-zinc-700 text-zinc-100 shadow-xl" 
+                                                    : "border-transparent text-zinc-600 hover:bg-zinc-900/50"
+                                            )}
+                                        >
+                                            <div className="flex items-center justify-between mb-2">
+                                                <span className="text-[8px] font-bold uppercase tracking-widest opacity-40">Chapter {idx + 1}</span>
+                                                {activePageId === p.id && <div className="w-1.5 h-1.5 rounded-full bg-zinc-100 shadow-[0_0_10px_rgba(255,255,255,0.3)]" />}
+                                            </div>
+                                            <span className="text-sm font-bold truncate block tracking-tight">{p.title}</span>
+                                        </button>
+                                    ))}
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => {
+                                            const newId = Date.now().toString();
+                                            setPages([...pages, { id: newId, title: 'New Chapter', content: '', pageNumber: pages.length + 1 }]);
+                                            setActivePageId(newId);
+                                        }}
+                                        className="w-full h-16 border-dashed border-zinc-800 text-zinc-700 hover:text-zinc-100 rounded-2xl mt-4 flex items-center justify-center gap-3 transition-all hover:border-zinc-700 bg-transparent text-[9px] font-bold uppercase tracking-widest"
+                                    >
+                                        <IconPlus className="w-4 h-4" /> 
+                                        <span>Add Chapter</span>
+                                    </Button>
                                 </div>
                             </ScrollArea>
-
-                            {/* --- PREMIUM INPUT INTERFACE --- */}
-                            <div className="p-6 bg-[#050505] border-t border-zinc-900/50">
-                                {attachmentPreviews.length > 0 && (
-                                    <div className="flex gap-3 mb-4 overflow-x-auto pb-2 scrollbar-hide">
-                                        {attachmentPreviews.map((src, idx) => (
-                                            <div key={idx} className="relative group shrink-0">
-                                                <img src={src} className="h-20 w-20 object-cover rounded-xl border border-zinc-800 shadow-2xl" />
-                                                <button 
-                                                    onClick={() => removeAttachment(idx)} 
-                                                    className="absolute -top-2 -right-2 w-6 h-6 bg-zinc-950 rounded-full text-zinc-500 border border-zinc-800 hover:text-red-500 transition-all flex items-center justify-center shadow-2xl backdrop-blur-md"
-                                                >
-                                                    <IconX className="w-3.5 h-3.5" />
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                                
-                                <div className={cn(
-                                    "bg-zinc-900/30 border border-zinc-800/80 rounded-2xl p-2 transition-all duration-500 relative group",
-                                    isBusy ? 'ring-2 ring-white/5 border-zinc-700 bg-zinc-900/50' : 'focus-within:border-zinc-600 focus-within:bg-zinc-900/40'
-                                )}>
-                                    <div className="flex items-end gap-2">
-                                        <button 
-                                            onClick={() => fileInputRef.current?.click()} 
-                                            className="w-10 h-10 rounded-xl bg-zinc-950/50 hover:bg-zinc-100 hover:text-zinc-950 flex items-center justify-center text-zinc-500 transition-all shrink-0 border border-zinc-800/50 active:scale-95"
-                                            title="Attach File"
-                                        >
-                                            <IconPlus className="w-5 h-5" />
-                                        </button>
-                                        <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileSelect} accept="image/*,application/pdf" multiple />
-                                        
-                                        <button
-                                            onMouseDown={startRecording} onMouseUp={stopRecording}
-                                            className={cn(
-                                                "w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0 border active:scale-95",
-                                                isListening ? 'bg-red-500/20 text-red-500 border-red-500/50 shadow-glow-red animate-pulse' : 'bg-zinc-950/50 text-zinc-500 hover:text-zinc-100 border-zinc-800/50'
-                                            )}
-                                            title="Voice Dictation"
-                                        >
-                                            {isListening ? <IconStop className="w-4 h-4" /> : <IconMic className="w-4 h-4" />}
-                                        </button>
-
-                                        <textarea
-                                            ref={textareaRef} value={input} onChange={e => setInput(e.target.value)}
-                                            placeholder={isListening ? "Listening to author..." : "Message Co-Author..."}
-                                            className="flex-1 bg-transparent border-none outline-none text-[13px] py-3 px-2 max-h-48 min-h-[40px] resize-none font-medium placeholder:text-zinc-600 text-zinc-100 scrollbar-hide"
-                                            onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
-                                            disabled={isBusy}
-                                        />
-                                        
-                                        <button 
-                                            onClick={() => handleSendMessage()} 
-                                            disabled={isBusy || (!input.trim() && attachments.length === 0)}
-                                            className={cn(
-                                                "w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0 shadow-2xl active:scale-90",
-                                                (input.trim() || attachments.length > 0) 
-                                                    ? 'bg-zinc-100 text-zinc-950 hover:bg-white hover:scale-105' 
-                                                    : 'bg-zinc-800 text-zinc-600 opacity-50'
-                                            )}
-                                        >
-                                            {isBusy ? <div className="w-4 h-4 border-2 border-zinc-900/30 border-t-zinc-900 rounded-full animate-spin"></div> : <IconSend className="w-4 h-4" />}
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <div className="flex justify-between items-center mt-4 px-1">
-                                    <div className="flex items-center gap-2">
-                                        <span className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
-                                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-zinc-600">Secure Uplink</span>
-                                    </div>
-                                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-zinc-700 tabular-nums">{activePage.content.length} CHARS</span>
-                                </div>
-                            </div>
-                        </>
-                    )}
-
-                    {leftTab === 'outline' && (
-                         <ScrollArea className="flex-1 p-6">
-                             <div className="space-y-4">
-                                 {pages.map((p, idx) => (
-                                     <button
-                                        key={p.id} onClick={() => setActivePageId(p.id)}
-                                        className={cn(
-                                            "w-full text-left p-6 rounded-2xl border transition-all group relative overflow-hidden",
-                                            activePageId === p.id 
-                                                ? "bg-zinc-900 border-zinc-700 text-zinc-100 shadow-xl" 
-                                                : "border-transparent text-zinc-600 hover:bg-zinc-900/50"
-                                        )}
-                                     >
-                                         <div className="flex items-center justify-between mb-2">
-                                             <span className="text-[8px] font-bold uppercase tracking-widest opacity-40">Chapter {idx + 1}</span>
-                                             {activePageId === p.id && <div className="w-1.5 h-1.5 rounded-full bg-zinc-100 shadow-[0_0_10px_rgba(255,255,255,0.3)]" />}
-                                         </div>
-                                         <span className="text-sm font-bold truncate block tracking-tight">{p.title}</span>
-                                     </button>
-                                 ))}
-                                 <Button
-                                    variant="outline"
-                                    onClick={() => {
-                                        const newId = Date.now().toString();
-                                        setPages([...pages, { id: newId, title: 'New Chapter', content: '', pageNumber: pages.length + 1 }]);
-                                        setActivePageId(newId);
-                                    }}
-                                    className="w-full h-16 border-dashed border-zinc-800 text-zinc-700 hover:text-zinc-100 rounded-2xl mt-4 flex items-center justify-center gap-3 transition-all hover:border-zinc-700 bg-transparent text-[9px] font-bold uppercase tracking-widest"
-                                 >
-                                     <IconPlus className="w-4 h-4" /> 
-                                     <span>Add Chapter</span>
-                                 </Button>
-                             </div>
-                         </ScrollArea>
-                    )}
+                        )}
+                    </div>
                 </div>
             </aside>
 
