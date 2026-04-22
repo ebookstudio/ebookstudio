@@ -379,14 +379,13 @@ const EbookStudioPage: React.FC = () => {
         <div className="flex flex-1 overflow-hidden relative">
             
             {/* --- STUDIO SIDEBAR --- */}
-            <aside className="hidden lg:flex w-[380px] bg-zinc-950 border-r border-zinc-900 flex-col z-20">
-                <div className="p-4 border-b border-zinc-900">
-                    <Tabs value={leftTab} onValueChange={(v: any) => setLeftTab(v)}>
-                        <TabsList className="w-full bg-zinc-900/50 h-10 p-1 rounded-lg border border-zinc-800">
-                            <TabsTrigger value="chat" className="flex-1 rounded-md text-[9px] font-bold uppercase tracking-widest data-[state=active]:bg-zinc-100 data-[state=active]:text-zinc-950 transition-all">Co-Author</TabsTrigger>
-                            <TabsTrigger value="outline" className="flex-1 rounded-md text-[9px] font-bold uppercase tracking-widest data-[state=active]:bg-zinc-100 data-[state=active]:text-zinc-950 transition-all">Outline</TabsTrigger>
-                        </TabsList>
-                    </Tabs>
+            <aside className="hidden lg:flex w-[380px] bg-zinc-950 border-r border-zinc-900/50 flex-col z-20 shadow-[20px_0_40px_rgba(0,0,0,0.3)]">
+                <div className="h-14 border-b border-zinc-900/50 flex items-center justify-between px-6 bg-zinc-950/50 backdrop-blur-xl">
+                    <div className="flex items-center gap-3">
+                         <div className="w-2 h-2 rounded-full bg-zinc-100 shadow-[0_0_8px_rgba(255,255,255,0.4)] animate-pulse" />
+                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-100">Studio Intelligence</span>
+                    </div>
+                    <Badge variant="outline" className="bg-zinc-900/50 border-zinc-800 text-zinc-500 text-[8px] font-bold uppercase tracking-widest px-2 py-0.5">v4.0.2</Badge>
                 </div>
 
                 <div className="flex-1 overflow-hidden relative flex flex-col bg-[#050505]">
