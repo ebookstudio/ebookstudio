@@ -356,11 +356,11 @@ const AIEbookCreatorWizard: React.FC = ({ onComplete, onCancel }) => {
                                 <div className="w-full bg-zinc-950 border border-border rounded-xl p-6 text-left space-y-3">
                                     <p className="text-[9px] font-bold text-zinc-700 uppercase tracking-widest">Generation Status</p>
                                     <div className="space-y-1">
-                                        <p className="text-[9px] font-mono text-zinc-400">> System ready.</p>
-                                        {generationProgress > 10 && <p className="text-[9px] font-mono text-zinc-600">> Analyzing document structure...</p>}
-                                        {generationProgress > 30 && <p className="text-[9px] font-mono text-zinc-600">> Drafting core chapters...</p>}
-                                        {generationProgress > 70 && <p className="text-[9px] font-mono text-zinc-600">> Finalizing typographic rules...</p>}
-                                        {generationProgress === 100 && <p className="text-[9px] font-mono text-zinc-300">> Process complete.</p>}
+                                        <p className="text-[9px] font-mono text-zinc-400">&gt; System ready.</p>
+                                        {generationProgress > 10 && <p className="text-[9px] font-mono text-zinc-600">&gt; Analyzing document structure...</p>}
+                                        {generationProgress > 30 && <p className="text-[9px] font-mono text-zinc-600">&gt; Drafting core chapters...</p>}
+                                        {generationProgress > 70 && <p className="text-[9px] font-mono text-zinc-600">&gt; Finalizing typographic rules...</p>}
+                                        {generationProgress === 100 && <p className="text-[9px] font-mono text-zinc-300">&gt; Process complete.</p>}
                                     </div>
                                 </div>
                             </div>

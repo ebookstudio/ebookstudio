@@ -1,5 +1,9 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+
+export const getAppBaseUrl = () => {
+    return window.location.origin;
+};
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';

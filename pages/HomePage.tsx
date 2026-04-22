@@ -12,10 +12,10 @@ import { EBook } from '../types';
 const { useNavigate } = ReactRouterDOM as any;
 
 const MOCK_BOOKS: EBook[] = [
-    { id: '1', title: "The Silent Garden", author: "Elena Voss", price: 1299, genre: "Fiction", coverImageUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&auto=format", description: "A journey through the hidden whispers of nature.", publicationDate: "2026", content: "" },
-    { id: '2', title: "Modern Structures", author: "Marcus Chen", price: 1999, genre: "Design", coverImageUrl: "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=800&auto=format", description: "The intersection of biological intelligence and digital form.", publicationDate: "2026", content: "" },
-    { id: '3', title: "The Perception Shift", author: "Aria Thorne", price: 999, genre: "Philosophy", coverImageUrl: "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=800&auto=format", description: "Exploring the boundaries of perception in the digital age.", publicationDate: "2026", content: "" },
-    { id: '4', title: "Zero to Unicorn", author: "Sophia Lin", price: 2499, genre: "Business", coverImageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format", description: "Scalable strategies for the next generation of founders.", publicationDate: "2026", content: "" },
+    { id: '1', title: "The Silent Garden", author: "Elena Voss", price: 1299, genre: "Fiction", coverImageUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&auto=format", description: "A journey through the hidden whispers of nature.", publicationDate: "2026", sellerId: "system" },
+    { id: '2', title: "Modern Structures", author: "Marcus Chen", price: 1999, genre: "Design", coverImageUrl: "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=800&auto=format", description: "The intersection of biological intelligence and digital form.", publicationDate: "2026", sellerId: "system" },
+    { id: '3', title: "The Perception Shift", author: "Aria Thorne", price: 999, genre: "Philosophy", coverImageUrl: "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=800&auto=format", description: "Exploring the boundaries of perception in the digital age.", publicationDate: "2026", sellerId: "system" },
+    { id: '4', title: "Zero to Unicorn", author: "Sophia Lin", price: 2499, genre: "Business", coverImageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format", description: "Scalable strategies for the next generation of founders.", publicationDate: "2026", sellerId: "system" },
 ];
 
 const HomePage: React.FC = () => {

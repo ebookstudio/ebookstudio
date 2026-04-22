@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { EBook, GeneratedImage, UserType } from '../../types';
 import AIPricingOptimizer from '../AI/AIPricingOptimizer';
 import AICoverGenerator from '../AI/AICoverGenerator';
-import { IconUpload, IconWallet, IconRocket, IconSparkles, IconCheck, IconBook } from '../../constants';
+import { IconUpload, IconWallet, IconRocket, IconSparkles, IconCheck, IconBook, IconX } from '../../constants';
 import { useAppContext } from '../../contexts/AppContext';
 import { analyzePdfContent } from '../../services/aiService';
 import Spinner from '../Spinner';

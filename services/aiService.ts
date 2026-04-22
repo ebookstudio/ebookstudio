@@ -7,7 +7,7 @@ const OPENROUTER_MODEL = "anthropic/claude-3.5-sonnet:beta"; // Top tier creativ
 const FALLBACK_MODEL = "google/gemini-2.0-flash-exp:free";
 
 // Lazy initialization for Gemini
-let genAI: GoogleGenAI | null = null;
+let genAI: any = null;
 
 const getOpenRouterKey = () => import.meta.env.VITE_OPENROUTER_API_KEY || "";
 const getGeminiKey = () => import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.VITE_API_KEY || "";
@@ -195,4 +195,8 @@ export const createStudioSession = (initialContext: string): any => {
             })();
         }
     };
+};
+export const transcribeAudio = async (audioBase64: string, mimeType: string): Promise<string> => {
+    console.log("Audio transcription requested", mimeType);
+    return "Audio transcription is currently in maintenance mode.";
 };

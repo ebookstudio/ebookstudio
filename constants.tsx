@@ -510,3 +510,11 @@ export const IconFileText = (props: React.SVGProps<SVGSVGElement>) => (
     <polyline points="10 9 9 9 8 9"></polyline>
   </svg>
 );
+export const IconPenTip = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M9 7L19 17" />
+    <path d="M21 11l-8-8c-.78-.78-2.05-.78-2.83 0l-1.41 1.41L12 8l-2 2-4-4-1.41 1.41c-.78.78-.78 2.05 0 2.83l8 8" />
+    <path d="M21 11l-5 5" />
+    <path d="M11 21l.405-.405c.78-.78.78-2.05 0-2.83l-1.41-1.41L6 20l-1 1" />
+  </svg>
+);

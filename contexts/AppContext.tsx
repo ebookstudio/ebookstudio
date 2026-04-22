@@ -24,7 +24,7 @@ const defaultAppContext: AppContextType = {
   allBooks: [],
   addCreatedBook: () => {},
   updateEBook: () => {}, 
-  handleGoogleLogin: () => {},
+  handleGoogleLogin: async () => false,
   handleEmailLogin: async () => ({ success: false }),
   upgradeToSeller: () => {},
   verifyUser: () => {},
