@@ -125,63 +125,94 @@ const StorePage: React.FC = () => {
             </div>
         )}
 
-        {/* --- BOOK DETAIL DIALOG --- */}
+        {/* --- PREMIUM BOOK DETAIL DIALOG --- */}
         <Dialog open={!!selectedBook} onOpenChange={(open) => !open && setSelectedBook(null)}>
             {selectedBook && (
-                <DialogContent className="max-w-5xl p-0 bg-zinc-950 border border-border rounded-xl overflow-hidden shadow-2xl">
-                    <div className="grid grid-cols-1 lg:grid-cols-12 h-full lg:h-[700px]">
-                        <div className="lg:col-span-5 bg-zinc-900 p-12 lg:p-16 flex items-center justify-center border-r border-border">
-                            <img 
-                                src={selectedBook.coverImageUrl} 
-                                alt={selectedBook.title} 
-                                className="w-full max-w-[320px] h-auto rounded-lg shadow-2xl border border-border"
-                            />
+                <DialogContent className="max-w-6xl p-0 bg-zinc-950 border border-white/5 rounded-3xl overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.8)] outline-none">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[600px] lg:h-[750px]">
+                        
+                        {/* Left Column: Cinematic Visual Area */}
+                        <div className="lg:col-span-5 bg-[#080808] relative flex items-center justify-center p-12 overflow-hidden border-r border-zinc-900">
+                             {/* Ambient Glow Background */}
+                             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] bg-zinc-100/[0.03] blur-[120px] rounded-full pointer-events-none" />
+                             
+                             <div className="relative group perspective-1000">
+                                <img 
+                                    src={selectedBook.coverImageUrl} 
+                                    alt={selectedBook.title} 
+                                    className="w-full max-w-[340px] h-auto rounded-lg shadow-[0_40px_80px_rgba(0,0,0,0.8)] border border-zinc-800 transition-transform duration-700 group-hover:scale-105"
+                                />
+                                {/* Bottom Reflection Effect */}
+                                <div className="absolute -bottom-12 left-0 right-0 h-12 bg-gradient-to-t from-transparent to-zinc-950/20 blur-xl opacity-40 scale-x-90" />
+                             </div>
+
+                             <div className="absolute bottom-8 left-10 flex items-center gap-3">
+                                 <div className="w-1.5 h-1.5 rounded-full bg-zinc-600" />
+                                 <span className="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-600">High Fidelity Asset</span>
+                             </div>
                         </div>
-                        <div className="lg:col-span-7 flex flex-col">
-                            <ScrollArea className="flex-1 p-12 lg:p-16">
-                                <DialogHeader className="mb-12 space-y-6">
-                                    <div className="flex items-center gap-4">
-                                        <Badge variant="outline" className="text-zinc-500 border-zinc-800 px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md">
-                                            {selectedBook.genre}
-                                        </Badge>
-                                        <div className="flex items-center gap-1">
-                                            {[1, 2, 3, 4, 5].map(i => <IconStar key={i} className="w-3 h-3 text-zinc-500" />)}
+
+                        {/* Right Column: Detailed Intelligence Area */}
+                        <div className="lg:col-span-7 flex flex-col bg-[#020202]">
+                            <ScrollArea className="flex-1">
+                                <div className="p-12 lg:p-20 space-y-16">
+                                    <header className="space-y-10">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-4">
+                                                <Badge className="bg-zinc-100 text-zinc-950 px-3 py-1 text-[9px] font-black uppercase tracking-[0.2em] rounded-md border-none shadow-glow-sm">
+                                                    {selectedBook.genre}
+                                                </Badge>
+                                                <div className="w-1 h-1 rounded-full bg-zinc-800" />
+                                                <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Master Edition</span>
+                                            </div>
+                                            <div className="flex items-center gap-1.5">
+                                                {[1, 2, 3, 4, 5].map(i => <IconStar key={i} className="w-3 h-3 text-zinc-400 fill-zinc-400" />)}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <DialogTitle className="text-4xl font-bold tracking-tight text-zinc-100">
-                                            {selectedBook.title}
-                                        </DialogTitle>
-                                        <DialogDescription className="text-xs font-bold uppercase tracking-widest text-zinc-500">
-                                            By {selectedBook.author}
-                                        </DialogDescription>
-                                    </div>
-                                </DialogHeader>
-                                
-                                <div className="space-y-12">
-                                    <div className="space-y-4">
-                                        <h4 className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Description</h4>
-                                        <p className="text-zinc-400 text-sm leading-relaxed">
-                                            {selectedBook.description}
-                                        </p>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="p-6 rounded-lg bg-zinc-900 border border-border">
-                                            <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-2">Published</p>
-                                            <p className="text-zinc-200 font-bold text-sm">{selectedBook.publicationDate}</p>
+
+                                        <div className="space-y-4">
+                                            <h2 className="text-5xl lg:text-6xl font-black tracking-tighter leading-[0.9] text-zinc-100">
+                                                {selectedBook.title}
+                                            </h2>
+                                            <p className="text-[11px] font-black uppercase tracking-[0.4em] text-zinc-500">
+                                                Orchestrated by {selectedBook.author}
+                                            </p>
                                         </div>
-                                        <div className="p-6 rounded-lg bg-zinc-900 border border-border">
-                                            <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-2">Quality</p>
-                                            <p className="text-emerald-500 font-bold text-sm uppercase tracking-wider">Premium Grade</p>
+                                    </header>
+                                    
+                                    <div className="space-y-16">
+                                        <div className="space-y-6">
+                                            <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 flex items-center gap-4">
+                                                <span>Abstract</span>
+                                                <div className="h-px flex-1 bg-zinc-900/50" />
+                                            </h4>
+                                            <p className="text-zinc-400 text-[15px] leading-relaxed font-medium">
+                                                {selectedBook.description}
+                                            </p>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-6">
+                                            <div className="p-8 rounded-2xl bg-zinc-900/40 border border-zinc-800/50 transition-all hover:bg-zinc-900/60 group">
+                                                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4 group-hover:text-zinc-400 transition-colors">Integration Date</p>
+                                                <p className="text-zinc-100 font-bold text-lg tabular-nums">{selectedBook.publicationDate}</p>
+                                            </div>
+                                            <div className="p-8 rounded-2xl bg-zinc-900/40 border border-zinc-800/50 transition-all hover:bg-zinc-900/60 group">
+                                                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4 group-hover:text-zinc-400 transition-colors">Processing Quality</p>
+                                                <p className="text-emerald-400 font-black text-xs uppercase tracking-[0.2em] flex items-center gap-2">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                                                    Neural Optimized
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </ScrollArea>
                             
-                            <div className="p-12 lg:p-16 bg-zinc-900 border-t border-border flex items-center justify-between">
-                                <div className="space-y-1">
-                                    <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">Purchase Price</span>
-                                    <p className="text-3xl font-bold text-zinc-100">${selectedBook.price.toFixed(2)}</p>
+                            {/* Action Bar Footer */}
+                            <div className="p-12 lg:px-20 lg:py-10 bg-[#050505] border-t border-zinc-900 flex items-center justify-between mt-auto">
+                                <div className="space-y-1.5">
+                                    <span className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-600">Access Fee</span>
+                                    <p className="text-4xl font-black text-zinc-100 tracking-tighter">${selectedBook.price.toFixed(2)}</p>
                                 </div>
                                 <Button 
                                     onClick={() => {
@@ -189,10 +220,15 @@ const StorePage: React.FC = () => {
                                         setSelectedBook(null);
                                     }}
                                     disabled={isInCart(selectedBook.id)}
-                                    className="h-12 px-10 rounded-md bg-zinc-100 text-zinc-950 hover:bg-zinc-200 transition-all font-bold text-xs uppercase tracking-widest flex items-center gap-3 shadow-xl"
+                                    className={cn(
+                                        "h-14 px-12 rounded-xl transition-all font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-4 shadow-2xl",
+                                        isInCart(selectedBook.id)
+                                            ? "bg-zinc-900 text-zinc-600 cursor-not-allowed border border-zinc-800"
+                                            : "bg-zinc-100 text-zinc-950 hover:bg-white hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(255,255,255,0.15)]"
+                                    )}
                                 >
                                     {isInCart(selectedBook.id) ? (
-                                        <>In Cart <IconCheck className="w-4 h-4" /></>
+                                        <>Item in Cart <IconCheck className="w-4 h-4" /></>
                                     ) : (
                                         <>Add to Cart <IconArrowRight className="w-4 h-4" /></>
                                     )}
