@@ -325,7 +325,7 @@ const EbookStudioPage: React.FC = () => {
   const lastAiMessage = messages.slice().reverse().find(m => m.role === 'ai');
 
   return (
-    <div className="flex flex-col h-screen bg-zinc-950 text-zinc-100 overflow-hidden selection:bg-zinc-100/10 selection:text-zinc-100 font-sans">
+    <div className="h-screen w-full flex flex-col bg-zinc-950 text-zinc-100 overflow-hidden selection:bg-zinc-100/10 selection:text-zinc-100 font-sans relative z-[100]">
         
         <CinematicWriterOverlay 
             isOpen={isCinematicMode} 
@@ -376,105 +376,118 @@ const EbookStudioPage: React.FC = () => {
             </div>
         </header>
 
-        <div className="flex flex-1 overflow-hidden relative h-[calc(100vh-64px)]">
+        <div className="flex-1 flex overflow-hidden relative min-h-0">
             
-            {/* --- STUDIO SIDEBAR --- */}
-            <aside className="hidden lg:flex w-[380px] bg-zinc-950 border-r border-zinc-900/50 flex-col z-20 shadow-[20px_0_40px_rgba(0,0,0,0.3)] h-full">
-                <div className="h-14 border-b border-zinc-900/50 flex items-center justify-between px-6 bg-zinc-950/50 backdrop-blur-xl shrink-0">
+            {/* --- PREMIUM STUDIO SIDEBAR (FIXED ARCHITECTURE) --- */}
+            <aside className="hidden lg:flex fixed top-16 left-0 bottom-0 w-[380px] bg-zinc-950 border-r border-zinc-900/50 flex-col z-[40] shadow-[20px_0_60px_rgba(0,0,0,0.5)]">
+                
+                {/* Sidebar Header */}
+                <div className="h-14 border-b border-zinc-900/50 flex items-center justify-between px-6 bg-zinc-950/80 backdrop-blur-xl shrink-0 z-20">
                     <div className="flex items-center gap-3">
-                         <div className="w-2 h-2 rounded-full bg-zinc-100 shadow-[0_0_8px_rgba(255,255,255,0.4)] animate-pulse" />
-                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-100">Studio Intelligence</span>
+                         <div className="w-2 h-2 rounded-full bg-zinc-100 shadow-[0_0_12px_rgba(255,255,255,0.6)] animate-pulse" />
+                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-100">Intelligence Unit</span>
                     </div>
-                    <Badge variant="outline" className="bg-zinc-900/50 border-zinc-800 text-zinc-500 text-[8px] font-bold uppercase tracking-widest px-2 py-0.5">v4.0.2</Badge>
+                    <Badge variant="outline" className="bg-zinc-900/50 border-zinc-800 text-zinc-500 text-[8px] font-bold uppercase tracking-[0.2em] px-2 py-0.5">v4.0.2</Badge>
                 </div>
 
-                <div className="flex-1 overflow-hidden relative flex flex-col bg-[#050505]">
-                    <div className="p-4 border-b border-zinc-900/30 flex justify-center shrink-0">
-                        <div className="flex bg-zinc-900/50 p-1 rounded-lg border border-zinc-800/50">
+                {/* Main Sidebar Content Area */}
+                <div className="flex-1 overflow-hidden relative flex flex-col bg-[#020202]">
+                    
+                    {/* Tab Switcher */}
+                    <div className="p-4 border-b border-zinc-900/30 flex justify-center shrink-0 bg-zinc-950/50 z-20">
+                        <div className="flex bg-zinc-900/80 p-1 rounded-xl border border-zinc-800/50 w-full max-w-[280px]">
                             <button 
                                 onClick={() => setLeftTab('chat')}
                                 className={cn(
-                                    "px-4 py-1.5 rounded-md text-[9px] font-bold uppercase tracking-widest transition-all",
-                                    leftTab === 'chat' ? "bg-zinc-100 text-zinc-950 shadow-lg" : "text-zinc-500 hover:text-zinc-300"
+                                    "flex-1 py-2 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-300",
+                                    leftTab === 'chat' ? "bg-zinc-100 text-zinc-950 shadow-[0_0_20px_rgba(255,255,255,0.2)]" : "text-zinc-600 hover:text-zinc-300"
                                 )}
                             >
-                                Intelligence
+                                Co-Author
                             </button>
                             <button 
                                 onClick={() => setLeftTab('outline')}
                                 className={cn(
-                                    "px-4 py-1.5 rounded-md text-[9px] font-bold uppercase tracking-widest transition-all",
-                                    leftTab === 'outline' ? "bg-zinc-100 text-zinc-950 shadow-lg" : "text-zinc-500 hover:text-zinc-300"
+                                    "flex-1 py-2 rounded-lg text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-300",
+                                    leftTab === 'outline' ? "bg-zinc-100 text-zinc-950 shadow-[0_0_20px_rgba(255,255,255,0.2)]" : "text-zinc-600 hover:text-zinc-300"
                                 )}
                             >
-                                Structure
+                                Blueprint
                             </button>
                         </div>
                     </div>
                     
-                    <div className="flex-1 flex flex-col min-h-0">
+                    {/* Content Logic */}
+                    <div className="flex-1 flex flex-col min-h-0 relative">
                         {leftTab === 'chat' && (
-                            <>
-                                <div className="flex-1 overflow-y-auto custom-scrollbar">
-                                    <div className="p-6 space-y-8 pb-10">
+                            <div className="flex flex-col h-full overflow-hidden">
+                                {/* Message History */}
+                                <div className="flex-1 overflow-y-auto custom-scrollbar scroll-smooth">
+                                    <div className="p-6 space-y-10">
                                         {messages.length === 0 ? (
-                                            <div className="flex flex-col items-center justify-center py-20 text-center opacity-40">
-                                                <IconBrain className="w-12 h-12 mb-4 text-zinc-500" />
-                                                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Co-Author Initialized</p>
-                                                <p className="text-[9px] mt-2 text-zinc-600 max-w-[200px]">Send a message to begin your creative journey.</p>
+                                            <div className="flex flex-col items-center justify-center py-32 text-center">
+                                                <div className="w-16 h-16 rounded-3xl bg-zinc-900/50 flex items-center justify-center border border-zinc-800/50 mb-6 shadow-2xl">
+                                                    <IconBrain className="w-8 h-8 text-zinc-600" />
+                                                </div>
+                                                <p className="text-[11px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-2">Neural Link Ready</p>
+                                                <p className="text-[10px] text-zinc-600 max-w-[220px] leading-relaxed">Initiate conversation with your Co-Author to begin the architectural drafting process.</p>
                                             </div>
                                         ) : (
                                             messages.map((msg, idx) => (
-                                                <div key={msg.id} className="animate-fade-in">
-                                                    <div className="flex items-center gap-3 mb-3">
-                                                        <Badge className={cn(
-                                                            "px-2 py-0.5 text-[8px] font-black uppercase tracking-widest rounded-sm border-none shadow-sm",
-                                                            msg.role === 'user' ? 'bg-zinc-800 text-zinc-400' : 'bg-zinc-100 text-zinc-950'
-                                                        )}>
+                                                <div key={msg.id} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                                    <div className="flex items-center gap-3 mb-4">
+                                                        <div className={cn(
+                                                            "w-1 h-4 rounded-full",
+                                                            msg.role === 'user' ? "bg-zinc-700" : "bg-zinc-100 shadow-[0_0_10px_rgba(255,255,255,0.3)]"
+                                                        )} />
+                                                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-500">
                                                             {msg.role === 'user' ? 'Author' : 'Co-Author'}
-                                                        </Badge>
+                                                        </span>
                                                         {msg.role === 'ai' && msg.isStreaming && (
-                                                            <div className="flex gap-1">
-                                                                <div className="w-1 h-1 rounded-full bg-zinc-500 animate-pulse" />
-                                                                <div className="w-1 h-1 rounded-full bg-zinc-500 animate-pulse delay-75" />
-                                                                <div className="w-1 h-1 rounded-full bg-zinc-500 animate-pulse delay-150" />
+                                                            <div className="flex gap-1 items-center ml-2">
+                                                                <span className="w-1 h-1 rounded-full bg-zinc-500 animate-bounce" />
+                                                                <span className="w-1 h-1 rounded-full bg-zinc-500 animate-bounce delay-75" />
+                                                                <span className="w-1 h-1 rounded-full bg-zinc-500 animate-bounce delay-150" />
                                                             </div>
                                                         )}
                                                     </div>
                                                     <div className={cn(
-                                                        "text-[13px] leading-relaxed font-medium whitespace-pre-wrap selection:bg-zinc-100 selection:text-zinc-950",
-                                                        msg.role === 'user' ? 'text-zinc-100' : 'text-zinc-300'
+                                                        "text-[13px] leading-[1.7] font-medium selection:bg-zinc-100 selection:text-zinc-950",
+                                                        msg.role === 'user' ? 'text-zinc-300 pl-4 border-l border-zinc-900' : 'text-zinc-100'
                                                     )}>
                                                         {msg.attachments?.map((src, i) => (
-                                                            <img key={i} src={src} className="h-40 w-auto rounded-lg mb-4 border border-zinc-800/50 shadow-2xl" />
+                                                            <div key={i} className="mb-6 rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl group relative cursor-zoom-in">
+                                                                <img src={src} className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105" />
+                                                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                            </div>
                                                         ))}
-                                                        {msg.text}
+                                                        <div className="whitespace-pre-wrap">{msg.text}</div>
                                                         {msg.isToolUse && (
-                                                            <div className="mt-4 flex items-center gap-2 p-3 bg-zinc-900/50 border border-zinc-800 rounded-xl">
-                                                                <div className="w-1.5 h-1.5 rounded-full bg-zinc-100 animate-pulse" />
-                                                                <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-500 italic">Synchronizing E-book Draft...</span>
+                                                            <div className="mt-6 flex items-center gap-4 p-4 bg-zinc-900/30 border border-zinc-800/50 rounded-2xl backdrop-blur-sm">
+                                                                <div className="w-2 h-2 rounded-full bg-zinc-100 animate-pulse shadow-[0_0_8px_rgba(255,255,255,0.5)]" />
+                                                                <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-500 italic">Executing Architectural Integration...</span>
                                                             </div>
                                                         )}
                                                     </div>
                                                 </div>
                                             ))
                                         )}
-                                        <div ref={messagesEndRef} />
+                                        <div ref={messagesEndRef} className="h-4" />
                                     </div>
                                 </div>
 
-                                {/* --- PREMIUM INPUT INTERFACE --- */}
-                                <div className="p-6 bg-[#050505] border-t border-zinc-900/50 mt-auto shrink-0">
+                                {/* --- PREMIUM INPUT INTERFACE (DOCKED AT BOTTOM) --- */}
+                                <div className="shrink-0 p-6 bg-[#020202] border-t border-zinc-900/80 z-10 shadow-[0_-20px_40px_rgba(0,0,0,0.4)]">
                                     {attachmentPreviews.length > 0 && (
-                                        <div className="flex gap-3 mb-4 overflow-x-auto pb-2 scrollbar-hide">
+                                        <div className="flex gap-4 mb-6 overflow-x-auto pb-2 scrollbar-hide">
                                             {attachmentPreviews.map((src, idx) => (
                                                 <div key={idx} className="relative group shrink-0">
-                                                    <img src={src} className="h-20 w-20 object-cover rounded-xl border border-zinc-800 shadow-2xl" />
+                                                    <img src={src} className="h-20 w-20 object-cover rounded-2xl border border-zinc-800 shadow-2xl transition-all group-hover:border-zinc-500" />
                                                     <button 
                                                         onClick={() => removeAttachment(idx)} 
-                                                        className="absolute -top-2 -right-2 w-6 h-6 bg-zinc-950 rounded-full text-zinc-500 border border-zinc-800 hover:text-red-500 transition-all flex items-center justify-center shadow-2xl backdrop-blur-md"
+                                                        className="absolute -top-2 -right-2 w-7 h-7 bg-zinc-950 rounded-full text-zinc-500 border border-zinc-800 hover:text-red-500 hover:border-red-500/50 transition-all flex items-center justify-center shadow-2xl backdrop-blur-xl z-20"
                                                     >
-                                                        <IconX className="w-3.5 h-3.5" />
+                                                        <IconX className="w-4 h-4" />
                                                     </button>
                                                 </div>
                                             ))}
@@ -482,14 +495,14 @@ const EbookStudioPage: React.FC = () => {
                                     )}
                                     
                                     <div className={cn(
-                                        "bg-zinc-900/30 border border-zinc-800/80 rounded-2xl p-2 transition-all duration-500 relative group",
-                                        isBusy ? 'ring-2 ring-white/5 border-zinc-700 bg-zinc-900/50' : 'focus-within:border-zinc-600 focus-within:bg-zinc-900/40'
+                                        "bg-zinc-900/40 border border-zinc-800/80 rounded-3xl p-2 transition-all duration-700 relative group overflow-hidden",
+                                        isBusy ? 'ring-2 ring-white/10 border-zinc-700 bg-zinc-900/60' : 'focus-within:border-zinc-600 focus-within:bg-zinc-900/50 focus-within:shadow-[0_0_40px_rgba(255,255,255,0.03)]'
                                     )}>
                                         <div className="flex items-end gap-2">
                                             <button 
                                                 onClick={() => fileInputRef.current?.click()} 
-                                                className="w-10 h-10 rounded-xl bg-zinc-950/50 hover:bg-zinc-100 hover:text-zinc-950 flex items-center justify-center text-zinc-500 transition-all shrink-0 border border-zinc-800/50 active:scale-95"
-                                                title="Attach File"
+                                                className="w-11 h-11 rounded-2xl bg-zinc-950/80 hover:bg-zinc-100 hover:text-zinc-950 flex items-center justify-center text-zinc-500 transition-all duration-500 shrink-0 border border-zinc-800/50 active:scale-90"
+                                                title="Attach Asset"
                                             >
                                                 <IconPlus className="w-5 h-5" />
                                             </button>
@@ -498,18 +511,18 @@ const EbookStudioPage: React.FC = () => {
                                             <button
                                                 onMouseDown={startRecording} onMouseUp={stopRecording}
                                                 className={cn(
-                                                    "w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0 border active:scale-95",
-                                                    isListening ? 'bg-red-500/20 text-red-500 border-red-500/50 shadow-glow-red animate-pulse' : 'bg-zinc-950/50 text-zinc-500 hover:text-zinc-100 border-zinc-800/50'
+                                                    "w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-500 shrink-0 border active:scale-90",
+                                                    isListening ? 'bg-red-500/20 text-red-500 border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.3)] animate-pulse' : 'bg-zinc-950/80 text-zinc-500 hover:text-zinc-100 border-zinc-800/50'
                                                 )}
-                                                title="Voice Dictation"
+                                                title="Voice Command"
                                             >
-                                                {isListening ? <IconStop className="w-4 h-4" /> : <IconMic className="w-4 h-4" />}
+                                                {isListening ? <IconStop className="w-5 h-5" /> : <IconMic className="w-5 h-5" />}
                                             </button>
-
+                                            
                                             <textarea
                                                 ref={textareaRef} value={input} onChange={e => setInput(e.target.value)}
-                                                placeholder={isListening ? "Listening to author..." : "Message Co-Author..."}
-                                                className="flex-1 bg-transparent border-none outline-none text-[13px] py-3 px-2 max-h-48 min-h-[40px] resize-none font-medium placeholder:text-zinc-600 text-zinc-100 scrollbar-hide"
+                                                placeholder={isListening ? "Listening..." : "Message Co-Author..."}
+                                                className="flex-1 bg-transparent border-none outline-none text-[14px] py-3.5 px-2 max-h-48 min-h-[44px] resize-none font-medium placeholder:text-zinc-700 text-zinc-100 scrollbar-hide selection:bg-zinc-100 selection:text-zinc-950"
                                                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
                                                 disabled={isBusy}
                                             />
@@ -518,94 +531,115 @@ const EbookStudioPage: React.FC = () => {
                                                 onClick={() => handleSendMessage()} 
                                                 disabled={isBusy || (!input.trim() && attachments.length === 0)}
                                                 className={cn(
-                                                    "w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0 shadow-2xl active:scale-90",
+                                                    "w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-700 shrink-0 shadow-2xl active:scale-90",
                                                     (input.trim() || attachments.length > 0) 
                                                         ? 'bg-zinc-100 text-zinc-950 hover:bg-white hover:scale-105' 
-                                                        : 'bg-zinc-800 text-zinc-600 opacity-50'
+                                                        : 'bg-zinc-800 text-zinc-600 opacity-40 cursor-not-allowed'
                                                 )}
                                             >
-                                                {isBusy ? <div className="w-4 h-4 border-2 border-zinc-900/30 border-t-zinc-900 rounded-full animate-spin"></div> : <IconSend className="w-4 h-4" />}
+                                                {isBusy ? <div className="w-5 h-5 border-2 border-zinc-950/20 border-t-zinc-950 rounded-full animate-spin"></div> : <IconSend className="w-5 h-5" />}
                                             </button>
                                         </div>
                                     </div>
                                     
-                                    <div className="flex justify-between items-center mt-4 px-1">
-                                        <div className="flex items-center gap-2">
-                                            <span className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
-                                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-zinc-600">Secure Uplink</span>
+                                    <div className="flex justify-between items-center mt-4 px-2">
+                                        <div className="flex items-center gap-2.5">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)] animate-pulse" />
+                                            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-600">Secure Neural Link</span>
                                         </div>
-                                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-zinc-700 tabular-nums">{activePage.content.length} CHARS</span>
+                                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-700 tabular-nums">
+                                            {activePage.content.length.toLocaleString()} CHARS
+                                        </span>
                                     </div>
                                 </div>
-                            </>
-                        )}
-
-                        {leftTab === 'outline' && (
-                            <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
-                                <div className="space-y-4">
-                                    {pages.map((p, idx) => (
-                                        <button
-                                            key={p.id} onClick={() => setActivePageId(p.id)}
-                                            className={cn(
-                                                "w-full text-left p-6 rounded-2xl border transition-all group relative overflow-hidden",
-                                                activePageId === p.id 
-                                                    ? "bg-zinc-900 border-zinc-700 text-zinc-100 shadow-xl" 
-                                                    : "border-transparent text-zinc-600 hover:bg-zinc-900/50"
-                                            )}
-                                        >
-                                            <div className="flex items-center justify-between mb-2">
-                                                <span className="text-[8px] font-bold uppercase tracking-widest opacity-40">Chapter {idx + 1}</span>
-                                                {activePageId === p.id && <div className="w-1.5 h-1.5 rounded-full bg-zinc-100 shadow-[0_0_10px_rgba(255,255,255,0.3)]" />}
-                                            </div>
-                                            <span className="text-sm font-bold truncate block tracking-tight">{p.title}</span>
-                                        </button>
-                                    ))}
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => {
-                                            const newId = Date.now().toString();
-                                            setPages([...pages, { id: newId, title: 'New Chapter', content: '', pageNumber: pages.length + 1 }]);
-                                            setActivePageId(newId);
-                                        }}
-                                        className="w-full h-16 border-dashed border-zinc-800 text-zinc-700 hover:text-zinc-100 rounded-2xl mt-4 flex items-center justify-center gap-3 transition-all hover:border-zinc-700 bg-transparent text-[9px] font-bold uppercase tracking-widest"
-                                    >
-                                        <IconPlus className="w-4 h-4" /> 
-                                        <span>Add Chapter</span>
-                                    </Button>
-                                </div>
                             </div>
+                        )}
+                        {leftTab === 'outline' && (
+                             <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
+                                 <div className="flex items-center justify-between mb-10 pl-2">
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Master Blueprint</h3>
+                                    <Button variant="ghost" size="sm" className="h-8 px-4 text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 hover:text-zinc-100 hover:bg-zinc-900 transition-all rounded-xl border border-zinc-900">Sync</Button>
+                                 </div>
+                                 <div className="space-y-3">
+                                     {pages.map((p, idx) => (
+                                         <button 
+                                            key={p.id} 
+                                            onClick={() => setActivePageId(p.id)}
+                                            className={cn(
+                                                "w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-left transition-all duration-500 group relative overflow-hidden",
+                                                activePageId === p.id 
+                                                    ? "bg-zinc-100 text-zinc-950 shadow-[0_20px_40px_rgba(255,255,255,0.1)] translate-x-1" 
+                                                    : "text-zinc-600 hover:text-zinc-300 hover:bg-zinc-900/40"
+                                            )}
+                                         >
+                                             <div className={cn(
+                                                 "text-[10px] font-black opacity-40 group-hover:opacity-100 transition-opacity",
+                                                 activePageId === p.id ? "text-zinc-950" : "text-zinc-700"
+                                             )}>
+                                                 {String(idx + 1).padStart(2, '0')}
+                                             </div>
+                                             <span className="text-[12px] font-black flex-1 truncate tracking-tight">{p.title}</span>
+                                             {activePageId === p.id && <div className="w-2 h-2 rounded-full bg-zinc-950 shadow-[0_0_10px_rgba(0,0,0,0.5)]" />}
+                                         </button>
+                                     ))}
+                                 </div>
+                             </div>
                         )}
                     </div>
                 </div>
             </aside>
 
-            {/* --- STUDIO EDITOR --- */}
-            <main className="flex-1 flex flex-col relative bg-zinc-950">
-                <div className="h-10 bg-zinc-950 border-b border-zinc-900 flex items-center justify-between px-8 shrink-0">
-                     <div className="flex items-center gap-4">
-                         <Badge className="px-2 py-0.5 bg-zinc-900 text-zinc-500 text-[8px] font-bold uppercase tracking-widest border border-zinc-800 rounded">Drafting</Badge>
-                         <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">{activePage.title}</span>
-                     </div>
+            {/* --- STUDIO EDITOR (REPOSITIONED & OFFSET) --- */}
+            <main className="flex-1 flex flex-col min-w-0 bg-zinc-950 relative lg:ml-[380px] z-10">
+                <div className="h-12 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-900/50 flex items-center justify-between px-10 shrink-0 z-20">
                      <div className="flex items-center gap-6">
-                         <div className="flex items-center gap-2 text-[8px] font-bold uppercase tracking-widest text-zinc-700">
-                             <div className={cn("w-1.5 h-1.5 rounded-full", isBusy ? 'bg-zinc-100 animate-pulse' : 'bg-zinc-800')} />
-                             <span>{isBusy ? 'Syncing' : 'Connected'}</span>
+                         <div className="flex items-center gap-3">
+                            <div className="w-1.5 h-1.5 rounded-full bg-zinc-600" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600">Active Node</span>
+                         </div>
+                         <span className="text-[11px] font-bold text-zinc-400 tracking-tight">{activePage.title}</span>
+                     </div>
+                     <div className="flex items-center gap-8">
+                         <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-700">
+                             <div className={cn("w-2 h-2 rounded-full shadow-glow", isBusy ? 'bg-zinc-100 animate-pulse' : 'bg-zinc-800')} />
+                             <span>{isBusy ? 'Processing' : 'Synchronized'}</span>
                          </div>
                      </div>
                 </div>
                 
-                <ScrollArea className="flex-1">
-                    <div className="max-w-3xl mx-auto py-24 px-10">
+                <ScrollArea className="flex-1 custom-scrollbar">
+                    <div className="max-w-4xl mx-auto py-28 px-12">
+                        <div className="mb-20">
+                             <input 
+                                type="text"
+                                value={activePage.title}
+                                onChange={(e) => setPages(prev => prev.map(p => p.id === activePageId ? {...p, title: e.target.value} : p))}
+                                className="w-full bg-transparent border-none outline-none text-5xl font-black tracking-tighter placeholder:text-zinc-900 text-zinc-100 mb-6 focus:ring-0"
+                                placeholder="Blueprint Title..."
+                             />
+                             <div className="flex items-center gap-6 text-[11px] font-black uppercase tracking-[0.3em] text-zinc-700">
+                                 <div className="flex items-center gap-3">
+                                     <IconActivity className="w-4 h-4" />
+                                     <span>Draft v1.0.4</span>
+                                 </div>
+                                 <div className="w-1 h-1 rounded-full bg-zinc-800" />
+                                 <span>{activePage.content.split(/\s+/).filter(Boolean).length.toLocaleString()} Words</span>
+                             </div>
+                        </div>
+
                         <NovelEditor
                             title={activePage.title}
                             onTitleChange={(t) => setPages(prev => prev.map(p => p.id === activePageId ? {...p, title: t} : p))}
                             content={activePage.content}
                             onContentChange={(c) => setPages(prev => prev.map(p => p.id === activePageId ? {...p, content: c} : p))}
-                            onTriggerAI={(p) => handleSendMessage(undefined, `Write content: ${p}`)}
-                            onTriggerImageGen={(p) => handleSendMessage(undefined, `Generate image: ${p}`)}
+                            onTriggerAI={(p) => handleSendMessage(undefined, `Expand architecture: ${p}`)}
+                            onTriggerImageGen={(p) => handleSendMessage(undefined, `Visualize node: ${p}`)}
                         />
                     </div>
                 </ScrollArea>
+                
+                {/* Visual Accent */}
+                <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-zinc-100/[0.02] blur-[150px] rounded-full translate-y-1/2 translate-x-1/2 pointer-events-none" />
             </main>
         </div>
     </div>
