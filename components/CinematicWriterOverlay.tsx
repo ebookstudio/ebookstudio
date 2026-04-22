@@ -61,7 +61,7 @@ const CinematicWriterOverlay: React.FC<CinematicWriterOverlayProps> = ({
         const interval = setInterval(() => {
             setMetrics({
                 tps: Math.floor(Math.random() * 40) + 90, // Varied speed
-                stability: 98 + Math.random() * 2,
+                stability: 99 + Math.random() * 1,
                 sync: Math.min(100, metrics.sync + 2)
             });
         }, 800);
@@ -88,14 +88,14 @@ const CinematicWriterOverlay: React.FC<CinematicWriterOverlayProps> = ({
               return (
                   <div key={idx} className="my-12 w-full flex flex-col items-center">
                       <div className={`
-                          relative w-full max-w-3xl aspect-video rounded-lg overflow-hidden transition-all duration-1000
-                          ${isCurrent ? 'scale-95 opacity-80 blur-sm' : 'scale-100 opacity-100 blur-0 shadow-2xl shadow-indigo-500/10'}
+                          relative w-full max-w-3xl aspect-video rounded-lg overflow-hidden transition-all duration-1000 border border-zinc-900
+                          ${isCurrent ? 'scale-95 opacity-80 blur-sm' : 'scale-100 opacity-100 blur-0 shadow-2xl'}
                       `}>
                           {isCurrent && (
-                              <div className="absolute inset-0 z-10 bg-white/5 backdrop-blur-md flex items-center justify-center border border-white/10">
+                              <div className="absolute inset-0 z-10 bg-zinc-950/80 backdrop-blur-md flex items-center justify-center border border-zinc-100/10">
                                   <div className="flex flex-col items-center gap-3">
-                                      <IconSparkles className="w-6 h-6 text-white animate-spin-slow" />
-                                      <span className="text-[10px] uppercase tracking-[0.3em] text-white/70">Materializing Visual...</span>
+                                      <IconSparkles className="w-5 h-5 text-zinc-100 animate-spin" />
+                                      <span className="text-[9px] uppercase tracking-[0.3em] text-zinc-400 font-bold">Initializing Visual...</span>
                                   </div>
                               </div>
                           )}
@@ -105,11 +105,11 @@ const CinematicWriterOverlay: React.FC<CinematicWriterOverlayProps> = ({
                             className="w-full h-full object-cover animate-fade-in" 
                           />
                           {/* Cinematic Letterbox Bars */}
-                          <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-black/60 to-transparent pointer-events-none"></div>
-                          <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"></div>
+                          <div className="absolute top-0 left-0 right-0 h-10 bg-gradient-to-b from-zinc-950/80 to-transparent pointer-events-none"></div>
+                          <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-zinc-950/80 to-transparent pointer-events-none"></div>
                       </div>
-                      <span className="mt-4 text-[10px] uppercase tracking-widest text-neutral-600 font-medium">
-                          Fig. {idx + 1} — {alt}
+                      <span className="mt-4 text-[9px] uppercase tracking-widest text-zinc-700 font-bold">
+                          Asset Ref. {idx + 1} — {alt}
                       </span>
                   </div>
               );
@@ -119,20 +119,19 @@ const CinematicWriterOverlay: React.FC<CinematicWriterOverlayProps> = ({
           return (
             <div key={idx} className="animate-slide-up">
                 {part.split('\n').map((line, i) => {
-                    if(!line.trim()) return <div key={i} className="h-6"></div>;
+                    if(!line.trim()) return <div key={i} className="h-4"></div>;
                     
                     if (line.startsWith('# ')) 
-                        return <h1 key={i} className="text-4xl md:text-5xl font-serif text-white font-medium mb-8 mt-12 leading-tight tracking-tight">{line.replace('# ', '')}</h1>;
+                        return <h1 key={i} className="text-3xl md:text-4xl font-bold text-zinc-100 mb-6 mt-10 leading-tight tracking-tight uppercase tracking-wider">{line.replace('# ', '')}</h1>;
                     
                     if (line.startsWith('## ')) 
-                        return <h2 key={i} className="text-2xl md:text-3xl font-serif text-white/90 mb-6 mt-10 leading-snug">{line.replace('## ', '')}</h2>;
+                        return <h2 key={i} className="text-xl md:text-2xl font-bold text-zinc-200 mb-4 mt-8 leading-snug">{line.replace('## ', '')}</h2>;
                     
                     // Render Paragraphs
                     return (
-                        <p key={i} className="mb-6 text-lg md:text-xl leading-relaxed text-neutral-300 font-serif font-light tracking-wide mix-blend-screen">
+                        <p key={i} className="mb-4 text-base md:text-lg leading-relaxed text-zinc-400 font-medium tracking-normal">
                             {line.replace(/\*\*(.*?)\*\*/g, (match, p1) => {
-                                // Bold parsing hack for simplicity in this view
-                                return p1; // We just return text, React dangerouslySetInnerHtml would be needed for true parsing or a dedicated parser comp
+                                return p1; 
                             })}
                         </p>
                     );
@@ -143,37 +142,31 @@ const CinematicWriterOverlay: React.FC<CinematicWriterOverlayProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black text-white overflow-hidden flex flex-col font-sans">
+    <div className="fixed inset-0 z-[100] bg-zinc-950 text-zinc-100 overflow-hidden flex flex-col font-sans">
         
         {/* --- AMBIENT ATMOSPHERE --- */}
         <div className="absolute inset-0 pointer-events-none z-0">
-            {/* The "Aurora" - Reacts to streaming state */}
             <div className={`
-                absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-indigo-900/20 rounded-full blur-[120px] transition-all duration-[2000ms]
-                ${isStreaming ? 'opacity-60 scale-110 translate-y-10' : 'opacity-30 scale-100'}
-            `}></div>
-            <div className={`
-                absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-violet-900/10 rounded-full blur-[150px] transition-all duration-[3000ms]
-                ${isStreaming ? 'opacity-50 scale-105 -translate-y-10' : 'opacity-20 scale-100'}
+                absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-zinc-100/5 rounded-full blur-[100px] transition-all duration-[2000ms]
+                ${isStreaming ? 'opacity-40 scale-110' : 'opacity-10 scale-100'}
             `}></div>
             
             {/* Grain Texture */}
-            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03]"></div>
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.02]"></div>
         </div>
 
         {/* --- TOP BAR --- */}
-        <header className="relative z-20 h-20 px-8 flex items-center justify-between backdrop-blur-sm">
+        <header className="relative z-20 h-16 px-8 flex items-center justify-between bg-zinc-950/50 backdrop-blur-md border-b border-zinc-900">
             <div className="flex items-center gap-4">
-                <div className="relative group">
-                    <div className={`absolute -inset-2 bg-white/5 rounded-full blur-md transition-opacity duration-500 ${isStreaming ? 'opacity-100' : 'opacity-0'}`}></div>
-                    <CoAuthor className="w-10 h-10 border border-white/10 bg-black/50 shadow-2xl" isActive={isStreaming} />
+                <div className="relative">
+                    <CoAuthor className="w-8 h-8 bg-zinc-100 shadow-2xl" isActive={isStreaming} />
                 </div>
                 <div>
-                    <h2 className="text-sm font-bold tracking-[0.2em] text-white uppercase">Studio AI</h2>
+                    <h2 className="text-[10px] font-black tracking-[0.2em] text-zinc-100 uppercase">Studio Engine</h2>
                     <div className="flex items-center gap-2">
-                        <span className={`w-1.5 h-1.5 rounded-full ${isStreaming ? 'bg-green-500 animate-pulse' : 'bg-neutral-600'}`}></span>
-                        <p className="text-[10px] text-neutral-500 font-medium uppercase tracking-widest">
-                            {isStreaming ? 'AI Assistant Active' : 'Standby'}
+                        <span className={`w-1 h-1 rounded-full ${isStreaming ? 'bg-zinc-100 animate-pulse' : 'bg-zinc-800'}`}></span>
+                        <p className="text-[8px] text-zinc-600 font-black uppercase tracking-[0.3em]">
+                            {isStreaming ? 'Active Composition' : 'Ready'}
                         </p>
                     </div>
                 </div>
@@ -181,10 +174,10 @@ const CinematicWriterOverlay: React.FC<CinematicWriterOverlayProps> = ({
 
             <button 
                 onClick={onClose}
-                className="group flex items-center gap-3 px-6 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 transition-all hover:scale-105 active:scale-95 backdrop-blur-md"
+                className="group flex items-center gap-3 px-4 py-1.5 rounded bg-zinc-900 hover:bg-zinc-100 hover:text-zinc-950 border border-zinc-800 transition-all active:scale-95"
             >
-                <span className="text-xs font-bold tracking-widest text-neutral-400 group-hover:text-white transition-colors">EXIT STUDIO</span>
-                <IconX className="w-4 h-4 text-neutral-500 group-hover:text-white transition-colors" />
+                <span className="text-[9px] font-black tracking-widest uppercase">Terminate Session</span>
+                <IconX className="w-3.5 h-3.5" />
             </button>
         </header>
 
@@ -192,24 +185,24 @@ const CinematicWriterOverlay: React.FC<CinematicWriterOverlayProps> = ({
         <main className="relative z-10 flex-1 overflow-hidden flex justify-center">
             <div 
                 ref={scrollRef}
-                className="w-full max-w-4xl h-full overflow-y-auto custom-scrollbar px-6 md:px-12 py-12 scroll-smooth"
+                className="w-full max-w-3xl h-full overflow-y-auto custom-scrollbar px-8 md:px-10 py-16 scroll-smooth"
             >
                 {/* Context Tag */}
-                <div className="flex justify-center mb-16 opacity-0 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                    <div className="px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.02] backdrop-blur-md">
-                        <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-[0.2em]">
-                            Drafting: {chapterTitle}
+                <div className="flex justify-center mb-12 opacity-0 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+                    <div className="px-3 py-1 rounded bg-zinc-900/50 border border-zinc-800">
+                        <span className="text-[8px] font-black text-zinc-600 uppercase tracking-[0.2em]">
+                            Working Document: {chapterTitle}
                         </span>
                     </div>
                 </div>
 
                 {/* The Content */}
-                <article className="prose prose-invert max-w-none">
+                <article className="max-w-none">
                     {renderContent()}
                     
                     {/* The "Living" Cursor */}
                     {isStreaming && (
-                        <div className="inline-block w-1 h-6 ml-1 bg-gradient-to-t from-transparent via-white to-transparent opacity-80 animate-pulse align-middle shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+                        <div className="inline-block w-1 h-5 ml-1 bg-zinc-100 opacity-60 animate-pulse align-middle"></div>
                     )}
                 </article>
 
@@ -220,32 +213,32 @@ const CinematicWriterOverlay: React.FC<CinematicWriterOverlayProps> = ({
 
         {/* --- FLOATING HUD --- */}
         <div className="absolute bottom-8 left-0 right-0 z-30 flex justify-center pointer-events-none">
-            <div className="flex items-center gap-6 px-8 py-3 bg-[#0a0a0a]/80 backdrop-blur-xl border border-white/10 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.5)] pointer-events-auto transition-transform duration-500 hover:scale-105">
+            <div className="flex items-center gap-8 px-6 py-2.5 bg-zinc-950 border border-zinc-900 rounded shadow-2xl pointer-events-auto transition-all hover:border-zinc-800">
                 
                 {/* Metric: Speed */}
-                <div className="flex items-center gap-3 border-r border-white/5 pr-6">
-                    <IconFeather className="w-4 h-4 text-neutral-500" />
+                <div className="flex items-center gap-3 border-r border-zinc-900 pr-6">
+                    <IconFeather className="w-3.5 h-3.5 text-zinc-600" />
                     <div className="flex flex-col">
-                        <span className="text-sm font-bold text-white tabular-nums leading-none">{metrics.tps}</span>
-                        <span className="text-[8px] uppercase tracking-widest text-neutral-600 font-bold">Tokens/s</span>
+                        <span className="text-xs font-bold text-zinc-100 tabular-nums leading-none">{metrics.tps}</span>
+                        <span className="text-[7px] uppercase tracking-widest text-zinc-700 font-black mt-0.5">Tokens/s</span>
                     </div>
                 </div>
 
                 {/* Metric: Stability */}
-                <div className="flex items-center gap-3 border-r border-white/5 pr-6">
-                    <IconBrain className="w-4 h-4 text-neutral-500" />
+                <div className="flex items-center gap-3 border-r border-zinc-900 pr-6">
+                    <IconBrain className="w-3.5 h-3.5 text-zinc-600" />
                     <div className="flex flex-col">
-                        <span className="text-sm font-bold text-white tabular-nums leading-none">{metrics.stability.toFixed(0)}%</span>
-                        <span className="text-[8px] uppercase tracking-widest text-neutral-600 font-bold">Coherence</span>
+                        <span className="text-xs font-bold text-zinc-100 tabular-nums leading-none">{metrics.stability.toFixed(0)}%</span>
+                        <span className="text-[7px] uppercase tracking-widest text-zinc-700 font-black mt-0.5">Coherence</span>
                     </div>
                 </div>
 
                 {/* Metric: Sync */}
                 <div className="flex items-center gap-3">
-                    <IconActivity className={`w-4 h-4 transition-colors ${isStreaming ? 'text-green-500' : 'text-neutral-500'}`} />
-                    <div className="w-24 h-1 bg-white/10 rounded-full overflow-hidden">
+                    <IconActivity className={`w-3.5 h-3.5 transition-colors ${isStreaming ? 'text-zinc-100' : 'text-zinc-800'}`} />
+                    <div className="w-20 h-0.5 bg-zinc-900 rounded-full overflow-hidden">
                         <div 
-                            className="h-full bg-white transition-all duration-300 ease-out shadow-[0_0_10px_white]" 
+                            className="h-full bg-zinc-100 transition-all duration-300 ease-out" 
                             style={{ width: `${metrics.sync}%` }}
                         ></div>
                     </div>
