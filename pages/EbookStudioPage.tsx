@@ -476,18 +476,18 @@ const EbookStudioPage: React.FC = () => {
                                     </div>
                                 </div>
 
-                                {/* --- PREMIUM INPUT INTERFACE (DOCKED AT BOTTOM) --- */}
-                                <div className="shrink-0 p-6 bg-[#020202] border-t border-zinc-900/80 z-10 shadow-[0_-20px_40px_rgba(0,0,0,0.4)]">
+                                {/* --- PROFESSIONAL INPUT INTERFACE (SLIM & DOCKED) --- */}
+                                <div className="shrink-0 p-4 bg-[#010101] border-t border-zinc-900/50 z-10 shadow-[0_-15px_30px_rgba(0,0,0,0.4)]">
                                     {attachmentPreviews.length > 0 && (
-                                        <div className="flex gap-4 mb-6 overflow-x-auto pb-2 scrollbar-hide">
+                                        <div className="flex gap-3 mb-4 overflow-x-auto pb-2 scrollbar-hide">
                                             {attachmentPreviews.map((src, idx) => (
                                                 <div key={idx} className="relative group shrink-0">
-                                                    <img src={src} className="h-20 w-20 object-cover rounded-2xl border border-zinc-800 shadow-2xl transition-all group-hover:border-zinc-500" />
+                                                    <img src={src} className="h-16 w-16 object-cover rounded-xl border border-zinc-800 shadow-2xl transition-all group-hover:border-zinc-500" />
                                                     <button 
                                                         onClick={() => removeAttachment(idx)} 
-                                                        className="absolute -top-2 -right-2 w-7 h-7 bg-zinc-950 rounded-full text-zinc-500 border border-zinc-800 hover:text-red-500 hover:border-red-500/50 transition-all flex items-center justify-center shadow-2xl backdrop-blur-xl z-20"
+                                                        className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-zinc-950 rounded-full text-zinc-500 border border-zinc-800 hover:text-red-500 transition-all flex items-center justify-center shadow-2xl backdrop-blur-xl z-20"
                                                     >
-                                                        <IconX className="w-4 h-4" />
+                                                        <IconX className="w-3 h-3" />
                                                     </button>
                                                 </div>
                                             ))}
@@ -495,34 +495,34 @@ const EbookStudioPage: React.FC = () => {
                                     )}
                                     
                                     <div className={cn(
-                                        "bg-zinc-900/40 border border-zinc-800/80 rounded-3xl p-2 transition-all duration-700 relative group overflow-hidden",
-                                        isBusy ? 'ring-2 ring-white/10 border-zinc-700 bg-zinc-900/60' : 'focus-within:border-zinc-600 focus-within:bg-zinc-900/50 focus-within:shadow-[0_0_40px_rgba(255,255,255,0.03)]'
+                                        "bg-zinc-900/30 border border-zinc-800/50 rounded-2xl p-1.5 transition-all duration-500 relative group overflow-hidden",
+                                        isBusy ? 'ring-1 ring-white/5 border-zinc-700 bg-zinc-900/50' : 'focus-within:border-zinc-700/80 focus-within:bg-zinc-900/40'
                                     )}>
-                                        <div className="flex items-end gap-2">
+                                        <div className="flex items-end gap-1.5">
                                             <button 
                                                 onClick={() => fileInputRef.current?.click()} 
-                                                className="w-11 h-11 rounded-2xl bg-zinc-950/80 hover:bg-zinc-100 hover:text-zinc-950 flex items-center justify-center text-zinc-500 transition-all duration-500 shrink-0 border border-zinc-800/50 active:scale-90"
+                                                className="w-9 h-9 rounded-xl bg-transparent hover:bg-zinc-800/50 flex items-center justify-center text-zinc-500 hover:text-zinc-300 transition-all shrink-0 active:scale-95"
                                                 title="Attach Asset"
                                             >
-                                                <IconPlus className="w-5 h-5" />
+                                                <IconPlus className="w-4.5 h-4.5" />
                                             </button>
                                             <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileSelect} accept="image/*,application/pdf" multiple />
                                             
                                             <button
                                                 onMouseDown={startRecording} onMouseUp={stopRecording}
                                                 className={cn(
-                                                    "w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-500 shrink-0 border active:scale-90",
-                                                    isListening ? 'bg-red-500/20 text-red-500 border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.3)] animate-pulse' : 'bg-zinc-950/80 text-zinc-500 hover:text-zinc-100 border-zinc-800/50'
+                                                    "w-9 h-9 rounded-xl flex items-center justify-center transition-all shrink-0 active:scale-95",
+                                                    isListening ? 'bg-red-500/10 text-red-500 shadow-[0_0_15px_rgba(239,68,68,0.2)]' : 'bg-transparent text-zinc-500 hover:text-zinc-300'
                                                 )}
                                                 title="Voice Command"
                                             >
-                                                {isListening ? <IconStop className="w-5 h-5" /> : <IconMic className="w-5 h-5" />}
+                                                {isListening ? <IconStop className="w-4 h-4 animate-pulse" /> : <IconMic className="w-4 h-4" />}
                                             </button>
                                             
                                             <textarea
                                                 ref={textareaRef} value={input} onChange={e => setInput(e.target.value)}
                                                 placeholder={isListening ? "Listening..." : "Message Co-Author..."}
-                                                className="flex-1 bg-transparent border-none outline-none text-[14px] py-3.5 px-2 max-h-48 min-h-[44px] resize-none font-medium placeholder:text-zinc-700 text-zinc-100 scrollbar-hide selection:bg-zinc-100 selection:text-zinc-950"
+                                                className="flex-1 bg-transparent border-none outline-none text-[13px] py-2 px-1 max-h-32 min-h-[36px] resize-none font-medium placeholder:text-zinc-700 text-zinc-100 scrollbar-hide selection:bg-zinc-100 selection:text-zinc-950"
                                                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
                                                 disabled={isBusy}
                                             />
@@ -531,23 +531,23 @@ const EbookStudioPage: React.FC = () => {
                                                 onClick={() => handleSendMessage()} 
                                                 disabled={isBusy || (!input.trim() && attachments.length === 0)}
                                                 className={cn(
-                                                    "w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-700 shrink-0 shadow-2xl active:scale-90",
+                                                    "w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300 shrink-0 shadow-lg active:scale-90",
                                                     (input.trim() || attachments.length > 0) 
-                                                        ? 'bg-zinc-100 text-zinc-950 hover:bg-white hover:scale-105' 
-                                                        : 'bg-zinc-800 text-zinc-600 opacity-40 cursor-not-allowed'
+                                                        ? 'bg-zinc-100 text-zinc-950 hover:bg-white hover:shadow-[0_0_20px_rgba(255,255,255,0.2)]' 
+                                                        : 'bg-zinc-800/50 text-zinc-600 opacity-30 cursor-not-allowed'
                                                 )}
                                             >
-                                                {isBusy ? <div className="w-5 h-5 border-2 border-zinc-950/20 border-t-zinc-950 rounded-full animate-spin"></div> : <IconSend className="w-5 h-5" />}
+                                                {isBusy ? <div className="w-4 h-4 border-2 border-zinc-950/20 border-t-zinc-950 rounded-full animate-spin"></div> : <IconSend className="w-4 h-4" />}
                                             </button>
                                         </div>
                                     </div>
                                     
-                                    <div className="flex justify-between items-center mt-4 px-2">
-                                        <div className="flex items-center gap-2.5">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)] animate-pulse" />
-                                            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-600">Secure Neural Link</span>
+                                    <div className="flex justify-between items-center mt-3 px-1.5">
+                                        <div className="flex items-center gap-2">
+                                            <span className="w-1 h-1 rounded-full bg-green-500/80 shadow-[0_0_8px_rgba(34,197,94,0.4)]" />
+                                            <span className="text-[8px] font-black uppercase tracking-[0.2em] text-zinc-600/80">Neural Link Stable</span>
                                         </div>
-                                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-700 tabular-nums">
+                                        <span className="text-[8px] font-black uppercase tracking-[0.2em] text-zinc-700 tabular-nums">
                                             {activePage.content.length.toLocaleString()} CHARS
                                         </span>
                                     </div>
