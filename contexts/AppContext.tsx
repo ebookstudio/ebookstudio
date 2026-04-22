@@ -241,8 +241,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         const result = await signInWithPopup(auth, googleProvider);
         console.log("Google Login Success:", result.user.displayName);
         return true;
-    } catch (e) {
-        console.error("Google Login Failed", e);
+    } catch (e: any) {
+        console.error("Google Login Failed Error Code:", e.code);
+        console.error("Google Login Failed Message:", e.message);
+        if (e.code === 'auth/configuration-not-found') {
+            alert("Configuration Error: Please enable 'Google' as a sign-in provider in your Firebase Console.");
+        } else if (e.code === 'auth/unauthorized-domain') {
+            alert("Domain Error: This domain is not authorized in Firebase Console. Add 'ebookstudio.vercel.app' to Authorized Domains.");
+        } else {
+            alert("Login failed: " + e.message);
+        }
         return false;
     }
   };
