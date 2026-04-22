@@ -11,7 +11,7 @@ Create a file named `install-ebook-engine.sh` and paste the following code:
 #!/bin/bash
 
 # ==========================================
-# Ebook-Engine Installer & Updater
+# EbookStudio Installer & Updater
 # ==========================================
 
 # Configuration
@@ -24,7 +24,7 @@ BLUE='\033[0;34m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-echo -e "${BLUE}Starting Ebook-Engine Setup...${NC}"
+echo -e "${BLUE}Starting EbookStudio Setup...${NC}"
 
 # 1. Check for Dependencies
 if ! command -v npm &> /dev/null; then
@@ -95,7 +95,7 @@ Create a file named `run-ebook-engine.sh` and paste the following code:
 #!/bin/bash
 
 # ==========================================
-# Ebook-Engine Launcher
+# EbookStudio Launcher
 # ==========================================
 
 WEBAPP_DIR="ebook-engine-webapp"

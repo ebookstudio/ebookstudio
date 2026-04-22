@@ -6,12 +6,11 @@ import {
     IconChevronLeft
 } from '../constants';
 import * as ReactRouterDOM from 'react-router-dom';
-import MorphicEye from '../components/MorphicEye';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import CoAuthor from '../components/CoAuthor';
+import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
+import { Separator } from '../components/ui/separator';
+import { cn } from '../lib/utils';
 
 const { useNavigate } = ReactRouterDOM as any;
 
@@ -50,8 +49,8 @@ const CheckoutPage: React.FC = () => {
             key: RAZORPAY_KEY_ID,
             amount: Math.round(total * 100), 
             currency: "INR",
-            name: "EbookStudio Archive",
-            description: `Archive Acquisition (${cart.length} Fragments)`,
+            name: "EbookStudio",
+            description: `Asset Purchase (${cart.length} items)`,
             image: "https://ebookstudio.vercel.app/logo.png",
             handler: function (response: any) {
                 clearCart();
@@ -63,44 +62,41 @@ const CheckoutPage: React.FC = () => {
                 email: currentUser.email,
             },
             theme: {
-                color: "#000000",
+                color: "#09090b",
             },
         };
 
         try {
             const rzp = new (window as any).Razorpay(options);
             rzp.on('payment.failed', function (response: any) {
-                alert(`Sync Interrupted: ${response.error.description}`);
+                alert(`Payment Failed: ${response.error.description}`);
                 setIsProcessing(false);
             });
             rzp.open();
         } catch (error) {
-            console.error("Payment Protocol Error", error);
+            console.error("Payment Error", error);
             setIsProcessing(false);
         }
     };
 
     if (cart.length === 0) {
         return (
-            <div className="min-h-screen bg-[#000000] flex flex-col items-center justify-center p-8 selection:bg-white selection:text-black">
-                <div className="fixed inset-0 z-0">
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white/[0.02] rounded-full blur-[140px]" />
-                    <div className="absolute inset-0 bg-dot-matrix opacity-[0.1]" />
-                </div>
-                
-                <div className="relative z-10 text-center max-w-2xl">
-                    <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-white/5 mb-12">
-                        <IconShoppingCart className="w-10 h-10 text-zinc-600" />
+            <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-10">
+                <div className="relative z-10 text-center max-w-lg animate-fade-in space-y-12">
+                    <div className="inline-flex items-center justify-center w-24 h-24 rounded-2xl bg-zinc-900 border border-border shadow-2xl">
+                        <IconShoppingCart className="w-8 h-8 text-zinc-700" />
                     </div>
-                    <h1 className="text-white text-6xl font-black tracking-tighter mb-8 leading-tight">Your Neural Buffer is Empty.</h1>
-                    <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.5em] mb-16 leading-loose max-w-sm mx-auto">
-                        The archive awaits your selection. Synchronize fragments from the marketplace to initialize acquisition.
-                    </p>
+                    <div className="space-y-4">
+                        <h1 className="text-zinc-100 text-5xl font-bold tracking-tighter">Cart is empty.</h1>
+                        <p className="text-zinc-500 text-sm font-medium leading-relaxed max-w-xs mx-auto">
+                            Select premium high-fidelity publications from our secure marketplace.
+                        </p>
+                    </div>
                     <Button 
                         onClick={() => navigate('/store')}
-                        className="h-20 px-12 rounded-full bg-white text-black hover:bg-zinc-200 text-xs font-black uppercase tracking-widest transition-all shadow-2xl"
+                        className="h-12 px-12 rounded-md bg-zinc-100 text-zinc-950 hover:bg-zinc-200 text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-xl"
                     >
-                        <IconStore className="w-4 h-4 mr-3" /> Browse Archive
+                        Browse Marketplace
                     </Button>
                 </div>
             </div>
@@ -108,126 +104,106 @@ const CheckoutPage: React.FC = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[#000000] pt-40 pb-64 selection:bg-white selection:text-black">
-            <div className="fixed inset-0 z-0">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-white/[0.02] rounded-full blur-[150px]" />
-                <div className="absolute inset-0 bg-dot-matrix opacity-[0.1]" />
-            </div>
-
-            <div className="container mx-auto px-8 lg:px-16 max-w-7xl relative z-10">
-                <header className="mb-24 flex flex-col md:flex-row md:items-end justify-between gap-12">
-                    <div className="max-w-3xl">
-                        <Button 
-                            variant="ghost" 
-                            onClick={() => navigate('/store')}
-                            className="p-0 text-zinc-600 hover:text-white mb-8 group transition-colors"
-                        >
-                            <IconChevronLeft className="mr-3 w-4 h-4 group-hover:-translate-x-1 transition-transform" /> 
-                            <span className="text-[9px] font-black uppercase tracking-[0.3em]">Back to Store</span>
-                        </Button>
-                        <Badge variant="outline" className="px-6 py-1.5 border-white/10 text-zinc-500 text-[9px] font-black uppercase tracking-[0.4em] rounded-full bg-white/5 mb-8">
-                            Transaction Protocol / v1.0
-                        </Badge>
-                        <h1 className="text-white text-6xl md:text-8xl font-black tracking-tighter leading-none mb-6">Settlement.</h1>
-                        <p className="text-zinc-500 text-lg md:text-xl font-medium leading-relaxed max-w-xl">
-                            Finalize the synchronization of {cart.length} archive fragments to your personal repository.
-                        </p>
-                    </div>
+        <div className="min-h-screen bg-zinc-950 pt-32 pb-64 relative overflow-hidden">
+            <div className="container mx-auto px-8 max-w-7xl relative z-10">
+                <header className="mb-24">
+                    <Button 
+                        variant="ghost" 
+                        onClick={() => navigate('/store')}
+                        className="p-0 text-zinc-600 hover:text-zinc-100 mb-8 group transition-colors font-bold text-[10px] uppercase tracking-[0.3em]"
+                    >
+                        <IconChevronLeft className="mr-3 w-4 h-4 group-hover:-translate-x-1 transition-transform" /> 
+                        Marketplace
+                    </Button>
+                    <h1 className="text-zinc-100 text-6xl font-bold tracking-tighter leading-none">Checkout</h1>
                 </header>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
                     {/* --- CART ITEMS --- */}
-                    <div className="lg:col-span-8">
-                        <div className="space-y-6">
-                            {cart.map((item) => (
-                                <Card key={item.id} className="bg-[#050505] border-white/5 rounded-[40px] overflow-hidden p-8 group hover:border-white/10 transition-all duration-500">
-                                    <div className="flex flex-col md:flex-row gap-10">
-                                        <div className="w-full md:w-32 h-44 flex-shrink-0 relative">
-                                            <img src={item.coverImageUrl} className="w-full h-full object-cover rounded-2xl grayscale group-hover:grayscale-0 transition-all duration-700 shadow-2xl" />
-                                            <div className="absolute inset-0 rounded-2xl border border-white/5" />
+                    <div className="lg:col-span-7 space-y-6">
+                        <div className="flex items-center justify-between mb-8 pb-4 border-b border-border">
+                            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">Order Manifest ({cart.length} items)</h3>
+                        </div>
+                        {cart.map((item) => (
+                            <div key={item.id} className="bg-zinc-900 border border-border p-6 rounded-xl group hover:border-zinc-700 transition-all">
+                                <div className="flex gap-8">
+                                    <div className="w-24 h-32 flex-shrink-0 relative overflow-hidden rounded-md border border-border shadow-xl">
+                                        <img src={item.coverImageUrl} className="w-full h-full object-cover" />
+                                    </div>
+                                    <div className="flex-1 flex flex-col justify-center min-w-0">
+                                        <div className="flex justify-between items-start mb-4 gap-6">
+                                            <div className="min-w-0">
+                                                <h3 className="text-zinc-100 text-lg font-bold tracking-tight truncate">{item.title}</h3>
+                                                <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">Authored by {item.author}</p>
+                                            </div>
+                                            <button 
+                                                onClick={() => removeFromCart(item.id)}
+                                                className="w-8 h-8 rounded-md bg-zinc-950 text-zinc-800 hover:text-red-500 transition-all flex items-center justify-center border border-border"
+                                            >
+                                                <IconTrash className="w-3.5 h-3.5" />
+                                            </button>
                                         </div>
-                                        <div className="flex-1 flex flex-col justify-center">
-                                            <div className="flex justify-between items-start mb-4">
-                                                <div>
-                                                    <h3 className="text-white text-2xl font-black tracking-tighter mb-2">{item.title}</h3>
-                                                    <p className="type-tiny opacity-40">Protocol by {item.author}</p>
-                                                </div>
-                                                <Button 
-                                                    variant="ghost" 
-                                                    onClick={() => removeFromCart(item.id)}
-                                                    className="w-12 h-12 rounded-full bg-white/5 text-zinc-500 hover:bg-rose-500/10 hover:text-rose-500 transition-all p-0"
-                                                >
-                                                    <IconTrash className="w-5 h-5" />
-                                                </Button>
+                                        <div className="flex items-center justify-between mt-auto">
+                                            <div className="px-2 py-0.5 bg-zinc-950 border border-border text-zinc-600 text-[8px] font-black uppercase tracking-widest rounded">
+                                                {item.genre}
                                             </div>
-                                            <div className="flex items-center justify-between mt-auto">
-                                                <Badge variant="outline" className="px-4 py-1 border-white/5 text-[8px] font-black uppercase tracking-widest text-zinc-600">
-                                                    {item.genre}
-                                                </Badge>
-                                                <span className="text-white text-3xl font-black tracking-tighter">${item.price.toFixed(2)}</span>
-                                            </div>
+                                            <span className="text-zinc-100 text-lg font-bold tracking-tight">${item.price.toFixed(2)}</span>
                                         </div>
                                     </div>
-                                </Card>
-                            ))}
-                        </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
 
                     {/* --- SUMMARY --- */}
-                    <div className="lg:col-span-4">
-                        <Card className="bg-[#050505] border-white/10 rounded-[48px] p-10 sticky top-40 shadow-2xl overflow-hidden">
-                            <div className="absolute inset-0 bg-dot-matrix opacity-[0.05] pointer-events-none" />
-                            <h2 className="text-white text-2xl font-black tracking-tighter mb-10 relative z-10">Protocol Summary</h2>
+                    <div className="lg:col-span-5">
+                        <div className="bg-zinc-900 border border-border p-8 lg:p-12 rounded-2xl sticky top-32 shadow-2xl space-y-10">
+                            <h2 className="text-zinc-100 text-xl font-bold tracking-tight">Summary</h2>
                             
-                            <div className="space-y-6 mb-10 relative z-10">
-                                <div className="flex justify-between text-sm font-medium">
-                                    <span className="text-zinc-500 uppercase tracking-widest text-[9px] font-black">Subtotal Protocol</span>
-                                    <span className="text-white font-mono">${subtotal.toFixed(2)}</span>
+                            <div className="space-y-6">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-[0.2em]">Subtotal</span>
+                                    <span className="text-zinc-100 font-bold text-lg tracking-tight">${subtotal.toFixed(2)}</span>
                                 </div>
-                                <div className="flex justify-between text-sm font-medium">
-                                    <span className="text-zinc-500 uppercase tracking-widest text-[9px] font-black">Neural GST (18%)</span>
-                                    <span className="text-white font-mono">${tax.toFixed(2)}</span>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-[0.2em]">Service Tax (18%)</span>
+                                    <span className="text-zinc-100 font-bold text-lg tracking-tight">${tax.toFixed(2)}</span>
                                 </div>
-                                <Separator className="bg-white/5" />
+                                <Separator className="bg-zinc-800" />
                                 <div className="flex justify-between items-end">
-                                    <span className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-1">Total Fee</span>
-                                    <span className="text-white text-5xl font-black tracking-tighter leading-none">${total.toFixed(2)}</span>
+                                    <span className="text-zinc-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">Total Amount</span>
+                                    <span className="text-zinc-100 text-4xl font-bold tracking-tighter">${total.toFixed(2)}</span>
                                 </div>
                             </div>
 
-                            <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5 mb-12 relative z-10">
-                                <div className="flex items-center gap-4 mb-4">
-                                    <IconShieldCheck className="w-5 h-5 text-emerald-500" />
-                                    <span className="text-white text-[9px] font-black uppercase tracking-widest">Encrypted Sync</span>
+                            <div className="p-6 rounded-xl bg-zinc-950 border border-border space-y-4">
+                                <div className="flex items-center gap-3">
+                                    <IconShieldCheck className="w-4 h-4 text-emerald-500" />
+                                    <span className="text-zinc-100 text-[10px] font-bold uppercase tracking-[0.2em]">Secure Checkout</span>
                                 </div>
-                                <p className="text-zinc-500 text-[9px] font-medium leading-relaxed">
-                                    Your transaction is secured by industrial-grade cryptographic protocols via Razorpay.
+                                <p className="text-zinc-600 text-[10px] font-medium leading-relaxed leading-relaxed">
+                                    Transactions processed via industrial-grade encrypted payment protocols.
                                 </p>
                             </div>
 
                             <Button 
                                 onClick={handleCheckout}
                                 disabled={isProcessing}
-                                className="w-full h-20 rounded-full bg-white text-black hover:bg-zinc-200 text-[10px] font-black uppercase tracking-widest transition-all shadow-2xl group relative z-10"
+                                className="w-full h-12 rounded-md bg-zinc-100 text-zinc-950 hover:bg-zinc-200 text-[10px] font-black uppercase tracking-[0.3em] transition-all shadow-xl flex items-center justify-center gap-4 group"
                             >
                                 {isProcessing ? (
-                                    <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                                    <div className="w-4 h-4 border-2 border-zinc-950/20 border-t-zinc-950 rounded-full animate-spin" />
                                 ) : (
                                     <>
-                                        <IconCreditCard className="w-4 h-4 mr-3" /> Initialize Ingestion
-                                        <IconArrowRight className="w-4 h-4 ml-3 group-hover:translate-x-1 transition-transform" />
+                                        <IconCreditCard className="w-4 h-4" /> Finalize Acquisition
                                     </>
                                 )}
                             </Button>
                             
-                            <Button 
-                                variant="ghost"
-                                onClick={() => navigate('/store')}
-                                className="w-full h-14 mt-4 rounded-full text-zinc-600 hover:text-white transition-all text-[9px] font-black uppercase tracking-widest relative z-10"
-                            >
-                                Continue Browsing
-                            </Button>
-                        </Card>
+                            <div className="text-center">
+                                <p className="text-[8px] font-bold uppercase tracking-[0.3em] text-zinc-700">Protected by EbookStudio OS Architecture</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

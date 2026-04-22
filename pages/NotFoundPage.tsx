@@ -1,7 +1,7 @@
-
 import React from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
-import MorphicEye from '../components/MorphicEye';
+import CoAuthor from '../components/CoAuthor';
+import { Button } from '../components/ui/button';
 
 const { useNavigate } = ReactRouterDOM as any;
 
@@ -9,37 +9,39 @@ const NotFoundPage: React.FC = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8 text-center font-sans overflow-hidden relative">
-            {/* Global Antigravity Background (Simulated locally for standalone look) */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(15,15,25,1)_0%,rgba(0,0,0,1)_100%)]"></div>
-            <div className="absolute top-[20%] left-[15%] w-32 h-32 border border-white/5 rounded-full animate-float opacity-30 blur-[1px]"></div>
-            <div className="absolute bottom-[25%] right-[20%] w-64 h-64 border border-white/5 rotate-45 animate-float-delayed opacity-20"></div>
-            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none"></div>
-
-            <div className="relative z-10 animate-fade-in flex flex-col items-center">
-                <div className="mb-10 p-6 bg-white/5 border border-white/10 rounded-full backdrop-blur-3xl shadow-[0_0_80px_rgba(255,255,255,0.05)]">
-                    <MorphicEye className="w-24 h-24" />
-                </div>
-
-                <h1 className="text-8xl md:text-[12rem] font-black text-white leading-none tracking-tighter mb-4 opacity-10 select-none">404</h1>
-                <div className="absolute top-[45%] md:top-[40%]">
-                    <h2 className="text-2xl md:text-5xl font-black text-white tracking-tight uppercase">Segment Not Found</h2>
-                </div>
-
-                <p className="text-neutral-500 max-w-sm mx-auto mb-12 text-xs md:text-sm font-mono uppercase tracking-[0.3em] mt-16 leading-relaxed">
-                    The requested data fragment does not exist in the current neural cluster.
-                </p>
-
-                <button
-                    onClick={() => navigate('/')}
-                    className="px-10 py-5 bg-white text-black font-black text-[10px] uppercase tracking-[0.4em] rounded-full hover:bg-neutral-200 transition-all shadow-glow-white hover:scale-105 active:scale-95"
-                >
-                    Return to Origin
-                </button>
+        <div className="min-h-screen bg-background flex flex-col items-center justify-center p-10 text-center selection:bg-white selection:text-black overflow-hidden relative">
+            {/* Ambient Background */}
+            <div className="absolute inset-0 z-0">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-purple-600/10 rounded-full blur-[150px]" />
+                <div className="absolute inset-0 bg-dot-matrix opacity-[0.1]" />
             </div>
 
-            <div className="absolute bottom-8 left-0 right-0 text-center">
-                <span className="text-[9px] font-mono text-neutral-700 uppercase tracking-widest">EbookStudio Neural OS v1.0.4</span>
+            <div className="relative z-10 animate-fade-in flex flex-col items-center">
+                <div className="mb-12 p-8 bg-white/5 border border-white/10 rounded-full backdrop-blur-3xl shadow-3xl">
+                    <CoAuthor size="lg" />
+                </div>
+
+                <div className="relative mb-12">
+                    <h1 className="text-8xl md:text-[14rem] font-serif font-bold text-white leading-none tracking-tighter opacity-5 select-none italic">404</h1>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <h2 className="text-3xl md:text-6xl font-serif font-bold text-white tracking-tight italic">Lost in the stacks.</h2>
+                    </div>
+                </div>
+
+                <p className="text-zinc-500 max-w-md mx-auto mb-16 text-lg font-medium italic leading-relaxed">
+                    We couldn't find the page you were looking for. Maybe it's hidden in another chapter?
+                </p>
+
+                <Button
+                    onClick={() => navigate('/')}
+                    className="h-20 px-16 bg-white text-black font-bold text-sm uppercase tracking-widest rounded-full hover:bg-zinc-200 transition-all shadow-3xl hover:scale-105 italic"
+                >
+                    Back to Home
+                </Button>
+            </div>
+
+            <div className="absolute bottom-12 left-0 right-0 text-center">
+                <span className="text-[10px] font-bold text-zinc-800 uppercase tracking-widest italic">EbookStudio v1.2</span>
             </div>
         </div>
     );

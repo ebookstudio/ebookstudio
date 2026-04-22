@@ -199,7 +199,7 @@ const HostingPreviewPage: React.FC = () => {
             {/* Footer */}
             <footer className={`mt-32 pt-10 border-t text-center ${isLight ? 'border-neutral-200 text-neutral-400' : 'border-white/10 text-neutral-600'}`}>
                 <p className="text-xs font-mono">
-                    &copy; {new Date().getFullYear()} {siteConfig.displayName}. Hosted via Ebook-Engine.
+                    &copy; {new Date().getFullYear()} {siteConfig.displayName}. Hosted via EbookStudio.
                 </p>
             </footer>
         </div>

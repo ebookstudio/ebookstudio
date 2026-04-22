@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { IconRocket, IconBrain, IconSettings, IconArrowRight, IconBook } from '../constants';
-import MorphicEye from '../components/MorphicEye';
+import CoAuthor from '../components/CoAuthor';
 import { getAppBaseUrl } from '../App';
 
 const { useNavigate } = ReactRouterDOM as any;
@@ -33,7 +33,7 @@ const StudioLandingPage: React.FC = () => {
             <div className="fixed inset-0 bg-black flex flex-col items-center justify-center z-50">
                 <div className="relative">
                     <div className="absolute inset-0 bg-white/20 blur-2xl rounded-full animate-pulse-slow"></div>
-                    <MorphicEye className="w-24 h-24 border border-white/50 bg-black relative z-10" />
+                    <CoAuthor className="w-24 h-24 border border-white/50 bg-black relative z-10" />
                 </div>
                 <div className="mt-8 flex flex-col items-center gap-3">
                     <h1 className="text-white text-3xl font-black tracking-tighter uppercase animate-slide-up font-sans">
@@ -52,7 +52,7 @@ const StudioLandingPage: React.FC = () => {
         return (
             <div className="fixed inset-0 bg-black flex flex-col items-center justify-center z-50 overflow-hidden">
                 <div className="absolute inset-0 bg-white/5 animate-pulse-square"></div>
-                <MorphicEye className="w-32 h-32 border border-white bg-black animate-spin-slow scale-125 transition-transform duration-1000" />
+                <CoAuthor className="w-32 h-32 border border-white bg-black animate-spin-slow scale-125 transition-transform duration-1000" />
                 <h2 className="mt-12 text-white text-xl font-bold uppercase tracking-[0.5em] animate-pulse">Establishing Uplink...</h2>
             </div>
         );

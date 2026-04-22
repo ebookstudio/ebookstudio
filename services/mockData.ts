@@ -4,9 +4,9 @@ import { EBook, User, Seller, UserType, CreatorSiteConfig } from '../types';
 export const mockEBooks: EBook[] = [
   {
     id: 'manual-01',
-    title: "Ebook-Engine Manual",
-    author: 'Ebook-Engine AI',
-    description: 'The official documentation for the Ebook-Engine platform. Learn how to use the Neural Engine, generate viral covers, and publish your work to the world.',
+    title: "EbookStudio Manual",
+    author: 'EbookStudio AI',
+    description: 'The official documentation for the EbookStudio platform. Learn how to use the AI Writing Studio, generate beautiful covers, and publish your work to the world.',
     price: 0,
     coverImageUrl: 'https://images.unsplash.com/photo-1555421689-491a97ff2040?auto=format&fit=crop&q=80&w=800', 
     genre: 'Technology',
@@ -17,7 +17,7 @@ export const mockEBooks: EBook[] = [
         id: 'p1',
         pageNumber: 1,
         title: 'Welcome to the Future',
-        content: `# Welcome to Ebook-Engine\n\n**Where Thought Becomes Literature.**\n\nEbook-Engine is more than just a writing tool; it is a collaborative neural engine designed to elevate your creative process. Whether you are outlining a sci-fi epic, drafting a technical manual, or publishing your first novel, this platform provides the intelligence and infrastructure you need.\n\n![Workspace](https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&q=80&w=1000)\n\n### Core Philosophy\n\nWe believe that AI should not replace the author, but amplify them. Our "Studio AI" engine is built on Google's Gemini models, fine-tuned to understand narrative structure, tone, and pacing.\n\n### In This Manual\n\nOver the next 10 pages, we will cover:\n- The Studio Interface\n- AI Tools & Prompting\n- Visual Asset Generation\n- Publishing & Monetization`
+        content: `# Welcome to EbookStudio\n\n**Where Your Ideas Become Stories.**\n\nEbookStudio is more than just a writing tool; it is a workspace designed to help you write better. Whether you are outlining a sci-fi epic, drafting a technical manual, or publishing your first novel, this platform provides the tools you need.\n\n![Workspace](https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&q=80&w=1000)\n\n### Core Philosophy\n\nWe believe that AI should not replace the author, but help them. Our AI Co-Author is built on Google's Gemini models, designed to understand your story structure, tone, and pacing.\n\n### In This Manual\n\nOver the next 10 pages, we will cover:\n- The Studio Interface\n- Using AI Help\n- Generating Cover Art\n- Publishing & Sales`
       },
       {
         id: 'p2',
@@ -29,19 +29,19 @@ export const mockEBooks: EBook[] = [
         id: 'p3',
         pageNumber: 3,
         title: 'The eBook Studio',
-        content: `# The Studio\n\nThis is where the magic happens. The Studio is divided into two main zones: the **Context Panel** (Left) and the **Editor** (Right).\n\n![Studio](https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?auto=format&fit=crop&q=80&w=1000)\n\n### 1. The Editor\n\nA distraction-free markdown environment. It supports:\n- **Rich Text**: Headers (#), Bold (**text**), and Lists (- item).\n- **Slash Commands**: Type \`/\` to open the quick menu for headings, images, or AI generation.\n\n### 2. The Context Panel\n\nYour AI Studio AI lives here. You can chat with it to brainstorm ideas, or switch to the **Outline View** to manage your chapters.`
+        content: `# The Studio\n\nThis is where the magic happens. The Studio is divided into two main zones: the **AI Assistant** (Left) and the **Editor** (Right).\n\n![Studio](https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?auto=format&fit=crop&q=80&w=1000)\n\n### 1. The Editor\n\nA simple and clean writing environment. It supports:\n- **Easy Formatting**: Headers (#), Bold (**text**), and Lists (- item).\n- **Shortcuts**: Type \`/\` to open the quick menu for headings, images, or AI help.\n\n### 2. The Assistant Panel\n\nYour AI Co-Author lives here. You can chat with it to brainstorm ideas, or switch to the **Outline View** to manage your chapters.`
       },
       {
         id: 'p4',
         pageNumber: 4,
         title: 'Using the AI Studio AI',
-        content: `# The Neural Engine\n\nYour Studio AI is always listening. You can ask it to:\n\n- *"Write the next paragraph describing a rainy neon city."*\n- *"Fix the grammar in this chapter."*\n- *"Give me 5 ideas for a plot twist."*\n\n![AI Brain](https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&q=80&w=1000)\n\n### Context Awareness\n\nThe AI reads what you write. If you are in Chapter 3, it knows what happened in Chapter 2. This ensures consistency in character names, plot points, and tone.\n\n**Auto-Pilot**: Use the "Auto-Write" button in the header to let the AI draft an entire chapter structure for you automatically.`
+        content: `# AI Help\n\nYour AI Co-Author is here to help. You can ask it to:\n\n- *"Write the next paragraph describing a beautiful sunset."*\n- *"Fix the grammar in this chapter."*\n- *"Give me 5 ideas for a plot twist."*\n\n![AI Brain](https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&q=80&w=1000)\n\n### Context Awareness\n\nThe AI knows what you are writing. If you are in Chapter 3, it remembers what happened in Chapter 2. This ensures your characters and story stay consistent.\n\n**Assistant Mode**: Use the "Auto-Write" button in the header to let the AI suggest a chapter structure for you automatically.`
       },
       {
         id: 'p5',
         pageNumber: 5,
         title: 'Generating Visuals',
-        content: `# AI Art Generation\n\nA picture is worth a thousand words. Ebook-Engine integrates the **Gemini 2.5 Image Model** to generate professional cover art and in-book illustrations.\n\n![Art Generation](https://images.unsplash.com/photo-1561557944-6e7860d9a7fd?auto=format&fit=crop&q=80&w=1000)\n\n### How to Generate\n\n1. **Cover Art**: Go to the "Publish" page and use the AI Cover Designer. Select a style (e.g., Cinematic, Minimalist) and describe your vision.\n2. **In-Text Illustrations**: In the Studio editor, type \`/image\` to conjure an image command. Describe the scene, and the AI will insert it directly into your page.\n\n> *Note: All images are royalty-free and unique to your book.*`
+        content: `# AI Art Generation\n\nA picture is worth a thousand words. EbookStudio integrates the **Gemini 2.5 Image Model** to generate professional cover art and in-book illustrations.\n\n![Art Generation](https://images.unsplash.com/photo-1561557944-6e7860d9a7fd?auto=format&fit=crop&q=80&w=1000)\n\n### How to Generate\n\n1. **Cover Art**: Go to the "Publish" page and use the AI Cover Designer. Select a style (e.g., Cinematic, Minimalist) and describe your vision.\n2. **In-Text Illustrations**: In the Studio editor, type \`/image\` to conjure an image command. Describe the scene, and the AI will insert it directly into your page.\n\n> *Note: All images are royalty-free and unique to your book.*`
       },
       {
         id: 'p6',
@@ -71,7 +71,7 @@ export const mockEBooks: EBook[] = [
         id: 'p10',
         pageNumber: 10,
         title: 'Community & Support',
-        content: `# We Are Here For You\n\nEbook-Engine is built by writers, for writers. If you encounter bugs or have feature requests, reach out.\n\n![Community](https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&q=80&w=1000)\n\n### Channels\n\n- **Help Center**: Accessible from your profile dropdown.\n- **Email**: opendev-labs.help@gmail.com\n- **Updates**: Follow the "Ebook-Engine Manual" book for patch notes and new feature guides.\n\nThank you for creating with us.\n\n**- The OpenDev Team**`
+        content: `# We Are Here For You\n\nEbookStudio is built by writers, for writers. If you encounter bugs or have feature requests, reach out.\n\n![Community](https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&q=80&w=1000)\n\n### Channels\n\n- **Help Center**: Accessible from your profile dropdown.\n- **Email**: opendev-labs.help@gmail.com\n- **Updates**: Follow the "EbookStudio Manual" book for patch notes and new feature guides.\n\nThank you for creating with us.\n\n**- The OpenDev Team**`
       }
     ]
   },
@@ -241,7 +241,7 @@ const defaultCreatorSiteConfig: CreatorSiteConfig = {
   slug: 'admin',
   theme: 'dark-minimal',
   profileImageUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=200',
-  displayName: 'Ebook-Engine Team',
+  displayName: 'EbookStudio Team',
   tagline: 'Official Updates & Manuals',
   showcasedBookIds: ['manual-01', 'sacred-quantum-01', 'sacred-quantum-02'], 
 };
@@ -249,16 +249,16 @@ const defaultCreatorSiteConfig: CreatorSiteConfig = {
 // Standard Admin/Seller
 export const mockSeller: Seller = {
   id: 'seller_admin',
-  name: 'Ebook-Engine Official',
-  username: '@ebookengine_hq',
-  email: 'admin@ebook-engine.com',
-  payoutEmail: 'finance@ebook-engine.com',
+  name: 'EbookStudio Official',
+  username: '@ebookstudio_hq',
+  email: 'admin@ebookstudio.com',
+  payoutEmail: 'finance@ebookstudio.com',
   uploadedBooks: mockEBooks, 
   creatorSite: defaultCreatorSiteConfig,
   isVerified: true,
   profileImageUrl: defaultCreatorSiteConfig.profileImageUrl,
   coverImageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1200',
-  bio: "The official account for Ebook-Engine updates and documentation."
+  bio: "The official account for EbookStudio updates and documentation."
 };
 
 // ROOT OWNER ADMIN
@@ -286,7 +286,7 @@ export const mockUser: User = {
   id: 'user_admin',
   name: 'Admin User',
   username: '@admin',
-  email: 'admin@ebook-engine.com',
+  email: 'admin@ebookstudio.com',
   purchaseHistory: [mockEBooks[0]], 
   wishlist: [],
   isVerified: true,

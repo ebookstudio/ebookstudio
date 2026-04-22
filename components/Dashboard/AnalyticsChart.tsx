@@ -1,26 +1,28 @@
-
 import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const salesDataDefault = [ 
-  { name: 'Jan', sales: 12000 }, { name: 'Feb', sales: 19000 },
-  { name: 'Mar', sales: 15000 }, { name: 'Apr', sales: 22000 },
-  { name: 'May', sales: 28000 }, { name: 'Jun', sales: 24000 },
-  { name: 'Jul', sales: 32000 }, { name: 'Aug', sales: 38000 },
+  { name: 'Jan', sales: 12000, visitors: 8000 }, { name: 'Feb', sales: 19000, visitors: 12000 },
+  { name: 'Mar', sales: 15000, visitors: 10000 }, { name: 'Apr', sales: 22000, visitors: 15000 },
+  { name: 'May', sales: 28000, visitors: 20000 }, { name: 'Jun', sales: 24000, visitors: 18000 },
+  { name: 'Jul', sales: 32000, visitors: 25000 }, { name: 'Aug', sales: 38000, visitors: 30000 },
 ];
 
 interface AnalyticsChartProps {
     title?: string;
-    data?: { name: string; sales: number }[]; 
+    data?: any[]; 
     className?: string;
+    hideHeader?: boolean;
 }
 
-const AnalyticsChart: React.FC<AnalyticsChartProps> = ({ title = "Revenue Trend", data = salesDataDefault, className = "" }) => {
+const AnalyticsChart: React.FC<AnalyticsChartProps> = ({ title = "Performance Trend", data = salesDataDefault, className = "", hideHeader = false }) => {
   return (
     <div className={`flex flex-col h-full w-full ${className}`}>
-      <div className="flex justify-between items-center mb-6 px-2 shrink-0">
-          <h3 className="text-lg font-medium text-white">{title}</h3>
-      </div>
+      {!hideHeader && (
+        <div className="flex justify-between items-center mb-6 px-2 shrink-0">
+            <h3 className="text-xs font-bold text-zinc-600 uppercase tracking-widest">{title}</h3>
+        </div>
+      )}
 
       <div className="flex-1 w-full min-h-0 relative">
         <div className="absolute inset-0">
@@ -28,43 +30,54 @@ const AnalyticsChart: React.FC<AnalyticsChartProps> = ({ title = "Revenue Trend"
                 <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                     <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#81c995" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#81c995" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#fafafa" stopOpacity={0.15}/>
+                        <stop offset="95%" stopColor="#fafafa" stopOpacity={0}/>
+                    </linearGradient>
+                    <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#3f3f46" stopOpacity={0.2}/>
+                        <stop offset="95%" stopColor="#3f3f46" stopOpacity={0}/>
                     </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
+                <CartesianGrid strokeDasharray="0" stroke="#18181b" vertical={false} />
                 <XAxis 
                     dataKey="name" 
-                    stroke="#666" 
-                    tick={{ fill: '#999', fontSize: 11 }} 
+                    stroke="#27272a" 
+                    tick={{ fill: '#3f3f46', fontSize: 10, fontWeight: 700 }} 
                     axisLine={false}
                     tickLine={false}
                     dy={10}
                 />
                 <YAxis 
-                    stroke="#666" 
-                    tick={{ fill: '#999', fontSize: 11 }}
-                    tickFormatter={(value) => `₹${value >= 1000 ? (value/1000).toFixed(0) + 'k' : value}`} 
+                    stroke="#27272a" 
+                    tick={{ fill: '#3f3f46', fontSize: 10, fontWeight: 700 }}
+                    tickFormatter={(value) => `${value >= 1000 ? (value/1000).toFixed(0) + 'k' : value}`} 
                     axisLine={false}
                     tickLine={false}
                 />
                 <Tooltip
-                    cursor={{ stroke: '#81c995', strokeWidth: 1, strokeDasharray: '4 4' }} 
+                    cursor={{ stroke: '#52525b', strokeWidth: 1 }} 
                     contentStyle={{ 
-                        backgroundColor: '#1e1e1e', 
-                        border: '1px solid #333', 
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+                        backgroundColor: '#09090b', 
+                        border: '1px solid #27272a', 
+                        borderRadius: '4px',
+                        boxShadow: '0 10px 40px rgba(0,0,0,0.8)'
                     }}
-                    itemStyle={{ color: '#fff', fontSize: '12px' }}
-                    labelStyle={{ color: '#888', fontSize: '10px', marginBottom: '4px' }}
-                    formatter={(value: number) => [`₹${value.toLocaleString()}`, 'Revenue']}
+                    itemStyle={{ color: '#fafafa', fontSize: '10px', fontWeight: 700 }}
+                    labelStyle={{ color: '#52525b', fontSize: '9px', fontWeight: 800, marginBottom: '6px', textTransform: 'uppercase', tracking: '0.1em' }}
+                />
+                <Area 
+                    type="monotone" 
+                    dataKey="visitors" 
+                    stroke="#3f3f46" 
+                    strokeWidth={1}
+                    fillOpacity={1} 
+                    fill="url(#colorVisitors)" 
                 />
                 <Area 
                     type="monotone" 
                     dataKey="sales" 
-                    stroke="#81c995" 
-                    strokeWidth={3}
+                    stroke="#fafafa" 
+                    strokeWidth={1.5}
                     fillOpacity={1} 
                     fill="url(#colorSales)" 
                 />

@@ -5,7 +5,7 @@ import {
 } from '../../constants';
 import * as ReactRouterDOM from 'react-router-dom';
 import { GenerateContentResponse } from '@google/genai';
-import MorphicEye from '../MorphicEye';
+import CoAuthor from '../CoAuthor';
 
 const { useLocation } = ReactRouterDOM as any;
 
@@ -82,7 +82,7 @@ const AIChatbot: React.FC = () => {
         <div className="w-[90vw] md:w-[400px] h-[500px] md:h-[600px] max-h-[80vh] bg-[#09090b]/95 backdrop-blur-2xl rounded-t-3xl border-t border-x border-white/10 shadow-2xl flex flex-col overflow-hidden animate-slide-up ring-1 ring-white/10">
              <header className="flex items-center justify-between px-5 py-4 border-b border-white/5 bg-white/5">
                 <div className="flex items-center gap-3">
-                    <MorphicEye className="w-10 h-10 rounded-lg border border-white/20 bg-[#222] shadow-sm" />
+                    <CoAuthor className="w-10 h-10 rounded-lg border border-white/20 bg-[#222] shadow-sm" />
                     <div>
                         <h2 className="text-sm font-bold text-white tracking-wide">QUICK ASSIST</h2>
                     </div>
@@ -105,7 +105,7 @@ const AIChatbot: React.FC = () => {
                     <div key={msg.id} className="animate-fade-in border-b border-white/5 last:border-0 hover:bg-white/[0.02] transition-colors">
                          <div className="px-5 py-6 flex gap-4 items-start">
                             {msg.role === 'ai' && (
-                                <MorphicEye className="w-8 h-8 rounded-lg flex-shrink-0 mt-1 border border-white/20 bg-[#222]" isActive={false} />
+                                <CoAuthor className="w-8 h-8 rounded-lg flex-shrink-0 mt-1 border border-white/20 bg-[#222]" isActive={false} />
                             )}
                             <div className={`flex-1 space-y-2 ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
                                 {msg.role === 'ai' && (

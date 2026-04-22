@@ -1,199 +1,191 @@
-import React from 'react';
+import React, { useState } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
-    IconBrain, IconRocket, IconBook, IconArrowRight, 
-    LogoGoogle, LogoReact, LogoTS 
+    IconRocket, IconBook, IconArrowRight, 
+    IconStar, IconArrowUpRight, IconSparkles
 } from '../constants';
-import MorphicEye from '../components/MorphicEye';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '../components/ui/button';
+import { cn } from '../lib/utils';
+import { EBook } from '../types';
 
 const { useNavigate } = ReactRouterDOM as any;
 
+const MOCK_BOOKS: EBook[] = [
+    { id: '1', title: "The Silent Garden", author: "Elena Voss", price: 1299, genre: "Fiction", coverImageUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&auto=format", description: "A journey through the hidden whispers of nature.", publicationDate: "2026", content: "" },
+    { id: '2', title: "Modern Structures", author: "Marcus Chen", price: 1999, genre: "Design", coverImageUrl: "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=800&auto=format", description: "The intersection of biological intelligence and digital form.", publicationDate: "2026", content: "" },
+    { id: '3', title: "The Perception Shift", author: "Aria Thorne", price: 999, genre: "Philosophy", coverImageUrl: "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=800&auto=format", description: "Exploring the boundaries of perception in the digital age.", publicationDate: "2026", content: "" },
+    { id: '4', title: "Zero to Unicorn", author: "Sophia Lin", price: 2499, genre: "Business", coverImageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format", description: "Scalable strategies for the next generation of founders.", publicationDate: "2026", content: "" },
+];
+
 const HomePage: React.FC = () => {
     const navigate = useNavigate();
+    const [activeCategory, setActiveCategory] = useState("All");
+
+    const categories = ["All", "Fiction", "Design", "Philosophy", "Business"];
+    const filteredBooks = activeCategory === "All" ? MOCK_BOOKS : MOCK_BOOKS.filter(b => b.genre === activeCategory);
 
     return (
-        <div className="min-h-screen bg-[#000000] selection:bg-white selection:text-black">
+        <div className="min-h-screen bg-background text-foreground selection:bg-zinc-100/10">
             
             {/* --- HERO SECTION --- */}
-            <section className="relative min-h-screen flex flex-col items-center justify-center pt-20 px-6">
-                {/* Background Ambience */}
-                <div className="absolute inset-0 z-0">
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-white/[0.015] rounded-full blur-[160px]" />
-                    <div className="absolute inset-0 bg-dot-matrix opacity-[0.2]" />
-                </div>
+            <section className="relative min-h-[90vh] flex flex-col items-center justify-center pt-32 px-6 overflow-hidden">
+                <div className="absolute inset-0 bg-dot-matrix opacity-[0.1]" />
                 
+                {/* Subtle Glows */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-zinc-100/[0.02] rounded-full blur-[120px] pointer-events-none" />
+
                 <motion.div 
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 1.2, ease: [0.19, 1, 0.22, 1] }}
-                    className="relative z-10 flex flex-col items-center w-full max-w-6xl"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    className="relative z-10 flex flex-col items-center w-full max-w-5xl text-center"
                 >
-                    {/* The Observer: Symmetrical Centerpiece */}
-                    <div className="mb-20">
-                        <MorphicEye variant="hero" className="opacity-80" />
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-zinc-900 border border-zinc-800 mb-8 animate-fade-in">
+                        <IconSparkles className="w-3.5 h-3.5 text-zinc-100" />
+                        <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-500">Premium Authorship Studio</span>
                     </div>
 
-                    <Badge variant="outline" className="mb-8 border-white/10 px-6 py-1.5 text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 rounded-full bg-white/[0.02]">
-                      Established Access Required
-                    </Badge>
-
-                    <h1 className="text-white text-center text-6xl md:text-8xl font-black tracking-tighter leading-[0.9] mb-12 max-w-4xl">
-                        The Neural <br /> Manuscript Engine
+                    <h1 className="text-5xl md:text-8xl font-bold tracking-tight mb-8 leading-[1.05] text-zinc-100">
+                        Craft the future of <br />
+                        <span className="text-zinc-500">digital literature.</span>
                     </h1>
                     
-                    <p className="text-zinc-500 text-center max-w-2xl mb-16 px-4 text-xl font-medium leading-relaxed">
-                        Creative sovereignty for the modern architect. <br />
-                        Orchestrate literature with <span className="text-white">Studio Interface</span>.
+                    <p className="text-zinc-500 text-lg md:text-xl max-w-2xl mb-12 leading-relaxed font-medium">
+                        The professional sanctuary for high-fidelity literature. Elevate your thoughts into publication-ready assets with advanced AI collaboration.
                     </p>
 
-                    <div className="flex flex-col sm:flex-row gap-6">
+                    <div className="flex flex-col sm:flex-row gap-4">
                         <Button 
                           onClick={() => navigate('/dashboard')}
-                          className="h-16 px-12 rounded-full bg-white text-black hover:bg-zinc-200 text-xs font-black uppercase tracking-widest transition-all hover:scale-105 shadow-2xl"
+                          className="h-12 px-8 rounded-md bg-zinc-100 text-zinc-950 hover:bg-zinc-200 text-sm font-bold transition-all flex items-center gap-2"
                         >
-                            Initialize Console <IconArrowRight className="w-4 h-4 ml-3" />
+                            Enter the Studio <IconArrowUpRight className="w-4 h-4" />
                         </Button>
                         <Button 
-                          variant="outline"
-                          onClick={() => navigate('/pricing')}
-                          className="h-16 px-12 rounded-full border-white/10 text-white hover:bg-white/5 text-xs font-black uppercase tracking-widest transition-all"
+                          variant="ghost"
+                          onClick={() => navigate('/store')}
+                          className="h-12 px-8 rounded-md border border-zinc-800 bg-zinc-900/50 text-zinc-100 hover:bg-zinc-800 text-sm font-bold transition-all"
                         >
-                            View Protocols
+                            Explore Library
                         </Button>
                     </div>
+                </motion.div>
 
-                    {/* Infrastructure Entities */}
-                    <div className="mt-40 flex flex-col items-center gap-10 opacity-30">
-                        <p className="text-[9px] tracking-[0.6em] text-zinc-600 font-black uppercase">Infrastructure Partners</p>
-                        <div className="flex items-center gap-16">
-                            <LogoGoogle className="w-6 h-6 grayscale" />
-                            <LogoReact className="w-6 h-6 grayscale" />
-                            <LogoTS className="w-6 h-6 grayscale" />
+                {/* Dashboard Preview Mockup */}
+                <motion.div 
+                    initial={{ opacity: 0, y: 100 }}
+                    animate={{ opacity: 1, y: 40 }}
+                    transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="mt-20 w-full max-w-6xl mx-auto px-4"
+                >
+                    <div className="rounded-2xl border border-zinc-800 bg-zinc-950/50 backdrop-blur-3xl shadow-2xl overflow-hidden aspect-[16/9] relative group">
+                        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60" />
+                        
+                        {/* Mock Dashboard UI */}
+                        <div className="h-full flex text-[8px] font-bold uppercase tracking-widest text-zinc-800">
+                            <div className="w-48 border-r border-zinc-900 p-6 space-y-6 hidden md:block bg-zinc-950/80">
+                                <div className="w-6 h-6 rounded bg-zinc-100 mb-8 flex items-center justify-center shadow-lg">
+                                    <div className="w-3 h-3 rounded-sm bg-zinc-950" />
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="h-1.5 w-full bg-zinc-900 rounded" />
+                                    <div className="h-1.5 w-3/4 bg-zinc-900 rounded opacity-50" />
+                                    <div className="h-1.5 w-5/6 bg-zinc-900 rounded opacity-50" />
+                                </div>
+                                <div className="pt-8 space-y-4">
+                                    <div className="text-[6px] text-zinc-700 uppercase tracking-[0.2em]">Workspace</div>
+                                    <div className="h-1.5 w-full bg-zinc-900 rounded opacity-50" />
+                                    <div className="h-1.5 w-2/3 bg-zinc-900 rounded opacity-50" />
+                                </div>
+                            </div>
+                            <div className="flex-1 p-10 space-y-10 bg-zinc-950/40">
+                                <div className="flex justify-between items-center">
+                                    <div className="space-y-2">
+                                        <div className="h-2 w-32 bg-zinc-900 rounded" />
+                                        <div className="h-1 w-20 bg-zinc-900/30 rounded" />
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <div className="h-8 w-24 rounded-md bg-zinc-900 border border-zinc-800" />
+                                        <div className="h-8 w-8 rounded-md bg-zinc-900 border border-zinc-800" />
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-3 gap-6">
+                                    {[1, 2, 3].map(i => (
+                                        <div key={i} className="h-32 rounded-xl bg-zinc-900/30 border border-zinc-800 p-5 flex flex-col justify-between">
+                                            <div className="h-1.5 w-12 bg-zinc-800 rounded" />
+                                            <div className="h-4 w-24 bg-zinc-100/10 rounded" />
+                                            <div className="h-1.5 w-20 bg-zinc-800/50 rounded" />
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="h-64 rounded-xl bg-zinc-900/10 border border-zinc-900 relative overflow-hidden">
+                                     <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-white/[0.01] to-transparent" />
+                                     <svg className="absolute inset-0 w-full h-full opacity-[0.03]" viewBox="0 0 400 100">
+                                         <path d="M0,80 C50,70 100,90 150,60 C200,30 250,50 300,20 C350,-10 400,10 400,10 L400,100 L0,100 Z" fill="white" />
+                                     </svg>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-700 bg-black/60 backdrop-blur-xl">
+                             <Button className="rounded-full h-20 w-20 flex items-center justify-center p-0 bg-zinc-100 text-zinc-950 hover:scale-110 shadow-2xl transition-transform border-none">
+                                <IconRocket className="w-6 h-6" />
+                             </Button>
                         </div>
                     </div>
                 </motion.div>
             </section>
 
-            {/* --- SYSTEM CAPABILITIES --- */}
-            <section className="py-64 px-6 relative z-10 border-y border-white/5 bg-[#030303]">
+            {/* --- FEATURES SECTION --- */}
+            <section className="py-32 px-6 border-t border-zinc-900 bg-zinc-950">
                 <div className="max-w-7xl mx-auto">
-                    <div className="flex flex-col lg:flex-row items-baseline justify-between mb-40 gap-12">
-                        <div className="max-w-3xl">
-                            <h2 className="text-white text-5xl md:text-8xl font-black tracking-tighter mb-10 leading-none">Sovereign <br /> Architecture.</h2>
-                            <p className="text-zinc-500 text-2xl font-medium leading-relaxed">
-                                High-fidelity tools engineered for the transition from fragmented nodes to professional literature.
-                            </p>
-                        </div>
-                        <div className="h-[1px] w-full lg:w-40 bg-white/10" />
-                    </div>
+                    <header className="text-center mb-24 space-y-4">
+                        <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-zinc-100">Precision Authorship.</h2>
+                        <p className="text-zinc-500 text-lg max-w-2xl mx-auto font-medium">
+                            Designed for the modern architect of words. A suite of high-density tools that integrate seamlessly with your creative process.
+                        </p>
+                    </header>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                        {/* Capability 01 */}
-                        <Card className="bg-transparent border-white/5 rounded-[48px] overflow-hidden group hover:border-white/10 transition-all duration-700">
-                          <CardContent className="p-12 flex flex-col h-full">
-                              <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center mb-12 border border-white/5 group-hover:bg-white group-hover:text-black transition-all duration-700">
-                                  <IconBrain className="w-7 h-7" />
-                              </div>
-                              <h3 className="text-white text-3xl font-black mb-6 tracking-tight">Neural Drafting</h3>
-                              <p className="text-zinc-500 text-lg font-medium leading-relaxed mb-12 flex-grow">
-                                  Automated narrative synthesis. Our engine understands structure, tone, and depth to maintain world-building consistency.
-                              </p>
-                              <div className="aspect-square bg-white/[0.02] rounded-3xl border border-white/5 flex items-center justify-center opacity-40 group-hover:opacity-100 transition-all duration-1000">
-                                <div className="w-1/2 h-[1px] bg-white/20 relative">
-                                  <div className="absolute inset-0 bg-white shadow-[0_0_20px_white] w-1/4 animate-scanline" />
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {[
+                            { title: "AI Integration", desc: "Collaborate with an intelligence engine that understands your unique narrative style.", icon: IconSparkles },
+                            { title: "Direct Publishing", desc: "Instantly publish and monetize your works to a global audience.", icon: IconRocket },
+                            { title: "Studio Experience", desc: "Immersive writing environments optimized for deep concentration.", icon: IconBook }
+                        ].map((feature, i) => (
+                            <div key={i} className="p-10 rounded-2xl border border-zinc-900 bg-zinc-950 hover:border-zinc-700 transition-all group">
+                                <div className="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-8 text-zinc-100 group-hover:scale-110 transition-transform">
+                                    <feature.icon className="w-5 h-5" />
                                 </div>
-                              </div>
-                          </CardContent>
-                        </Card>
-
-                        {/* Capability 02 */}
-                        <Card className="bg-transparent border-white/5 rounded-[48px] overflow-hidden group hover:border-white/10 transition-all duration-700">
-                          <CardContent className="p-12 flex flex-col h-full">
-                              <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center mb-12 border border-white/5 group-hover:bg-white group-hover:text-black transition-all duration-700">
-                                  <IconRocket className="w-7 h-7" />
-                              </div>
-                              <h3 className="text-white text-3xl font-black mb-6 tracking-tight">Direct Commerce</h3>
-                              <p className="text-zinc-500 text-lg font-medium leading-relaxed mb-12 flex-grow">
-                                  Establish your own storefront. Retain 100% ownership of your intellectual fragments and distribution channels.
-                              </p>
-                              <div className="aspect-square bg-white/[0.02] rounded-3xl border border-white/5 p-10 opacity-40 group-hover:opacity-100 transition-all duration-1000">
-                                <div className="w-full h-full border border-dashed border-white/10 rounded-2xl flex items-center justify-center">
-                                  <span className="text-[10px] font-black uppercase tracking-widest text-zinc-700">Protocol Ready</span>
-                                </div>
-                              </div>
-                          </CardContent>
-                        </Card>
-
-                        {/* Capability 03 */}
-                        <Card className="bg-transparent border-white/5 rounded-[48px] overflow-hidden group hover:border-white/10 transition-all duration-700">
-                          <CardContent className="p-12 flex flex-col h-full">
-                              <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center mb-12 border border-white/5 group-hover:bg-white group-hover:text-black transition-all duration-700">
-                                  <IconBook className="w-7 h-7" />
-                              </div>
-                              <h3 className="text-white text-3xl font-black mb-6 tracking-tight">Focus Protocol</h3>
-                              <p className="text-zinc-500 text-lg font-medium leading-relaxed mb-12 flex-grow">
-                                  A distraction-free synthesis interface. Minimized cognitive load for maximum immersion.
-                              </p>
-                              <div className="aspect-square bg-white/[0.02] rounded-3xl border border-white/5 flex items-center justify-center opacity-40 group-hover:opacity-100 transition-all duration-1000">
-                                <MorphicEye variant="logo" className="scale-150" />
-                              </div>
-                          </CardContent>
-                        </Card>
+                                <h3 className="text-xl font-bold mb-4 text-zinc-100 tracking-tight">{feature.title}</h3>
+                                <p className="text-zinc-500 leading-relaxed font-medium text-sm">{feature.desc}</p>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>
 
-            {/* --- CALL TO ACTION --- */}
-            <section className="py-80 px-6 relative bg-black">
-                 <div className="max-w-5xl mx-auto text-center">
-                    <motion.div
-                        initial={{ opacity: 0, y: 40 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-                        viewport={{ once: true }}
-                    >
-                        <h2 className="text-white text-6xl md:text-9xl font-black tracking-tighter mb-16 leading-none">Manifest <br /> Your Vision.</h2>
-                        <p className="text-zinc-500 text-2xl font-medium mb-20 max-w-3xl mx-auto leading-relaxed">
-                            Join the next iteration of creators who are architecting the future of digital literature.
-                        </p>
+            {/* --- CTA SECTION --- */}
+            <section className="py-32 px-6 border-t border-zinc-900 text-center relative overflow-hidden bg-zinc-950">
+                 <div className="absolute inset-0 bg-dot-matrix opacity-[0.05]" />
+                 <div className="max-w-4xl mx-auto relative z-10 space-y-10">
+                    <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-zinc-100">Begin your session.</h2>
+                    <p className="text-zinc-500 text-lg md:text-xl font-medium">
+                        Join the collective of professionals redefining the soul of modern literature.
+                    </p>
+                    <div className="pt-4">
                         <Button 
                           onClick={() => navigate('/login')}
-                          className="h-20 px-20 rounded-full bg-white text-black hover:bg-zinc-200 text-sm font-black uppercase tracking-widest shadow-[0_0_60px_rgba(255,255,255,0.1)] transition-all hover:scale-110"
+                          className="h-14 px-12 rounded-md bg-zinc-100 text-zinc-950 hover:bg-zinc-200 text-lg font-bold transition-all shadow-xl"
                         >
-                            Establish Protocol Access
+                            Get Started
                         </Button>
-                    </motion.div>
+                    </div>
                  </div>
             </section>
-
-            {/* --- FOOTER --- */}
-            <footer className="py-32 border-t border-white/5 bg-black">
-                <div className="max-w-7xl mx-auto px-6">
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-16">
-                        <div className="flex items-center gap-6">
-                            <MorphicEye variant="logo" className="opacity-30" />
-                            <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.5em]">ebookstudio</span>
-                        </div>
-                        
-                        <div className="flex items-center gap-16 opacity-10">
-                            <LogoReact className="w-6 h-6 grayscale" />
-                            <LogoTS className="w-6 h-6 grayscale" />
-                        </div>
-                        
-                        <p className="text-[10px] text-zinc-800 font-black tracking-[0.2em] uppercase">
-                            © 2026 opendev-labs
-                        </p>
-                    </div>
-                </div>
-            </footer>
 
         </div>
     );
 };
 
 export default HomePage;
-

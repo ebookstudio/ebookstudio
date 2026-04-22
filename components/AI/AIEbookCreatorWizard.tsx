@@ -1,16 +1,17 @@
-
 import React, { useState } from 'react';
 import { IconSparkles, IconWand, IconLink, IconCheck, IconX, IconBook } from '../../constants';
 import Spinner from '../Spinner';
 import { generateTitleSuggestions, generateBookOutline, generateFullChapterContent } from '../../services/geminiService';
 import { ChapterOutline, AnalyzedStyle } from '../../types';
+import { cn } from '../../lib/utils';
+import { Button } from '../../components/ui/button';
 
 interface AIEbookCreatorWizardProps {
     onComplete: (data: { title: string; pages: { title: string; content: string }[]; style?: AnalyzedStyle }) => void;
     onCancel: () => void;
 }
 
-const AIEbookCreatorWizard: React.FC<AIEbookCreatorWizardProps> = ({ onComplete, onCancel }) => {
+const AIEbookCreatorWizard: React.FC = ({ onComplete, onCancel }) => {
     const [step, setStep] = useState<'mode' | 'details' | 'outline' | 'generation'>('mode');
     
     // Import Mode
@@ -37,15 +38,14 @@ const AIEbookCreatorWizard: React.FC<AIEbookCreatorWizardProps> = ({ onComplete,
     const handleAnalyzeCanva = () => {
         if (!canvaLink) return;
         setIsAnalyzing(true);
-        // Simulation of analysis logic based on the user's prompt description
         setTimeout(() => {
             setAnalyzedStyle({
-                fontPrimary: 'Playfair Display',
+                fontPrimary: 'Inter',
                 fontSecondary: 'Inter',
-                colorPrimary: '#2C5530', // Deep Green
-                colorSecondary: '#D4AF37', // Gold
-                colorBackground: '#FEFDF7', // Cream
-                colorText: '#2D3748'
+                colorPrimary: '#18181b', 
+                colorSecondary: '#fafafa', 
+                colorBackground: '#09090b', 
+                colorText: '#fafafa'
             });
             setIsAnalyzing(false);
             setStep('details');
@@ -94,244 +94,279 @@ const AIEbookCreatorWizard: React.FC<AIEbookCreatorWizardProps> = ({ onComplete,
         });
     };
 
+    const inputClasses = "w-full h-10 bg-zinc-950 border border-border rounded-md px-4 text-xs font-bold text-zinc-100 placeholder:text-zinc-800 focus:outline-none focus:ring-1 focus:ring-zinc-700 transition-all";
+    const labelClasses = "block text-[9px] font-bold text-zinc-600 uppercase tracking-[0.2em] mb-2 ml-1";
+
     return (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-            <div className="bg-[#0a0a0a] w-full max-w-4xl h-[600px] rounded-3xl border border-white/10 shadow-2xl flex overflow-hidden relative">
+        <div className="fixed inset-0 z-[200] bg-zinc-950/80 backdrop-blur-md flex items-center justify-center p-4">
+            <div className="bg-zinc-900 w-full max-w-4xl h-[600px] rounded-2xl border border-border shadow-2xl flex overflow-hidden relative animate-in zoom-in duration-300">
                 
                 {/* Left Sidebar Steps */}
-                <div className="w-64 bg-[#111] border-r border-white/5 p-6 flex flex-col justify-between hidden md:flex">
-                    <div>
-                        <h2 className="text-xl font-bold text-white mb-8 flex items-center gap-2">
-                            <IconSparkles className="w-5 h-5 text-google-blue"/> AI Creator
-                        </h2>
+                <div className="w-60 bg-zinc-950 border-r border-border p-8 flex flex-col justify-between hidden md:flex">
+                    <div className="space-y-12">
+                        <div className="flex items-center gap-3">
+                            <div className="w-6 h-6 bg-zinc-100 rounded flex items-center justify-center shadow-lg">
+                                <span className="text-zinc-950 font-black text-[10px]">E</span>
+                            </div>
+                            <span className="text-[10px] font-bold text-zinc-100 uppercase tracking-widest">AI Creator</span>
+                        </div>
                         <div className="space-y-6">
                             {[
-                                { id: 'mode', label: 'Start' },
-                                { id: 'details', label: 'Concept' },
+                                { id: 'mode', label: 'Initialization' },
+                                { id: 'details', label: 'Conceptualize' },
                                 { id: 'outline', label: 'Structure' },
-                                { id: 'generation', label: 'Generate' }
+                                { id: 'generation', label: 'Generation' }
                             ].map((s, idx) => {
                                 const isActive = step === s.id;
                                 const isPast = ['mode', 'details', 'outline', 'generation'].indexOf(step) > idx;
                                 return (
-                                    <div key={s.id} className={`flex items-center gap-3 ${isActive ? 'text-white' : 'text-neutral-500'}`}>
-                                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border ${isActive ? 'border-white bg-white/10' : isPast ? 'bg-green-500 border-green-500 text-black' : 'border-neutral-700'}`}>
+                                    <div key={s.id} className="flex items-center gap-4 group">
+                                        <div className={cn(
+                                            "w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold border transition-all",
+                                            isActive ? 'border-zinc-100 bg-zinc-100 text-zinc-950 scale-105 shadow-lg shadow-white/5' : 
+                                            isPast ? 'bg-zinc-400 border-zinc-400 text-zinc-950' : 
+                                            'border-zinc-800 text-zinc-600'
+                                        )}>
                                             {isPast ? <IconCheck className="w-3 h-3"/> : idx + 1}
                                         </div>
-                                        <span className="text-sm font-medium">{s.label}</span>
+                                        <span className={cn(
+                                            "text-[9px] font-bold uppercase tracking-widest transition-colors",
+                                            isActive ? 'text-zinc-100' : 'text-zinc-600'
+                                        )}>{s.label}</span>
                                     </div>
                                 );
                             })}
                         </div>
                     </div>
                     {analyzedStyle && (
-                        <div className="p-3 bg-white/5 rounded-xl border border-white/5">
-                            <p className="text-[10px] text-neutral-500 uppercase tracking-widest mb-2">Style Active</p>
+                        <div className="p-4 bg-zinc-900 border border-border rounded-lg space-y-3">
+                            <p className="text-[8px] text-zinc-600 font-bold uppercase tracking-widest">Style Profile</p>
                             <div className="flex gap-2">
-                                <div className="w-4 h-4 rounded-full" style={{background: analyzedStyle.colorPrimary}}></div>
-                                <div className="w-4 h-4 rounded-full" style={{background: analyzedStyle.colorSecondary}}></div>
-                                <div className="w-4 h-4 rounded-full" style={{background: analyzedStyle.colorBackground}}></div>
+                                <div className="w-3 h-3 rounded-full border border-border" style={{background: analyzedStyle.colorPrimary}}></div>
+                                <div className="w-3 h-3 rounded-full border border-border" style={{background: analyzedStyle.colorSecondary}}></div>
+                                <div className="w-3 h-3 rounded-full border border-border" style={{background: analyzedStyle.colorBackground}}></div>
                             </div>
-                            <p className="text-xs text-white mt-1 font-serif">Canva Theme</p>
+                            <p className="text-[9px] text-zinc-400 font-bold">Imported Identity</p>
                         </div>
                     )}
                 </div>
 
                 {/* Main Content Area */}
-                <div className="flex-1 p-8 overflow-y-auto relative custom-scrollbar">
-                    <button onClick={onCancel} className="absolute top-6 right-6 p-2 hover:bg-white/10 rounded-full transition-colors text-neutral-400 hover:text-white">
-                        <IconX className="w-5 h-5" />
-                    </button>
+                <div className="flex-1 flex flex-col min-w-0 bg-zinc-900 relative">
+                    <header className="h-14 border-b border-border flex items-center justify-between px-8 shrink-0">
+                        <div className="w-4" /> {/* Spacer */}
+                        <button onClick={onCancel} className="p-2 hover:bg-zinc-800 rounded-md transition-all text-zinc-700 hover:text-zinc-100">
+                            <IconX className="w-3.5 h-3.5" />
+                        </button>
+                    </header>
 
-                    {step === 'mode' && (
-                        <div className="h-full flex flex-col items-center justify-center text-center max-w-lg mx-auto">
-                            <h3 className="text-3xl font-bold text-white mb-2">Start a New Project</h3>
-                            <p className="text-neutral-400 mb-8">Choose how you want to begin your creative journey.</p>
-                            
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                                <button 
-                                    onClick={() => setStep('details')}
-                                    className="p-6 rounded-3xl bg-white/5 border border-white/10 hover:border-white/30 hover:bg-white/10 transition-all group text-left"
-                                >
-                                    <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                                        <IconWand className="w-5 h-5 text-blue-400" />
+                    <div className="flex-1 overflow-y-auto p-8 custom-scrollbar relative">
+                        {step === 'mode' && (
+                            <div className="h-full flex flex-col items-center justify-center text-center max-w-lg mx-auto animate-fade-in space-y-8">
+                                <div className="space-y-2">
+                                    <h3 className="text-xl font-bold text-zinc-100 tracking-tight">Create Publication</h3>
+                                    <p className="text-xs text-zinc-500 font-medium">Choose your preferred generation method.</p>
+                                </div>
+                                
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                                    <button 
+                                        onClick={() => setStep('details')}
+                                        className="p-6 rounded-xl bg-zinc-950 border border-border hover:border-zinc-700 hover:bg-zinc-900 transition-all group text-left space-y-4"
+                                    >
+                                        <div className="w-8 h-8 bg-zinc-900 border border-border rounded flex items-center justify-center group-hover:scale-105 transition-transform">
+                                            <IconWand className="w-3.5 h-3.5 text-zinc-100" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xs font-bold text-zinc-100 mb-1 uppercase tracking-widest">AI Standard</h4>
+                                            <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest leading-relaxed">Assisted drafting from scratch.</p>
+                                        </div>
+                                    </button>
+
+                                    <div className="p-6 rounded-xl bg-zinc-950 border border-border group text-left space-y-4 relative">
+                                         <div className="w-8 h-8 bg-zinc-900 border border-border rounded flex items-center justify-center group-hover:scale-105 transition-transform">
+                                            <IconLink className="w-3.5 h-3.5 text-zinc-100" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xs font-bold text-zinc-100 mb-1 uppercase tracking-widest">Asset Sync</h4>
+                                            <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest leading-relaxed mb-4">Import style from external links.</p>
+                                            
+                                            <div className="space-y-2">
+                                                <input 
+                                                    value={canvaLink}
+                                                    onChange={(e) => setCanvaLink(e.target.value)}
+                                                    placeholder="URL Source..."
+                                                    className="w-full h-8 bg-zinc-900 border border-zinc-800 rounded px-3 text-[10px] font-bold text-zinc-100 focus:outline-none transition-all"
+                                                />
+                                                <Button 
+                                                    onClick={handleAnalyzeCanva}
+                                                    disabled={isAnalyzing || !canvaLink}
+                                                    className="w-full h-8 bg-zinc-100 text-zinc-950 text-[9px] font-black uppercase tracking-widest rounded transition-all disabled:opacity-50"
+                                                >
+                                                    {isAnalyzing ? 'Analyzing...' : 'Sync Asset'}
+                                                </Button>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <h4 className="font-bold text-white mb-1">From Scratch</h4>
-                                    <p className="text-xs text-neutral-400">Let AI guide you through topic, genre, and outline creation.</p>
-                                </button>
-
-                                <button 
-                                    onClick={() => {}}
-                                    className="p-6 rounded-3xl bg-white/5 border border-white/10 hover:border-white/30 hover:bg-white/10 transition-all group text-left relative overflow-hidden"
-                                >
-                                     {/* Input Overlay for Canva */}
-                                     <div className="space-y-3">
-                                        <div className="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                                            <IconLink className="w-5 h-5 text-purple-400" />
-                                        </div>
-                                        <h4 className="font-bold text-white mb-1">Import from Canva</h4>
-                                        <p className="text-xs text-neutral-400 mb-3">Analyze a public link and replicate the design style.</p>
-                                        
-                                        <div className="relative">
-                                            <input 
-                                                value={canvaLink}
-                                                onChange={(e) => setCanvaLink(e.target.value)}
-                                                placeholder="Paste Canva View Link..."
-                                                className="w-full bg-black border border-white/20 rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-purple-500"
-                                                onClick={(e) => e.stopPropagation()}
-                                            />
-                                            <button 
-                                                onClick={(e) => { e.stopPropagation(); handleAnalyzeCanva(); }}
-                                                disabled={isAnalyzing || !canvaLink}
-                                                className="mt-2 w-full py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold rounded-full transition-colors disabled:opacity-50"
-                                            >
-                                                {isAnalyzing ? 'Analyzing...' : 'Analyze & Import'}
-                                            </button>
-                                        </div>
-                                     </div>
-                                </button>
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {step === 'details' && (
-                        <div className="max-w-xl mx-auto py-10">
-                            <h3 className="text-2xl font-bold text-white mb-6">Book Concept</h3>
-                            
-                            <div className="space-y-5">
-                                <div>
-                                    <label className="block text-xs font-bold text-neutral-500 uppercase mb-1">Topic / Subject</label>
-                                    <input 
-                                        value={topic}
-                                        onChange={(e) => setTopic(e.target.value)}
-                                        className="w-full bg-[#151515] border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/30"
-                                        placeholder="e.g. Artificial Intelligence in 2030"
-                                    />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-bold text-neutral-500 uppercase mb-1">Genre</label>
-                                        <select 
-                                            value={genre} 
-                                            onChange={e => setGenre(e.target.value)}
-                                            className="w-full bg-[#151515] border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/30 appearance-none"
-                                        >
-                                            <option value="">Select Genre</option>
-                                            <option value="Non-Fiction">Non-Fiction</option>
-                                            <option value="Fiction">Fiction</option>
-                                            <option value="Sci-Fi">Sci-Fi</option>
-                                            <option value="Business">Business</option>
-                                            <option value="Self-Help">Self-Help</option>
-                                        </select>
+                        {step === 'details' && (
+                            <div className="max-w-xl mx-auto animate-fade-in space-y-8">
+                                <header>
+                                    <h3 className="text-xl font-bold text-zinc-100 tracking-tight">Conceptualize</h3>
+                                    <p className="text-xs text-zinc-500 font-medium">Define the core parameters of your asset.</p>
+                                </header>
+                                
+                                <div className="space-y-6">
+                                    <div className="space-y-2">
+                                        <label className={labelClasses}>Asset Topic</label>
+                                        <input 
+                                            value={topic}
+                                            onChange={(e) => setTopic(e.target.value)}
+                                            className={inputClasses}
+                                            placeholder="e.g. Modern Architecture in 2050"
+                                        />
                                     </div>
-                                    <div>
-                                        <label className="block text-xs font-bold text-neutral-500 uppercase mb-1">Tone</label>
-                                        <select 
-                                            value={tone} 
-                                            onChange={e => setTone(e.target.value)}
-                                            className="w-full bg-[#151515] border border-white/10 rounded-lg p-3 text-white focus:outline-none focus:border-white/30 appearance-none"
-                                        >
-                                            <option value="Professional">Professional</option>
-                                            <option value="Conversational">Conversational</option>
-                                            <option value="Inspirational">Inspirational</option>
-                                            <option value="Academic">Academic</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <button 
-                                    onClick={handleGenerateTitles}
-                                    disabled={!topic || !genre || isGeneratingTitles}
-                                    className="text-sm font-bold text-google-blue hover:text-white transition-colors flex items-center gap-2"
-                                >
-                                    {isGeneratingTitles ? <Spinner size="sm" /> : <><IconSparkles className="w-4 h-4"/> Suggest Titles</>}
-                                </button>
-
-                                {titleSuggestions.length > 0 && (
-                                    <div className="space-y-2 mt-2">
-                                        <label className="block text-xs font-bold text-neutral-500 uppercase mb-1">Select a Title</label>
-                                        {titleSuggestions.map(t => (
-                                            <button 
-                                                key={t}
-                                                onClick={() => setSelectedTitle(t)}
-                                                className={`w-full text-left p-3 rounded-lg border transition-all ${selectedTitle === t ? 'bg-white text-black border-white' : 'bg-white/5 border-white/5 text-neutral-300 hover:bg-white/10'}`}
+                                    <div className="grid grid-cols-2 gap-6">
+                                        <div className="space-y-2">
+                                            <label className={labelClasses}>Category</label>
+                                            <select 
+                                                value={genre} 
+                                                onChange={e => setGenre(e.target.value)}
+                                                className={cn(inputClasses, "appearance-none cursor-pointer")}
                                             >
-                                                {t}
-                                            </button>
+                                                <option value="">Select Category</option>
+                                                <option value="Non-Fiction">Non-Fiction</option>
+                                                <option value="Fiction">Fiction</option>
+                                                <option value="Technical">Technical</option>
+                                                <option value="Business">Business</option>
+                                                <option value="Educational">Educational</option>
+                                            </select>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className={labelClasses}>Tone</label>
+                                            <select 
+                                                value={tone} 
+                                                onChange={e => setTone(e.target.value)}
+                                                className={cn(inputClasses, "appearance-none cursor-pointer")}
+                                            >
+                                                <option value="Professional">Professional</option>
+                                                <option value="Conversational">Conversational</option>
+                                                <option value="Inspirational">Inspirational</option>
+                                                <option value="Analytical">Analytical</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <button 
+                                        type="button"
+                                        onClick={handleGenerateTitles}
+                                        disabled={!topic || !genre || isGeneratingTitles}
+                                        className="text-[9px] font-bold text-zinc-500 hover:text-zinc-100 uppercase tracking-widest transition-all flex items-center gap-2"
+                                    >
+                                        {isGeneratingTitles ? <Spinner size="sm" /> : <><IconSparkles className="w-3 h-3"/> Suggest Titles</>}
+                                    </button>
+
+                                    {titleSuggestions.length > 0 && (
+                                        <div className="space-y-3 mt-4 animate-fade-in">
+                                            <label className={labelClasses}>Select Title</label>
+                                            <div className="grid grid-cols-1 gap-2">
+                                                {titleSuggestions.map(t => (
+                                                    <button 
+                                                        key={t}
+                                                        onClick={() => setSelectedTitle(t)}
+                                                        className={cn(
+                                                            "w-full text-left p-3 px-5 rounded-md border text-[11px] font-bold transition-all",
+                                                            selectedTitle === t ? 'bg-zinc-100 text-zinc-950 border-zinc-100 shadow-xl' : 'bg-zinc-950 border-border text-zinc-700 hover:border-zinc-700'
+                                                        )}
+                                                    >
+                                                        {t}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <Button 
+                                        onClick={handleGenerateOutline}
+                                        disabled={!selectedTitle}
+                                        className="w-full h-11 bg-zinc-100 text-zinc-950 font-bold rounded transition-all mt-6 disabled:opacity-50 text-[10px] uppercase tracking-[0.2em]"
+                                    >
+                                        Generate Outline &rarr;
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 'outline' && (
+                            <div className="max-w-xl mx-auto animate-fade-in space-y-8">
+                                <header>
+                                    <h3 className="text-xl font-bold text-zinc-100 tracking-tight">{selectedTitle}</h3>
+                                    <p className="text-xs text-zinc-500 font-medium">Proposed Chapter Structure</p>
+                                </header>
+
+                                {isGeneratingOutline ? (
+                                    <div className="flex flex-col items-center justify-center py-20 space-y-6">
+                                        <Spinner size="lg" color="text-zinc-100" />
+                                        <p className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest animate-pulse">Drafting Structure...</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-2 mb-10">
+                                        {outline.map((chapter, idx) => (
+                                            <div key={idx} className="p-4 bg-zinc-950 border border-border rounded-lg space-y-1">
+                                                <h4 className="text-[11px] font-bold text-zinc-100 uppercase tracking-wider flex items-center gap-3">
+                                                    <span className="text-zinc-700 font-mono text-[9px]">{idx + 1}.</span>
+                                                    {chapter.title}
+                                                </h4>
+                                                <p className="text-[10px] text-zinc-600 font-medium leading-relaxed">{chapter.summary}</p>
+                                            </div>
                                         ))}
                                     </div>
                                 )}
 
-                                <button 
-                                    onClick={handleGenerateOutline}
-                                    disabled={!selectedTitle}
-                                    className="w-full py-3 bg-white text-black font-bold rounded-full hover:bg-neutral-200 transition-colors mt-4 disabled:opacity-50 text-xs uppercase tracking-widest"
-                                >
-                                    Generate Outline &rarr;
-                                </button>
+                                {!isGeneratingOutline && (
+                                    <Button 
+                                        onClick={handleGenerateFullEbook}
+                                        className="w-full h-12 bg-zinc-100 text-zinc-950 font-bold rounded shadow-xl transition-all uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-3"
+                                    >
+                                        <IconSparkles className="w-3.5 h-3.5" />
+                                        Finalize and Generate
+                                    </Button>
+                                )}
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {step === 'outline' && (
-                        <div className="max-w-xl mx-auto py-10">
-                            <h3 className="text-2xl font-bold text-white mb-2">{selectedTitle}</h3>
-                            <p className="text-neutral-500 mb-6">Proposed Chapter Outline</p>
-
-                            {isGeneratingOutline ? (
-                                <div className="flex flex-col items-center justify-center py-20">
-                                    <Spinner size="lg" />
-                                    <p className="text-neutral-500 mt-4 animate-pulse">Structuring your book...</p>
+                        {step === 'generation' && (
+                            <div className="h-full flex flex-col items-center justify-center max-w-md mx-auto text-center space-y-10 animate-fade-in">
+                                <div className="w-24 h-24 relative">
+                                    <svg className="w-full h-full transform -rotate-90">
+                                        <circle cx="48" cy="48" r="44" fill="none" stroke="#18181b" strokeWidth="3" />
+                                        <circle cx="48" cy="48" r="44" fill="none" stroke="#fafafa" strokeWidth="3" strokeDasharray="276" strokeDashoffset={276 - (276 * generationProgress) / 100} className="transition-all duration-500" strokeLinecap="round" />
+                                    </svg>
+                                    <div className="absolute inset-0 flex items-center justify-center text-lg font-bold text-zinc-100 tracking-tighter">
+                                        {generationProgress}%
+                                    </div>
                                 </div>
-                            ) : (
-                                <div className="space-y-3 mb-8">
-                                    {outline.map((chapter, idx) => (
-                                        <div key={idx} className="p-4 bg-white/5 border border-white/5 rounded-xl">
-                                            <div className="flex justify-between items-center mb-1">
-                                                <h4 className="font-bold text-white">Chapter {idx + 1}: {chapter.title}</h4>
-                                            </div>
-                                            <p className="text-sm text-neutral-400">{chapter.summary}</p>
-                                        </div>
-                                    ))}
+                                <div className="space-y-2">
+                                    <h3 className="text-xl font-bold text-zinc-100 tracking-tight">Generating Publication</h3>
+                                    <p className="text-xs text-zinc-500 font-medium">Compiling chapters and applying typographic standards.</p>
                                 </div>
-                            )}
-
-                            {!isGeneratingOutline && (
-                                <button 
-                                    onClick={handleGenerateFullEbook}
-                                    className="w-full py-4 bg-gradient-to-r from-google-blue to-purple-600 text-white font-bold rounded-full hover:shadow-glow-blue transition-all uppercase tracking-widest text-xs"
-                                >
-                                    <IconSparkles className="w-5 h-5 inline-block mr-2" />
-                                    Generate Full Ebook
-                                </button>
-                            )}
-                        </div>
-                    )}
-
-                    {step === 'generation' && (
-                        <div className="h-full flex flex-col items-center justify-center max-w-lg mx-auto text-center">
-                            <div className="w-24 h-24 mb-6 relative">
-                                <svg className="w-full h-full transform -rotate-90">
-                                    <circle cx="48" cy="48" r="45" fill="none" stroke="#1a1a1a" strokeWidth="6" />
-                                    <circle cx="48" cy="48" r="45" fill="none" stroke="#8ab4f8" strokeWidth="6" strokeDasharray="283" strokeDashoffset={283 - (283 * generationProgress) / 100} className="transition-all duration-500" />
-                                </svg>
-                                <div className="absolute inset-0 flex items-center justify-center text-xl font-bold text-white">
-                                    {generationProgress}%
+                                
+                                <div className="w-full bg-zinc-950 border border-border rounded-xl p-6 text-left space-y-3">
+                                    <p className="text-[9px] font-bold text-zinc-700 uppercase tracking-widest">Generation Status</p>
+                                    <div className="space-y-1">
+                                        <p className="text-[9px] font-mono text-zinc-400">> System ready.</p>
+                                        {generationProgress > 10 && <p className="text-[9px] font-mono text-zinc-600">> Analyzing document structure...</p>}
+                                        {generationProgress > 30 && <p className="text-[9px] font-mono text-zinc-600">> Drafting core chapters...</p>}
+                                        {generationProgress > 70 && <p className="text-[9px] font-mono text-zinc-600">> Finalizing typographic rules...</p>}
+                                        {generationProgress === 100 && <p className="text-[9px] font-mono text-zinc-300">> Process complete.</p>}
+                                    </div>
                                 </div>
                             </div>
-                            <h3 className="text-2xl font-bold text-white mb-2">Writing your Masterpiece</h3>
-                            <p className="text-neutral-400">Gemini is drafting chapters, formatting content, and applying styles.</p>
-                            
-                            <div className="mt-8 p-4 bg-white/5 rounded-xl border border-white/5 w-full text-left">
-                                <p className="text-xs font-mono text-google-green mb-1">> Initializing Neural Engine...</p>
-                                {generationProgress > 10 && <p className="text-xs font-mono text-neutral-400 mb-1">> Analyzing outline structure...</p>}
-                                {generationProgress > 30 && <p className="text-xs font-mono text-neutral-400 mb-1">> Drafting content batches...</p>}
-                                {generationProgress > 70 && <p className="text-xs font-mono text-neutral-400 mb-1">> Applying typographic rules...</p>}
-                                {generationProgress === 100 && <p className="text-xs font-mono text-google-blue mb-1">> Finalizing asset compilation...</p>}
-                            </div>
-                        </div>
-                    )}
+                        )}
 
+                    </div>
                 </div>
             </div>
         </div>

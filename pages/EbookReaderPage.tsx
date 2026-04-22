@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { useAppContext } from '../contexts/AppContext';
@@ -9,12 +8,13 @@ import {
     IconSun, IconMoon
 } from '../constants';
 import { Document, Page, pdfjs } from 'react-pdf';
-import MorphicEye from '../components/MorphicEye';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import CoAuthor from '../components/CoAuthor';
+import { Button } from '../components/ui/button';
+import { Tabs, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { ScrollArea } from '../components/ui/scroll-area';
+import { Badge } from '../components/ui/badge';
+import { Separator } from '../components/ui/separator';
+import { cn } from '../lib/utils';
 
 const { useParams, useNavigate } = ReactRouterDOM as any;
 
@@ -129,19 +129,19 @@ const EbookReaderPage: React.FC = () => {
     // --- HELPERS ---
     const getThemeClasses = () => {
         switch (settings.theme) {
-            case 'light': return 'bg-[#f8f9fa] text-neutral-900 selection:bg-yellow-200';
+            case 'light': return 'bg-white text-zinc-900 selection:bg-zinc-200';
             case 'sepia': return 'bg-[#f4ecd8] text-[#5b4636] selection:bg-[#d6cbb1]';
             case 'dark': 
-            default: return 'bg-[#000000] text-[#d4d4d4] selection:bg-white/20';
+            default: return 'bg-zinc-950 text-zinc-300 selection:bg-zinc-100/10';
         }
     };
     
     const getPageThemeClasses = () => {
          switch (settings.theme) {
-            case 'light': return 'bg-white shadow-[0_0_50px_rgba(0,0,0,0.1)] border-neutral-200';
-            case 'sepia': return 'bg-[#faf4e8] shadow-[0_0_50px_rgba(91,70,54,0.1)] border-[#e3d8c4]';
+            case 'light': return 'bg-white shadow-2xl border-zinc-100';
+            case 'sepia': return 'bg-[#faf4e8] shadow-2xl border-[#e3d8c4]';
             case 'dark': 
-            default: return 'bg-[#050505] shadow-[0_0_50px_rgba(0,0,0,0.8)] border-white/5';
+            default: return 'bg-zinc-900/50 border-zinc-800 shadow-3xl';
         }
     };
 
@@ -163,14 +163,14 @@ const EbookReaderPage: React.FC = () => {
             if (imageMatch) {
                 return (
                     <div key={index} className="my-12 flex flex-col items-center group">
-                        <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-black">
+                        <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-zinc-800 bg-zinc-950">
                             <img 
                                 src={imageMatch[2]} 
                                 alt={imageMatch[1]} 
-                                className="max-h-[600px] w-auto object-contain transition-transform duration-700 group-hover:scale-[1.02]" 
+                                className="max-h-[600px] w-auto object-contain transition-transform duration-1000 group-hover:scale-[1.05]" 
                             />
                         </div>
-                        {imageMatch[1] && <span className="type-tiny mt-6">{imageMatch[1]}</span>}
+                        {imageMatch[1] && <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 mt-6">{imageMatch[1]}</span>}
                     </div>
                 );
             }
@@ -178,19 +178,19 @@ const EbookReaderPage: React.FC = () => {
             return (
                 <div key={index} className="whitespace-pre-wrap">
                     {part.split('\n').map((line, i) => {
-                        if (!line.trim()) return <div key={i} className="h-6"></div>;
+                        if (!line.trim()) return <div key={i} className="h-8"></div>;
 
-                        if (line.startsWith('# ')) return <h1 key={i} className="type-display text-4xl md:text-6xl mb-10 mt-12 leading-none text-current">{line.replace('# ', '')}</h1>
-                        if (line.startsWith('## ')) return <h2 key={i} className="type-display text-2xl md:text-4xl mb-8 mt-10 leading-tight opacity-90 text-current">{line.replace('## ', '')}</h2>
-                        if (line.startsWith('### ')) return <h3 key={i} className="type-display text-xl md:text-2xl mb-6 mt-8 leading-tight opacity-80 text-current">{line.replace('### ', '')}</h3>
-                        if (line.startsWith('- ')) return <li key={i} className="ml-8 list-disc mb-4 pl-2 text-current">{line.replace('- ', '')}</li>
+                        if (line.startsWith('# ')) return <h1 key={i} className="text-4xl md:text-6xl font-bold tracking-tight mb-12 mt-16 leading-tight text-current">{line.replace('# ', '')}</h1>
+                        if (line.startsWith('## ')) return <h2 key={i} className="text-2xl md:text-4xl font-bold tracking-tight mb-10 mt-12 leading-tight text-current">{line.replace('## ', '')}</h2>
+                        if (line.startsWith('### ')) return <h3 key={i} className="text-xl md:text-2xl font-bold tracking-tight mb-8 mt-10 leading-tight text-current">{line.replace('### ', '')}</h3>
+                        if (line.startsWith('- ')) return <li key={i} className="ml-8 list-disc mb-6 pl-4 text-current font-medium">{line.replace('- ', '')}</li>
                         
                         const lineParts = line.split(/(\*\*.*?\*\*)/g);
                         return (
-                            <p key={i} className="mb-6 leading-relaxed text-current">
+                            <p key={i} className="mb-8 leading-relaxed text-current font-medium">
                                 {lineParts.map((sub, j) => {
                                     if (sub.startsWith('**') && sub.endsWith('**')) {
-                                        return <strong key={j} className="font-black text-current">{sub.slice(2, -2)}</strong>;
+                                        return <strong key={j} className="font-bold text-current">{sub.slice(2, -2)}</strong>;
                                     }
                                     return sub;
                                 })}
@@ -204,49 +204,47 @@ const EbookReaderPage: React.FC = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-dot-matrix opacity-20"></div>
-                <MorphicEye className="w-16 h-16 mb-8" />
-                <p className="type-tiny animate-pulse">Initializing Reader Protocol...</p>
+            <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center">
+                <CoAuthor className="w-12 h-12 mb-8 relative z-10" isActive={true} />
+                <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-600 animate-pulse relative z-10">Initializing Studio Reader...</p>
             </div>
         );
     }
 
     if (!book) return null;
 
-    const pages = book.pages && book.pages.length > 0 ? book.pages : [{ id: '1', title: 'Cover', pageNumber: 1, content: "No content available." }];
+    const pages = book.pages && book.pages.length > 0 ? book.pages : [{ id: '1', title: 'Front Matter', pageNumber: 1, content: "Connection active. Content initializing..." }];
     const currentTextPage = pages[textPageIndex];
     const progress = book.pdfUrl 
         ? Math.round((pageNumber / numPages) * 100)
         : Math.round(((textPageIndex + 1) / pages.length) * 100);
 
     return (
-        <div className={`min-h-screen w-full flex flex-col fixed inset-0 z-50 transition-colors duration-500 ${getThemeClasses()}`}>
+        <div className={cn("min-h-screen w-full flex flex-col fixed inset-0 z-50 transition-colors duration-1000", getThemeClasses())}>
             
-            {/* === HEADER (Sovereign Interface) === */}
-            <header className={`
-                h-20 flex items-center justify-between px-6 md:px-12 border-b z-40 relative backdrop-blur-3xl transition-colors duration-300
-                ${settings.theme === 'dark' ? 'bg-black/80 border-white/10' : settings.theme === 'light' ? 'bg-white/80 border-black/5' : 'bg-[#f4ecd8]/80 border-[#5b4636]/10'}
-            `}>
+            <header className={cn(
+                "h-14 flex items-center justify-between px-8 border-b z-40 relative backdrop-blur-xl transition-all duration-500",
+                settings.theme === 'dark' ? 'bg-zinc-950/60 border-zinc-800' : settings.theme === 'light' ? 'bg-white/60 border-zinc-100' : 'bg-[#f4ecd8]/60 border-[#5b4636]/10'
+            )}>
                 <div className="flex items-center gap-6 flex-1 min-w-0">
                     <Button 
                         variant="ghost" 
                         size="icon"
                         onClick={() => navigate(-1)} 
-                        className="rounded-full hover:bg-black/5 transition-all"
+                        className="rounded-md hover:bg-zinc-800/50 transition-all w-8 h-8 text-current"
                     >
-                        <IconX className="w-5 h-5 opacity-60" />
+                        <IconX className="w-4 h-4 opacity-40 hover:opacity-100" />
                     </Button>
                     <Button 
                         variant="ghost" 
                         size="icon"
                         onClick={() => setShowSidebar(true)} 
-                        className="rounded-full hover:bg-black/5 transition-all"
+                        className="rounded-md hover:bg-zinc-800/50 transition-all w-8 h-8 text-current"
                     >
-                         <IconMenu className="w-5 h-5 opacity-60" />
+                         <IconMenu className="w-4 h-4 opacity-40 hover:opacity-100" />
                     </Button>
-                    <Separator orientation="vertical" className="h-6 mx-2 opacity-10" />
-                    <h1 className="type-tiny truncate flex-1 min-w-0">{book.title}</h1>
+                    <Separator orientation="vertical" className="h-4 bg-zinc-800" />
+                    <h1 className="text-[10px] font-bold uppercase tracking-widest truncate text-current opacity-60">{book.title}</h1>
                 </div>
 
                 <div className="flex items-center gap-6 shrink-0">
@@ -255,43 +253,46 @@ const EbookReaderPage: React.FC = () => {
                             <Button 
                                 variant="ghost"
                                 onClick={() => setShowSettings(!showSettings)}
-                                className={`rounded-full border ${showSettings ? 'bg-black/5 border-white/10' : 'bg-transparent border-transparent'}`}
+                                className={cn(
+                                    "h-8 px-3 rounded-md border transition-all text-current",
+                                    showSettings ? 'bg-zinc-800 border-zinc-700' : 'bg-transparent border-transparent'
+                                )}
                             >
-                                <span className="font-display font-black text-xl">Aa</span>
+                                <span className="font-bold text-xs uppercase tracking-widest">Aa</span>
                             </Button>
                             
-                            {/* Settings Dropdown */}
                             {showSettings && (
-                                <div className={`absolute top-16 right-0 w-80 p-8 rounded-[32px] shadow-2xl border animate-slide-up origin-top-right z-50 glass-panel-heavy
-                                    ${settings.theme === 'dark' ? 'text-white' : 'text-neutral-900'}
-                                `}>
-                                    {/* Theme */}
-                                    <div className="mb-10">
-                                        <p className="type-tiny mb-4">Aesthetic Protocol</p>
+                                <div className={cn(
+                                    "absolute top-12 right-0 w-72 p-8 rounded-xl shadow-2xl border animate-fade-in origin-top-right z-50 backdrop-blur-3xl",
+                                    settings.theme === 'dark' ? 'bg-zinc-900 border-zinc-800 text-zinc-100' : 'bg-white border-zinc-100 text-zinc-900'
+                                )}>
+                                    <div className="mb-8">
+                                        <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-500 mb-4">Reader Theme</p>
                                         <Tabs value={settings.theme} onValueChange={(v: any) => setSettings(prev => ({ ...prev, theme: v }))}>
-                                            <TabsList className="bg-black/20 w-full h-12 p-1 rounded-full border border-white/5">
-                                                <TabsTrigger value="light" className="flex-1 rounded-full text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-black">Light</TabsTrigger>
-                                                <TabsTrigger value="sepia" className="flex-1 rounded-full text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-[#f4ecd8] data-[state=active]:text-[#5b4636]">Sepia</TabsTrigger>
-                                                <TabsTrigger value="dark" className="flex-1 rounded-full text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-white data-[state=active]:text-black">Dark</TabsTrigger>
+                                            <TabsList className="bg-zinc-950/50 w-full h-10 p-1 rounded-md border border-zinc-800">
+                                                <TabsTrigger value="light" className="flex-1 rounded text-[9px] font-bold uppercase tracking-widest data-[state=active]:bg-zinc-100 data-[state=active]:text-zinc-950">Light</TabsTrigger>
+                                                <TabsTrigger value="sepia" className="flex-1 rounded text-[9px] font-bold uppercase tracking-widest data-[state=active]:bg-[#f4ecd8] data-[state=active]:text-[#5b4636]">Sepia</TabsTrigger>
+                                                <TabsTrigger value="dark" className="flex-1 rounded text-[9px] font-bold uppercase tracking-widest data-[state=active]:bg-zinc-100 data-[state=active]:text-zinc-950">Dark</TabsTrigger>
                                             </TabsList>
                                         </Tabs>
                                     </div>
 
-                                    {/* Font Family */}
-                                    <div className="mb-10">
-                                        <p className="type-tiny mb-4">Typography</p>
+                                    <div className="mb-8">
+                                        <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-500 mb-4">Typography</p>
                                         <div className="grid grid-cols-3 gap-2">
                                             {[
                                                 { id: 'sans', label: 'Sans', font: 'font-sans' },
-                                                { id: 'serif', label: 'Serif', font: 'font-serif' },
+                                                { id: 'serif', label: 'Serif', font: 'font-serif italic' },
                                                 { id: 'mono', label: 'Mono', font: 'font-mono' },
                                             ].map(f => (
                                                 <button 
                                                     key={f.id}
                                                     onClick={() => setSettings(prev => ({ ...prev, fontFamily: f.id as FontFamily }))}
-                                                    className={`py-3 border rounded-xl text-xs font-black uppercase tracking-widest transition-all ${f.font}
-                                                        ${settings.fontFamily === f.id ? 'bg-white text-black border-white' : 'bg-white/5 border-white/5 text-zinc-500 hover:bg-white/10'}
-                                                    `}
+                                                    className={cn(
+                                                        "h-10 border rounded-md text-[9px] font-bold uppercase tracking-widest transition-all",
+                                                        f.font,
+                                                        settings.fontFamily === f.id ? 'bg-zinc-100 text-zinc-950 border-zinc-100 shadow-xl' : 'bg-zinc-950/50 border-zinc-800 text-zinc-500 hover:bg-zinc-800'
+                                                    )}
                                                 >
                                                     {f.label}
                                                 </button>
@@ -299,18 +300,17 @@ const EbookReaderPage: React.FC = () => {
                                         </div>
                                     </div>
 
-                                    {/* Font Size */}
                                     <div>
                                         <div className="flex justify-between items-center mb-4">
-                                            <p className="type-tiny">Scale</p>
-                                            <span className="text-xs font-black font-mono">{settings.fontSize}PX</span>
+                                            <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-500">Text Size</p>
+                                            <span className="text-[10px] font-bold font-mono text-zinc-300">{settings.fontSize}PX</span>
                                         </div>
                                         <div className="flex items-center gap-4">
-                                            <Button variant="outline" size="icon" onClick={() => setSettings(prev => ({ ...prev, fontSize: Math.max(12, prev.fontSize - 1) }))} className="rounded-full border-white/10 hover:bg-white/5"><IconMinus className="w-4 h-4"/></Button>
-                                            <ScrollArea className="flex-1 h-1 bg-white/10 rounded-full">
-                                                 <div className="h-full bg-white transition-all" style={{ width: `${((settings.fontSize - 12) / 20) * 100}%` }} />
-                                            </ScrollArea>
-                                            <Button variant="outline" size="icon" onClick={() => setSettings(prev => ({ ...prev, fontSize: Math.min(32, prev.fontSize + 1) }))} className="rounded-full border-white/10 hover:bg-white/5"><IconPlus className="w-4 h-4"/></Button>
+                                            <Button variant="ghost" size="icon" onClick={() => setSettings(prev => ({ ...prev, fontSize: Math.max(12, prev.fontSize - 1) }))} className="h-8 w-8 rounded-md bg-zinc-950 border border-zinc-800 text-zinc-500 hover:text-zinc-100"><IconMinus className="w-3 h-3"/></Button>
+                                            <div className="flex-1 h-1 bg-zinc-800 rounded-full overflow-hidden">
+                                                 <div className="h-full bg-zinc-400 transition-all" style={{ width: `${((settings.fontSize - 12) / 20) * 100}%` }} />
+                                            </div>
+                                            <Button variant="ghost" size="icon" onClick={() => setSettings(prev => ({ ...prev, fontSize: Math.min(32, prev.fontSize + 1) }))} className="h-8 w-8 rounded-md bg-zinc-950 border border-zinc-800 text-zinc-500 hover:text-zinc-100"><IconPlus className="w-3 h-3"/></Button>
                                         </div>
                                     </div>
                                 </div>
@@ -318,27 +318,28 @@ const EbookReaderPage: React.FC = () => {
                         </div>
                     )}
                     
-                    {/* Progress Indicator */}
-                    <div className="hidden md:flex items-center gap-4 px-6 py-2 rounded-full border border-white/5 bg-white/[0.02]">
-                        <span className="type-tiny tabular-nums">{progress}%</span>
-                        <div className="w-20 h-1 bg-white/10 rounded-full overflow-hidden">
-                            <div className="h-full bg-current transition-all duration-700" style={{ width: `${progress}%` }}></div>
+                    <div className="hidden md:flex items-center gap-4 px-4 py-1.5 rounded-md border border-current/10 bg-current/5">
+                        <span className="text-[9px] font-bold uppercase tracking-widest tabular-nums text-current opacity-60">{progress}%</span>
+                        <div className="w-16 h-1 bg-zinc-800 rounded-full overflow-hidden">
+                            <div className="h-full bg-zinc-500 transition-all duration-1000" style={{ width: `${progress}%` }}></div>
                         </div>
                     </div>
                 </div>
             </header>
 
-            {/* === SIDEBAR (Table of Contents) === */}
             {showSidebar && (
-                <div className="fixed inset-0 z-[60] flex">
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-xl" onClick={() => setShowSidebar(false)}></div>
-                    <div className={`relative w-[400px] h-full shadow-2xl flex flex-col animate-slide-right border-r glass-panel-heavy`}>
-                        <div className="p-10 border-b border-white/5 flex items-center justify-between">
-                            <h3 className="type-tiny">Neural Archive / Chapters</h3>
-                            <Button variant="ghost" size="icon" onClick={() => setShowSidebar(false)} className="rounded-full hover:bg-white/5"><IconX className="w-5 h-5"/></Button>
+                <div className="fixed inset-0 z-[60] flex animate-fade-in">
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-md" onClick={() => setShowSidebar(false)}></div>
+                    <div className={cn(
+                        "relative w-80 h-full shadow-2xl flex flex-col animate-slide-right border-r backdrop-blur-xl",
+                        settings.theme === 'dark' ? 'bg-zinc-950/90 border-zinc-800' : 'bg-white/90 border-zinc-100'
+                    )}>
+                        <div className="p-8 border-b border-zinc-800 flex items-center justify-between">
+                            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">Contents</h3>
+                            <Button variant="ghost" size="icon" onClick={() => setShowSidebar(false)} className="h-8 w-8 rounded-md hover:bg-zinc-800/50 text-zinc-500"><IconX className="w-4 h-4"/></Button>
                         </div>
                         <ScrollArea className="flex-1 p-6">
-                            <div className="space-y-3">
+                            <div className="space-y-2">
                                 {pages.map((p, idx) => (
                                     <button
                                         key={p.id}
@@ -347,14 +348,15 @@ const EbookReaderPage: React.FC = () => {
                                             setShowSidebar(false);
                                             contentRef.current?.scrollTo(0,0);
                                         }}
-                                        className={`w-full text-left p-8 rounded-3xl transition-all border ${
+                                        className={cn(
+                                            "w-full text-left px-4 py-3 rounded-md transition-all border group",
                                             textPageIndex === idx 
-                                            ? 'bg-white text-black border-white shadow-2xl scale-[1.02]' 
-                                            : 'bg-transparent border-transparent hover:bg-white/5 text-zinc-500 hover:text-white'
-                                        }`}
+                                            ? 'bg-zinc-100 text-zinc-950 border-zinc-100 shadow-xl' 
+                                            : 'bg-transparent border-transparent hover:bg-zinc-800/50 text-zinc-500 hover:text-zinc-100'
+                                        )}
                                     >
-                                        <span className="type-tiny block mb-2 opacity-50">NODE {idx + 1}</span>
-                                        <span className="type-display text-xl">{p.title}</span>
+                                        <span className="text-[8px] font-bold uppercase tracking-widest block mb-1 opacity-40">Section {idx + 1}</span>
+                                        <span className="text-sm font-bold tracking-tight">{p.title}</span>
                                     </button>
                                 ))}
                             </div>
@@ -363,18 +365,15 @@ const EbookReaderPage: React.FC = () => {
                 </div>
             )}
 
-            {/* === MAIN CONTENT === */}
-            <main className="flex-1 relative overflow-hidden flex flex-col pb-32"> 
-                
-                {/* --- PDF MODE --- */}
+            <main className="flex-1 relative overflow-hidden flex flex-col pb-24"> 
                 {book.pdfUrl && pdfBlobUrl ? (
-                    <div className="flex-1 relative bg-black/50 overflow-auto flex justify-center p-6 md:p-16 custom-scrollbar pb-40">
-                        <div className={`shadow-[0_0_100px_rgba(0,0,0,0.8)] border border-white/5 transition-transform origin-top`} style={{ transform: `scale(${scale})` }}>
+                    <div className="flex-1 relative bg-zinc-950 overflow-auto flex justify-center p-8 md:p-12 custom-scrollbar pb-32">
+                        <div className="shadow-2xl border border-zinc-800 transition-transform duration-1000 origin-top" style={{ transform: `scale(${scale})` }}>
                             <Document
                                 file={pdfBlobUrl}
                                 onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-                                loading={<div className="type-tiny p-20">Synchronizing PDF Stream...</div>}
-                                error={<div className="type-tiny p-20 text-rose-500">Stream Corruption Error</div>}
+                                loading={<div className="text-[10px] font-bold uppercase tracking-widest text-zinc-600 p-20">Loading stream...</div>}
+                                error={<div className="text-[10px] font-bold uppercase tracking-widest text-red-500 p-20">Stream unavailable</div>}
                             >
                                 <Page 
                                     pageNumber={pageNumber} 
@@ -386,34 +385,35 @@ const EbookReaderPage: React.FC = () => {
                             </Document>
                         </div>
                         
-                        {/* Floating PDF Controls */}
-                        <div className="fixed bottom-12 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-3xl border border-white/10 p-4 rounded-full flex items-center gap-6 shadow-2xl z-40">
-                             <Button variant="ghost" size="icon" onClick={() => setPageNumber(p => Math.max(1, p - 1))} disabled={pageNumber <= 1} className="rounded-full hover:bg-white/10"><IconChevronLeft className="w-5 h-5"/></Button>
-                             <span className="type-tiny tabular-nums">{pageNumber} / {numPages}</span>
-                             <Button variant="ghost" size="icon" onClick={() => setPageNumber(p => Math.min(numPages, p + 1))} disabled={pageNumber >= numPages} className="rounded-full hover:bg-white/10"><IconChevronRight className="w-5 h-5"/></Button>
-                             <Separator orientation="vertical" className="h-6 bg-white/10" />
-                             <Button variant="ghost" size="icon" onClick={() => setScale(s => Math.max(0.5, s - 0.1))} className="rounded-full hover:bg-white/10"><IconMinus className="w-4 h-4"/></Button>
-                             <Button variant="ghost" size="icon" onClick={() => setScale(s => Math.min(2, s + 0.1))} className="rounded-full hover:bg-white/10"><IconPlus className="w-4 h-4"/></Button>
+                        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-zinc-900/80 backdrop-blur-xl border border-zinc-800 p-2 rounded-lg flex items-center gap-4 shadow-2xl z-40">
+                             <Button variant="ghost" size="icon" onClick={() => setPageNumber(p => Math.max(1, p - 1))} disabled={pageNumber <= 1} className="h-8 w-8 rounded-md hover:bg-zinc-800 text-zinc-100 disabled:opacity-20"><IconChevronLeft className="w-4 h-4"/></Button>
+                             <span className="text-[9px] font-bold uppercase tracking-widest tabular-nums text-zinc-100">{pageNumber} / {numPages}</span>
+                             <Button variant="ghost" size="icon" onClick={() => setPageNumber(p => Math.min(numPages, p + 1))} disabled={pageNumber >= numPages} className="h-8 w-8 rounded-md hover:bg-zinc-800 text-zinc-100 disabled:opacity-20"><IconChevronRight className="w-4 h-4"/></Button>
+                             <Separator orientation="vertical" className="h-4 bg-zinc-800" />
+                             <Button variant="ghost" size="icon" onClick={() => setScale(s => Math.max(0.5, s - 0.1))} className="h-8 w-8 rounded-md hover:bg-zinc-800 text-zinc-100"><IconMinus className="w-3 h-3"/></Button>
+                             <Button variant="ghost" size="icon" onClick={() => setScale(s => Math.min(2, s + 0.1))} className="h-8 w-8 rounded-md hover:bg-zinc-800 text-zinc-100"><IconPlus className="w-3 h-3"/></Button>
                         </div>
                     </div>
                 ) : (
-                    /* --- TEXT MODE --- */
-                    <ScrollArea ref={contentRef} className="flex-1 scroll-smooth">
-                        <div className="max-w-4xl mx-auto py-20 md:py-32 px-6">
+                    <ScrollArea ref={contentRef} className="flex-1">
+                        <div className="max-w-3xl mx-auto py-24 px-8">
                             
-                            <div className={`
-                                min-h-[calc(100vh-300px)] p-10 md:p-24 rounded-[48px] transition-all duration-700 border
-                                ${getPageThemeClasses()}
-                            `}>
-                                <div className="mb-20 text-center pb-12 border-b border-current/5">
-                                    <h4 className="type-tiny mb-6 opacity-40">FRAGMENT {textPageIndex + 1}</h4>
-                                    <h2 className={`type-display text-4xl md:text-7xl leading-none text-current ${settings.fontFamily === 'serif' ? 'font-serif' : 'font-sans'}`}>
+                            <div className={cn(
+                                "min-h-[calc(100vh-300px)] p-8 md:p-20 rounded-3xl transition-all duration-1000 border relative overflow-hidden",
+                                getPageThemeClasses()
+                            )}>
+                                <div className="mb-20 text-center pb-12 border-b border-current/10">
+                                    <h4 className="text-[9px] font-bold uppercase tracking-widest mb-6 opacity-40">Chapter {textPageIndex + 1}</h4>
+                                    <h2 className={cn(
+                                        "text-4xl md:text-5xl font-bold tracking-tight leading-tight text-current",
+                                        settings.fontFamily === 'serif' ? 'font-serif' : 'font-sans'
+                                    )}>
                                         {currentTextPage.title}
                                     </h2>
                                 </div>
 
                                 <article 
-                                    className={`prose prose-zinc max-w-none transition-all duration-700 ${getFontFamily()}`}
+                                    className={cn("prose prose-zinc max-w-none transition-all duration-1000", getFontFamily())}
                                     style={{ 
                                         fontSize: `${settings.fontSize}px`, 
                                         lineHeight: settings.lineHeight,
@@ -421,14 +421,13 @@ const EbookReaderPage: React.FC = () => {
                                     }}
                                 >
                                     <div className="opacity-90">
-                                        {renderMarkdownContent(currentTextPage.content || "Neural link stable. Start writing...")}
+                                        {renderMarkdownContent(currentTextPage.content || "Connection active. Content pending...")}
                                     </div>
                                 </article>
 
-                                {/* Page Footer */}
-                                <div className="mt-24 pt-12 border-t border-current/5 flex flex-col md:flex-row gap-6 justify-between items-center text-center md:text-left">
-                                     <span className="type-tiny opacity-40">{book.title}</span>
-                                     <span className="type-tiny opacity-40">{textPageIndex + 1} / {pages.length}</span>
+                                <div className="mt-24 pt-12 border-t border-current/10 flex justify-between items-center">
+                                     <span className="text-[8px] font-bold uppercase tracking-[0.2em] opacity-40 text-current">{book.title}</span>
+                                     <span className="text-[8px] font-bold uppercase tracking-[0.2em] opacity-40 text-current">{textPageIndex + 1} / {pages.length}</span>
                                 </div>
                             </div>
                         </div>
@@ -436,12 +435,14 @@ const EbookReaderPage: React.FC = () => {
                 )}
             </main>
 
-            {/* === FIXED BOTTOM NAVIGATION (Text Mode) === */}
             {!book.pdfUrl && (
-                <div className={`fixed bottom-0 left-0 right-0 p-8 border-t z-50 backdrop-blur-3xl transition-colors duration-300 ${settings.theme === 'dark' ? 'bg-black/90 border-white/10' : settings.theme === 'light' ? 'bg-white/90 border-black/10' : 'bg-[#f4ecd8]/90 border-[#5b4636]/10'}`}>
-                    <div className="max-w-3xl mx-auto flex items-center justify-between gap-12">
+                <div className={cn(
+                    "fixed bottom-0 left-0 right-0 p-6 border-t z-50 backdrop-blur-xl transition-all duration-500",
+                    settings.theme === 'dark' ? 'bg-zinc-950/60 border-zinc-800' : settings.theme === 'light' ? 'bg-white/60 border-zinc-100' : 'bg-[#f4ecd8]/60 border-[#5b4636]/10'
+                )}>
+                    <div className="max-w-3xl mx-auto flex items-center justify-between gap-8">
                         <Button 
-                            variant="outline"
+                            variant="ghost"
                             onClick={() => {
                                 if (textPageIndex > 0) {
                                     setTextPageIndex(p => p - 1);
@@ -449,18 +450,18 @@ const EbookReaderPage: React.FC = () => {
                                 }
                             }}
                             disabled={textPageIndex === 0}
-                            className="flex-1 h-16 rounded-full border-white/10 hover:bg-white/5 group transition-all"
+                            className="flex-1 h-12 rounded-md bg-zinc-800/50 border border-zinc-800 hover:bg-zinc-100 hover:text-zinc-950 group transition-all text-current disabled:opacity-20"
                         >
-                            <IconChevronLeft className="w-4 h-4 mr-3 group-hover:-translate-x-1 transition-transform" />
-                            <span className="type-tiny">Previous Node</span>
+                            <IconChevronLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+                            <span className="text-[9px] font-bold uppercase tracking-widest">Previous Chapter</span>
                         </Button>
 
-                        <div className="type-tiny tabular-nums text-current opacity-40">
+                        <div className="text-[9px] font-bold uppercase tracking-widest tabular-nums text-current opacity-40">
                             {textPageIndex + 1} / {pages.length}
                         </div>
 
                         <Button 
-                            variant="outline"
+                            variant="ghost"
                             onClick={() => {
                                 if (textPageIndex < pages.length - 1) {
                                     setTextPageIndex(p => p + 1);
@@ -468,10 +469,10 @@ const EbookReaderPage: React.FC = () => {
                                 }
                             }}
                             disabled={textPageIndex === pages.length - 1}
-                            className="flex-1 h-16 rounded-full border-white/10 hover:bg-white/5 group transition-all"
+                            className="flex-1 h-12 rounded-md bg-zinc-800/50 border border-zinc-800 hover:bg-zinc-100 hover:text-zinc-950 group transition-all text-current disabled:opacity-20"
                         >
-                            <span className="type-tiny">Next Node</span>
-                            <IconChevronRight className="w-4 h-4 ml-3 group-hover:translate-x-1 transition-transform" />
+                            <span className="text-[9px] font-bold uppercase tracking-widest">Next Chapter</span>
+                            <IconChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                         </Button>
                     </div>
                 </div>

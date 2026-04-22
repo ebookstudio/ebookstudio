@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
@@ -17,6 +16,7 @@ import EbookReaderPage from './pages/EbookReaderPage';
 import HostingPreviewPage from './pages/HostingPreviewPage';
 import LoadingScreen from './components/LoadingScreen';
 import { useAppContext } from './contexts/AppContext';
+import { AnimatePresence, motion } from 'framer-motion';
 
 // Policy Pages
 import ContactPage from './pages/ContactPage';
@@ -28,69 +28,75 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 const AnimatedRoutes = () => {
     const location = useLocation();
 
-    // Scroll to top whenever the route changes
     React.useLayoutEffect(() => {
         window.scrollTo(0, 0);
     }, [location.pathname]);
     
     return (
-        <div key={location.pathname} className="flex-grow flex flex-col animate-page-enter will-change-transform origin-top">
-              <Routes location={location}>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/store" element={<StorePage />} />
-                <Route path="/pricing" element={<PricingPage />} />
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/checkout" element={<CheckoutPage />} />
-                {/* Internal Creator Page */}
-                <Route path="/s/:slug" element={<CreatorSitePage />} />
-                {/* Standalone Hosting Preview */}
-                <Route path="/site/:username" element={<HostingPreviewPage />} />
-                
-                <Route path="/edit-ebook/:bookId" element={<EditEBookPage />} />
-                <Route path="/ebook-studio" element={<EbookStudioPage />} />
-                <Route path="/read/:bookId" element={<EbookReaderPage />} />
-                
-                {/* Policy Routes */}
-                <Route path="/contact" element={<ContactPage />} />
-                <Route path="/shipping-policy" element={<ShippingPolicyPage />} />
-                <Route path="/refund-policy" element={<RefundPolicyPage />} />
-                <Route path="/terms-and-conditions" element={<TermsPage />} />
-                <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
-              </Routes>
-        </div>
+        <AnimatePresence mode="wait">
+            <motion.div 
+                key={location.pathname} 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="flex-grow flex flex-col"
+            >
+                  <Routes location={location}>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/store" element={<StorePage />} />
+                    <Route path="/pricing" element={<PricingPage />} />
+                    <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route path="/checkout" element={<CheckoutPage />} />
+                    <Route path="/s/:slug" element={<CreatorSitePage />} />
+                    <Route path="/site/:username" element={<HostingPreviewPage />} />
+                    <Route path="/edit-ebook/:bookId" element={<EditEBookPage />} />
+                    <Route path="/ebook-studio" element={<EbookStudioPage />} />
+                    <Route path="/read/:bookId" element={<EbookReaderPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/shipping-policy" element={<ShippingPolicyPage />} />
+                    <Route path="/refund-policy" element={<RefundPolicyPage />} />
+                    <Route path="/terms-and-conditions" element={<TermsPage />} />
+                    <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                  </Routes>
+            </motion.div>
+        </AnimatePresence>
     );
 };
 
 const AppContent: React.FC = () => {
   const { isInitialAuthCheck } = useAppContext();
+  const location = useLocation();
+  
+  const isDashboardRoute = location.pathname.startsWith('/dashboard') || 
+                           location.pathname.startsWith('/ebook-studio') ||
+                           location.pathname.startsWith('/read/') ||
+                           location.pathname.startsWith('/edit-ebook/');
 
   if (isInitialAuthCheck) {
     return <LoadingScreen />;
   }
 
   return (
-    <BrowserRouter>
-      <div className="flex flex-col min-h-screen bg-black font-sans text-foreground overflow-x-hidden relative">
-        
-        {/* === Foreground Content === */}
-        <div className="flex-grow relative z-10 flex flex-col w-full"> 
-          <Navbar />
-          <main className="flex-grow flex flex-col">
-              <AnimatedRoutes />
-          </main>
-          <Footer />
-        </div>
-        
+    <div className="flex flex-col min-h-screen bg-zinc-950 font-sans text-zinc-100 overflow-x-hidden relative selection:bg-zinc-100/10">
+      <div className="flex-grow relative z-10 flex flex-col w-full"> 
+        {!isDashboardRoute && <Navbar />}
+        <main className="flex-grow flex flex-col">
+            <AnimatedRoutes />
+        </main>
+        {!isDashboardRoute && <Footer />}
       </div>
-    </BrowserRouter>
+    </div>
   );
 };
 
 const App: React.FC = () => {
   return (
     <AppProvider>
-      <AppContent />
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
     </AppProvider>
   );
 };

@@ -1,70 +1,104 @@
 import React from 'react';
 import { APP_NAME, IconBook } from '../constants';
+import { Badge } from '../components/ui/badge';
 
 const TermsPage: React.FC = () => {
   return (
-    <div className="min-h-screen w-full relative bg-black pt-32 pb-20 bg-dot-matrix">
+    <div className="min-h-screen w-full relative bg-background pt-48 pb-32 selection:bg-white selection:text-black overflow-hidden">
       
+      {/* Ambient Background */}
+      <div className="absolute inset-0 z-0">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] bg-purple-600/5 rounded-full blur-[160px]" />
+          <div className="absolute inset-0 bg-dot-matrix opacity-[0.1]" />
+      </div>
+
       <div className="container mx-auto px-6 max-w-4xl relative z-10 animate-fade-in">
         
         {/* Header */}
-        <div className="text-center mb-20">
-            <div className="w-16 h-16 mx-auto bg-white rounded-2xl flex items-center justify-center border border-white/10 mb-8 shadow-2xl">
-                <IconBook className="w-8 h-8 text-black" />
+        <div className="text-center mb-24">
+            <div className="w-20 h-20 mx-auto bg-white/5 rounded-3xl flex items-center justify-center border border-white/5 mb-10 shadow-3xl backdrop-blur-xl">
+                <IconBook className="w-10 h-10 text-white" />
             </div>
-            <h1 className="type-display text-white mb-4">Terms of Service</h1>
-            <p className="type-tiny text-zinc-500 font-mono uppercase tracking-[0.3em]">
-                Protocol Established: {new Date().toLocaleDateString()}
+            <h1 className="text-white text-5xl md:text-7xl font-serif font-bold italic mb-6">Terms of Service</h1>
+            <p className="text-zinc-600 text-xs font-bold uppercase tracking-[0.4em] italic">
+                Effective Date: {new Date().toLocaleDateString()}
             </p>
         </div>
 
         {/* Content Card */}
-        <div className="glass-card-premium rounded-[40px] p-8 md:p-16">
-             <div className="space-y-16 text-zinc-400 leading-relaxed">
+        <div className="bg-white/5 border border-white/5 rounded-[4rem] p-12 md:p-24 relative overflow-hidden backdrop-blur-3xl shadow-3xl">
+             <div className="space-y-20 text-zinc-400 leading-relaxed italic">
                 
                 <section>
-                    <h3 className="type-h3 text-white mb-4">1. Neural Access Protocol</h3>
-                    <p className="type-body">
-                        By accessing <span className="text-white font-mono">ebookstudio.vercel.app</span>, you agree to be bound by these Terms of Service. If you do not agree to the operational parameters of this Agreement, you are not authorized to utilize this platform.
+                    <h3 className="text-3xl text-white font-serif font-bold mb-8 flex items-center gap-6 italic">
+                        <span className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-xs font-bold border border-white/5 text-white">01</span>
+                        Acceptance of Terms
+                    </h3>
+                    <p className="text-lg font-medium leading-relaxed">
+                        By using <span className="text-white font-mono italic">ebookstudio.vercel.app</span>, you agree to these rules. If you do not agree with this policy, you may not use our website.
                     </p>
                 </section>
 
                 <section>
-                    <h3 className="type-h3 text-white mb-4">2. Intellectual Assets</h3>
-                    <p className="type-body">
-                        The Platform and its original architecture, features, and core functionality are owned by {APP_NAME} and are protected by international intellectual property laws.
+                    <h3 className="text-3xl text-white font-serif font-bold mb-8 flex items-center gap-6 italic">
+                        <span className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-xs font-bold border border-white/5 text-white">02</span>
+                        Ownership
+                    </h3>
+                    <p className="text-lg font-medium leading-relaxed mb-8">
+                        This website and its content are owned by {APP_NAME} and are protected by law.
                     </p>
-                    <p className="mt-6 type-tiny text-zinc-500 bg-white/[0.02] p-6 rounded-2xl border border-white/5 italic">
-                        <strong className="text-white">Note on Synthesized Content:</strong> Manuscripts generated via our AI-assisted studio belong to the user, subject to the limited use requirements of the underlying model providers.
-                    </p>
+                    <div className="bg-white/5 p-10 rounded-[2rem] border border-white/5 shadow-inner">
+                        <Badge className="bg-white text-black mb-6 px-6 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-full border-none shadow-lg">
+                            Your Content
+                        </Badge>
+                        <p className="text-lg font-medium text-zinc-300 italic leading-relaxed">
+                            The books you write using our AI belong to you. We do not claim any ownership over your creative work.
+                        </p>
+                    </div>
                 </section>
 
                 <section>
-                    <h3 className="type-h3 text-white mb-4">3. External Synchronizations</h3>
-                    <p className="type-body">
-                        Our application integrates with Google API Services. Usage of these features constitutes acceptance of Google's Global Terms of Service.
+                    <h3 className="text-3xl text-white font-serif font-bold mb-8 flex items-center gap-6 italic">
+                        <span className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-xs font-bold border border-white/5 text-white">03</span>
+                        Third-Party Services
+                    </h3>
+                    <p className="text-lg font-medium leading-relaxed mb-10">
+                        We use Google's services for login and other features. By using them, you also agree to Google's terms.
                     </p>
-                    <ul className="space-y-3 mt-6 type-tiny text-zinc-500">
-                        <li className="flex items-center gap-3"><div className="w-1 h-1 rounded-full bg-zinc-700"></div> Data is never transferred for external surveillance.</li>
-                        <li className="flex items-center gap-3"><div className="w-1 h-1 rounded-full bg-zinc-700"></div> Data is never commercialized for third-party brokerage.</li>
-                        <li className="flex items-center gap-3"><div className="w-1 h-1 rounded-full bg-zinc-700"></div> No usage of data for cross-platform advertising.</li>
+                    <ul className="space-y-6 text-sm font-bold uppercase tracking-widest text-zinc-600">
+                        <li className="flex items-center gap-4"><div className="w-2 h-2 rounded-full bg-zinc-800"></div> Your data is never used for unwanted monitoring.</li>
+                        <li className="flex items-center gap-4"><div className="w-2 h-2 rounded-full bg-zinc-800"></div> Your data is never sold to third parties.</li>
+                        <li className="flex items-center gap-4"><div className="w-2 h-2 rounded-full bg-zinc-800"></div> We do not show you personalized ads.</li>
                     </ul>
                 </section>
 
                 <section>
-                    <h3 className="type-h3 text-white mb-4">4. Identity Integrity</h3>
-                    <p className="type-body">
-                        Upon account initiation, you must provide verified information. Failure to maintain identity integrity constitutes a breach of protocol, resulting in immediate suspension of access.
+                    <h3 className="text-3xl text-white font-serif font-bold mb-8 flex items-center gap-6 italic">
+                        <span className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-xs font-bold border border-white/5 text-white">04</span>
+                        Your Account
+                    </h3>
+                    <p className="text-lg font-medium leading-relaxed">
+                        When signing up, you must provide true information. Providing false information is a violation of our terms and may lead to account suspension.
                     </p>
                 </section>
 
                 <section>
-                    <h3 className="type-h3 text-white mb-4">5. Liability Thresholds</h3>
-                    <p className="type-body">
-                        {APP_NAME} shall not be liable for any indirect, incidental, or systemic damages resulting from the use or inability to use our neural studio or marketplace.
+                    <h3 className="text-3xl text-white font-serif font-bold mb-8 flex items-center gap-6 italic">
+                        <span className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-xs font-bold border border-white/5 text-white">05</span>
+                        Limitation of Liability
+                    </h3>
+                    <p className="text-lg font-medium leading-relaxed">
+                        {APP_NAME} is not responsible for any damages resulting from your use of this website.
                     </p>
                 </section>
 
+             </div>
+
+             {/* Footer Note */}
+             <div className="mt-24 pt-12 border-t border-white/5 text-center">
+                 <p className="text-[10px] font-bold text-zinc-700 uppercase tracking-[0.5em] italic">
+                     EBOOKSTUDIO LEGAL DEPARTMENT
+                 </p>
              </div>
         </div>
       </div>

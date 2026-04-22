@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { IconX, IconBrain, IconActivity, IconSparkles, IconFeather } from '../constants';
-import MorphicEye from './MorphicEye';
+import CoAuthor from './CoAuthor';
 
 interface CinematicWriterOverlayProps {
   isOpen: boolean;
@@ -166,14 +166,14 @@ const CinematicWriterOverlay: React.FC<CinematicWriterOverlayProps> = ({
             <div className="flex items-center gap-4">
                 <div className="relative group">
                     <div className={`absolute -inset-2 bg-white/5 rounded-full blur-md transition-opacity duration-500 ${isStreaming ? 'opacity-100' : 'opacity-0'}`}></div>
-                    <MorphicEye className="w-10 h-10 border border-white/10 bg-black/50 shadow-2xl" isActive={isStreaming} />
+                    <CoAuthor className="w-10 h-10 border border-white/10 bg-black/50 shadow-2xl" isActive={isStreaming} />
                 </div>
                 <div>
                     <h2 className="text-sm font-bold tracking-[0.2em] text-white uppercase">Studio AI</h2>
                     <div className="flex items-center gap-2">
                         <span className={`w-1.5 h-1.5 rounded-full ${isStreaming ? 'bg-green-500 animate-pulse' : 'bg-neutral-600'}`}></span>
                         <p className="text-[10px] text-neutral-500 font-medium uppercase tracking-widest">
-                            {isStreaming ? 'Neural Engine Active' : 'Standby'}
+                            {isStreaming ? 'AI Assistant Active' : 'Standby'}
                         </p>
                     </div>
                 </div>

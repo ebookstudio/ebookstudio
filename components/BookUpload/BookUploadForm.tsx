@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { EBook, GeneratedImage, UserType } from '../../types';
 import AIPricingOptimizer from '../AI/AIPricingOptimizer';
@@ -7,13 +6,14 @@ import { IconUpload, IconWallet, IconRocket, IconSparkles, IconCheck, IconBook }
 import { useAppContext } from '../../contexts/AppContext';
 import { analyzePdfContent } from '../../services/geminiService';
 import Spinner from '../Spinner';
+import { cn } from '../../lib/utils';
 
 interface BookUploadFormProps {
   onBookUploaded: (book: EBook) => void; 
 }
 
-const inputBaseClasses = `w-full bg-[#0b0b0b] border border-white/10 rounded-xl p-4 text-white placeholder-neutral-600 text-sm focus:outline-none focus:border-white/30 transition-all duration-200 font-sans`;
-const labelClasses = `block text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2`;
+const inputBaseClasses = `w-full bg-zinc-950 border border-border rounded-lg p-4 text-zinc-100 placeholder-zinc-700 text-sm focus:outline-none focus:ring-1 focus:ring-zinc-700 transition-all font-sans`;
+const labelClasses = `block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2 ml-1`;
 
 const BookUploadForm: React.FC<BookUploadFormProps> = ({ onBookUploaded }) => {
   const { currentUser, userType } = useAppContext();
@@ -143,133 +143,136 @@ const BookUploadForm: React.FC<BookUploadFormProps> = ({ onBookUploaded }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-[#1e1e1e] border border-white/5 p-8 md:p-10 shadow-2xl relative overflow-hidden rounded-[32px] animate-fade-in">
+    <div className="bg-zinc-900 border border-border rounded-xl p-8 lg:p-12 shadow-2xl relative overflow-hidden animate-fade-in">
       
-      <div className="relative z-10 mb-8 border-b border-white/5 pb-8">
-          <h2 className="text-3xl font-normal text-white mb-2">Publish New Book</h2>
-          <p className="text-neutral-400 text-sm">Upload a PDF or start a fresh manuscript.</p>
-      </div>
+      <header className="mb-10 pb-6 border-b border-border">
+          <h2 className="text-2xl font-bold text-zinc-100 tracking-tight">Upload Publication</h2>
+          <p className="text-zinc-500 text-sm mt-1">Upload a PDF document or initialize a new digital asset.</p>
+      </header>
           
       {formError && (
-        <div className="p-4 mb-8 text-red-400 bg-red-900/10 border border-red-500/20 text-sm font-medium rounded-xl flex items-center gap-2">
-           <IconCheck className="w-4 h-4 text-red-500" />
+        <div className="p-4 mb-8 text-red-400 bg-red-900/10 border border-red-500/20 text-xs font-bold rounded-lg flex items-center gap-3">
+           <IconX className="w-4 h-4 text-red-500" />
            {formError}
         </div>
       )}
 
       {/* PDF Upload Zone */}
-      <div className={`relative h-48 border border-dashed transition-all duration-300 mb-10 flex flex-col items-center justify-center gap-4 group rounded-3xl ${isAnalyzingPdf ? 'bg-white/5 border-white/30' : 'bg-[#0b0b0b] border-white/10 hover:border-white/30'}`}>
+      <div className={cn(
+        "relative h-40 border border-dashed transition-all duration-300 mb-10 flex flex-col items-center justify-center gap-4 group rounded-xl",
+        isAnalyzingPdf ? 'bg-zinc-800 border-zinc-600' : 'bg-zinc-950 border-border hover:border-zinc-700'
+      )}>
         
         {isAnalyzingPdf ? (
             <div className="flex flex-col items-center">
-                <Spinner size="md" color="text-white" />
-                <p className="mt-4 text-white font-bold text-xs uppercase tracking-widest animate-pulse">Analyzing Content...</p>
+                <Spinner size="md" color="text-zinc-100" />
+                <p className="mt-4 text-zinc-500 font-bold text-[10px] uppercase tracking-widest animate-pulse">Analyzing Content...</p>
             </div>
         ) : (
-            <label htmlFor="ebookFile" className="flex flex-col items-center justify-center cursor-pointer w-full h-full">
-                <div className="w-12 h-12 bg-[#1e1e1e] border border-white/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform rounded-full shadow-lg">
-                    <IconUpload className="w-5 h-5 text-white"/>
+            <label htmlFor="ebookFile" className="flex flex-col items-center justify-center cursor-pointer w-full h-full p-6">
+                <div className="w-10 h-10 bg-zinc-900 border border-border flex items-center justify-center mb-3 group-hover:scale-110 transition-transform rounded-full shadow-lg">
+                    <IconUpload className="w-4 h-4 text-zinc-100"/>
                 </div>
-                <span className="text-sm font-bold text-white mb-1">
-                    {file ? file.name : "Upload PDF Document"}
+                <span className="text-xs font-bold text-zinc-300 mb-1">
+                    {file ? file.name : "Select PDF Document"}
                 </span>
-                <span className="text-xs text-neutral-500">
-                    {file ? "Click to change file" : "Drag & drop or click to browse"}
+                <span className="text-[10px] text-zinc-600 font-bold uppercase tracking-wider">
+                    {file ? "Change Selection" : "Drag and drop or click to browse"}
                 </span>
                 <input type="file" id="ebookFile" accept="application/pdf" onChange={handleFileChange} className="hidden" />
             </label>
         )}
-        
-        {file && !isAnalyzingPdf && (
-            <button type="button" onClick={() => performPdfAnalysis(file)} className="absolute bottom-4 right-4 text-[10px] font-bold uppercase tracking-widest text-neutral-400 hover:text-white flex items-center gap-1 bg-[#1e1e1e] px-3 py-1.5 rounded-full border border-white/10">
-                <IconSparkles className="w-3 h-3" /> Re-Analyze
-            </button>
-        )}
       </div>
 
-      <div className={`space-y-8 ${isAnalyzingPdf ? 'opacity-50 pointer-events-none blur-sm' : ''}`}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-             <div>
-                <label htmlFor="title" className={labelClasses}>Book Title</label>
-                <input type="text" id="title" value={title} onChange={e => setTitle(e.target.value)} required className={inputBaseClasses} placeholder="Enter Title..."/>
+      <form onSubmit={handleSubmit} className={cn("space-y-8", isAnalyzingPdf && "opacity-50 pointer-events-none")}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+             <div className="space-y-2">
+                <label htmlFor="title" className={labelClasses}>Document Title</label>
+                <input type="text" id="title" value={title} onChange={e => setTitle(e.target.value)} required className={inputBaseClasses} placeholder="Enter publication title..."/>
              </div>
-             <div>
-                <label htmlFor="author" className={labelClasses}>Author</label>
-                <input type="text" id="author" value={author} onChange={e => setAuthor(e.target.value)} required className={inputBaseClasses} placeholder="Enter Author..."/>
+             <div className="space-y-2">
+                <label htmlFor="author" className={labelClasses}>Primary Author</label>
+                <input type="text" id="author" value={author} onChange={e => setAuthor(e.target.value)} required className={inputBaseClasses} placeholder="Enter author name..."/>
              </div>
           </div>
 
-          <div>
-             <label htmlFor="description" className={labelClasses}>Description</label>
-             <textarea id="description" value={description} onChange={e => setDescription(e.target.value)} rows={4} required className={`${inputBaseClasses} min-h-[120px] resize-none`}/>
+          <div className="space-y-2">
+             <label htmlFor="description" className={labelClasses}>Executive Summary</label>
+             <textarea id="description" value={description} onChange={e => setDescription(e.target.value)} rows={4} required className={cn(inputBaseClasses, "min-h-[120px] resize-none")} placeholder="Provide a brief summary of the content..."/>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-             <div>
-                <label htmlFor="genre" className={labelClasses}>Genre</label>
-                <input type="text" id="genre" value={genre} onChange={e => setGenre(e.target.value)} required className={inputBaseClasses} placeholder="Sci-Fi, Thriller..."/>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+             <div className="space-y-2">
+                <label htmlFor="genre" className={labelClasses}>Classification</label>
+                <input type="text" id="genre" value={genre} onChange={e => setGenre(e.target.value)} required className={inputBaseClasses} placeholder="e.g. Technical, Research, Fiction..."/>
              </div>
              
-             {/* Monetization */}
-             <div>
+             <div className="space-y-2">
                 <label className={labelClasses}>Monetization</label>
-                <div className="grid grid-cols-2 gap-3">
-                    <button type="button" onClick={() => setMonetizationType('paid')} className={`p-4 border text-left transition-all rounded-xl relative overflow-hidden group ${monetizationType === 'paid' ? 'bg-white text-black border-white' : 'bg-[#0b0b0b] text-neutral-400 border-white/10 hover:border-white/20'}`}>
-                        <div className="relative z-10 flex flex-col items-center justify-center gap-2">
-                             <IconWallet className={`w-5 h-5 ${monetizationType === 'paid' ? 'text-black' : 'text-neutral-500'}`}/>
-                             <span className="text-[10px] font-bold uppercase tracking-widest">Paid</span>
-                        </div>
+                <div className="grid grid-cols-2 gap-4">
+                    <button type="button" onClick={() => setMonetizationType('paid')} className={cn(
+                        "p-3 border rounded-lg transition-all flex items-center justify-center gap-3",
+                        monetizationType === 'paid' ? 'bg-zinc-100 text-zinc-950 border-zinc-100' : 'bg-zinc-950 text-zinc-500 border-border hover:border-zinc-800'
+                    )}>
+                        <IconWallet className="w-3.5 h-3.5"/>
+                        <span className="text-[10px] font-bold uppercase tracking-widest">Paid</span>
                     </button>
-                    <button type="button" onClick={() => setMonetizationType('free')} className={`p-4 border text-left transition-all rounded-xl relative overflow-hidden group ${monetizationType === 'free' ? 'bg-white text-black border-white' : 'bg-[#0b0b0b] text-neutral-400 border-white/10 hover:border-white/20'}`}>
-                        <div className="relative z-10 flex flex-col items-center justify-center gap-2">
-                             <IconRocket className={`w-5 h-5 ${monetizationType === 'free' ? 'text-black' : 'text-neutral-500'}`}/>
-                             <span className="text-[10px] font-bold uppercase tracking-widest">Free</span>
-                        </div>
+                    <button type="button" onClick={() => setMonetizationType('free')} className={cn(
+                        "p-3 border rounded-lg transition-all flex items-center justify-center gap-3",
+                        monetizationType === 'free' ? 'bg-zinc-100 text-zinc-950 border-zinc-100' : 'bg-zinc-950 text-zinc-500 border-border hover:border-zinc-800'
+                    )}>
+                        <IconRocket className="w-3.5 h-3.5"/>
+                        <span className="text-[10px] font-bold uppercase tracking-widest">Free</span>
                     </button>
                 </div>
              </div>
           </div>
 
           {monetizationType === 'paid' && (
-              <div className="animate-fade-in space-y-6 bg-[#0b0b0b] p-6 rounded-2xl border border-white/5">
-                  <div>
-                    <label htmlFor="price" className={labelClasses}>List Price (₹)</label>
-                    <input type="number" id="price" value={price} onChange={e => setPrice(e.target.value)} className={inputBaseClasses} placeholder="499"/>
+              <div className="animate-fade-in space-y-6 bg-zinc-950/50 p-6 rounded-xl border border-border">
+                  <div className="space-y-2">
+                    <label htmlFor="price" className={labelClasses}>List Price ($)</label>
+                    <input type="number" id="price" value={price} onChange={e => setPrice(e.target.value)} className={inputBaseClasses} placeholder="9.99"/>
                   </div>
                   <AIPricingOptimizer bookDetails={{ title, genre, description }} onPriceSuggested={handlePriceSuggested} />
               </div>
           )}
           
-          <div className="p-6 bg-[#0b0b0b] border border-white/5 rounded-2xl">
+          <div className="p-6 bg-zinc-950/50 border border-border rounded-xl space-y-6">
               <AICoverGenerator onCoverGenerated={handleCoverGenerated} currentTitle={title} currentAuthor={author} />
                
               {aiGeneratedCoverData && (
-                <div className="mt-6 p-4 bg-white/5 border border-white/10 flex items-center gap-4 rounded-xl">
-                    <img src={`data:image/jpeg;base64,${aiGeneratedCoverData.imageBytes}`} alt="AI Cover" className="w-12 h-16 object-cover bg-black rounded" />
-                    <span className="text-white text-[10px] font-bold uppercase tracking-widest flex items-center gap-2"><IconCheck className="w-3 h-3 text-green-500"/> Cover Attached</span>
+                <div className="p-4 bg-zinc-900 border border-border flex items-center gap-4 rounded-lg">
+                    <img src={`data:image/jpeg;base64,${aiGeneratedCoverData.imageBytes}`} alt="AI Cover" className="w-10 h-14 object-cover bg-zinc-950 rounded border border-border" />
+                    <div className="space-y-1">
+                        <span className="text-emerald-500 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
+                            <IconCheck className="w-3 h-3"/> AI Asset Attached
+                        </span>
+                        <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-tight">The generated cover will be used for this publication.</p>
+                    </div>
                 </div>
               )}
               
               {!aiGeneratedCoverData && (
-                <div className="mt-6">
-                    <label className={labelClasses}>Manual Cover URL</label>
-                    <input type="url" value={coverImageUrl} onChange={e => setCoverImageUrl(e.target.value)} className={inputBaseClasses} placeholder="https://..."/>
+                <div className="space-y-2">
+                    <label className={labelClasses}>Manual Cover URL (Optional)</label>
+                    <input type="url" value={coverImageUrl} onChange={e => setCoverImageUrl(e.target.value)} className={inputBaseClasses} placeholder="https://image-source.com/cover.jpg"/>
                 </div>
               )}
           </div>
 
           <div className="pt-4 flex justify-end">
               <button type="submit" disabled={isProcessingFile || isAnalyzingPdf}
-                      className="px-10 py-4 bg-white text-black font-bold hover:bg-neutral-200 transition-all text-xs uppercase tracking-widest flex items-center justify-center gap-2 disabled:opacity-50 rounded-full shadow-glow-white hover:scale-105 active:scale-95">
+                      className="px-10 h-12 bg-zinc-100 text-zinc-950 font-bold hover:bg-zinc-200 transition-all text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 disabled:opacity-50 rounded-md shadow-xl active:scale-95">
                 {isProcessingFile ? (
-                    <>Publishing...</>
+                    <>Synchronizing...</>
                 ) : (
-                    <><IconUpload className="w-4 h-4" /> Publish to Store</>
+                    <><IconUpload className="w-4 h-4" /> Publish Document</>
                 )}
               </button>
           </div>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 };
 

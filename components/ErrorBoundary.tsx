@@ -37,7 +37,7 @@ class ErrorBoundary extends Component<Props, State> {
                 <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-glow-white">
                     <IconBook className="w-10 h-10 text-black" />
                 </div>
-                <h1 className="text-4xl font-black tracking-tighter mb-4 uppercase">Neural Fault</h1>
+                <h1 className="text-4xl font-black tracking-tighter mb-4 uppercase italic">Oops! Something went wrong.</h1>
                 <p className="text-neutral-500 mb-8 text-sm leading-relaxed">
                     A critical exception occurred in the EbookStudio workspace. Your data is safe, but the interface needs to reset.
                 </p>
