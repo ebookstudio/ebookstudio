@@ -376,11 +376,11 @@ const EbookStudioPage: React.FC = () => {
             </div>
         </header>
 
-        <div className="flex flex-1 overflow-hidden relative">
+        <div className="flex flex-1 overflow-hidden relative h-[calc(100vh-64px)]">
             
             {/* --- STUDIO SIDEBAR --- */}
-            <aside className="hidden lg:flex w-[380px] bg-zinc-950 border-r border-zinc-900/50 flex-col z-20 shadow-[20px_0_40px_rgba(0,0,0,0.3)]">
-                <div className="h-14 border-b border-zinc-900/50 flex items-center justify-between px-6 bg-zinc-950/50 backdrop-blur-xl">
+            <aside className="hidden lg:flex w-[380px] bg-zinc-950 border-r border-zinc-900/50 flex-col z-20 shadow-[20px_0_40px_rgba(0,0,0,0.3)] h-full">
+                <div className="h-14 border-b border-zinc-900/50 flex items-center justify-between px-6 bg-zinc-950/50 backdrop-blur-xl shrink-0">
                     <div className="flex items-center gap-3">
                          <div className="w-2 h-2 rounded-full bg-zinc-100 shadow-[0_0_8px_rgba(255,255,255,0.4)] animate-pulse" />
                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-100">Studio Intelligence</span>
@@ -389,7 +389,7 @@ const EbookStudioPage: React.FC = () => {
                 </div>
 
                 <div className="flex-1 overflow-hidden relative flex flex-col bg-[#050505]">
-                    <div className="p-4 border-b border-zinc-900/30 flex justify-center">
+                    <div className="p-4 border-b border-zinc-900/30 flex justify-center shrink-0">
                         <div className="flex bg-zinc-900/50 p-1 rounded-lg border border-zinc-800/50">
                             <button 
                                 onClick={() => setLeftTab('chat')}
@@ -412,11 +412,11 @@ const EbookStudioPage: React.FC = () => {
                         </div>
                     </div>
                     
-                    <div className="flex-1 flex flex-col overflow-hidden">
+                    <div className="flex-1 flex flex-col min-h-0">
                         {leftTab === 'chat' && (
                             <>
-                                <ScrollArea className="flex-1">
-                                    <div className="p-6 space-y-8">
+                                <div className="flex-1 overflow-y-auto custom-scrollbar">
+                                    <div className="p-6 space-y-8 pb-10">
                                         {messages.length === 0 ? (
                                             <div className="flex flex-col items-center justify-center py-20 text-center opacity-40">
                                                 <IconBrain className="w-12 h-12 mb-4 text-zinc-500" />
@@ -461,10 +461,10 @@ const EbookStudioPage: React.FC = () => {
                                         )}
                                         <div ref={messagesEndRef} />
                                     </div>
-                                </ScrollArea>
+                                </div>
 
                                 {/* --- PREMIUM INPUT INTERFACE --- */}
-                                <div className="p-6 bg-[#050505] border-t border-zinc-900/50 mt-auto">
+                                <div className="p-6 bg-[#050505] border-t border-zinc-900/50 mt-auto shrink-0">
                                     {attachmentPreviews.length > 0 && (
                                         <div className="flex gap-3 mb-4 overflow-x-auto pb-2 scrollbar-hide">
                                             {attachmentPreviews.map((src, idx) => (
@@ -541,7 +541,7 @@ const EbookStudioPage: React.FC = () => {
                         )}
 
                         {leftTab === 'outline' && (
-                            <ScrollArea className="flex-1 p-6">
+                            <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
                                 <div className="space-y-4">
                                     {pages.map((p, idx) => (
                                         <button
@@ -573,7 +573,7 @@ const EbookStudioPage: React.FC = () => {
                                         <span>Add Chapter</span>
                                     </Button>
                                 </div>
-                            </ScrollArea>
+                            </div>
                         )}
                     </div>
                 </div>
