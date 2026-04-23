@@ -37,13 +37,13 @@ const AnimatedRoutes = () => {
     }, [location.pathname]);
     
     return (
-        <AnimatePresence mode="wait">
+        <AnimatePresence>
             <motion.div 
                 key={location.pathname} 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
                 className="flex-grow flex flex-col"
             >
                   <Routes location={location}>
@@ -52,6 +52,7 @@ const AnimatedRoutes = () => {
                     <Route path="/store" element={<StorePage />} />
                     <Route path="/pricing" element={<PricingPage />} />
                     <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route path="/dashboard/:tab" element={<DashboardPage />} />
                     <Route path="/checkout" element={<CheckoutPage />} />
                     <Route path="/s/:slug" element={<CreatorSitePage />} />
                     <Route path="/site/:username" element={<HostingPreviewPage />} />
@@ -77,10 +78,6 @@ const AppContent: React.FC = () => {
                            location.pathname.startsWith('/ebook-studio') ||
                            location.pathname.startsWith('/read/') ||
                            location.pathname.startsWith('/edit-ebook/');
-
-  if (isInitialAuthCheck) {
-    return <LoadingScreen />;
-  }
 
   return (
     <div className="flex flex-col min-h-screen bg-zinc-950 font-sans text-zinc-100 overflow-x-hidden relative selection:bg-zinc-100/10">

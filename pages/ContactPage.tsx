@@ -1,108 +1,118 @@
 import React from 'react';
-import { APP_NAME, IconSend, IconGlobe, IconInstagram } from '../constants';
-import { Badge } from '../components/ui/badge';
+import { APP_NAME, IconSend, IconGlobe, IconActivity } from '../constants';
 
 const ContactPage: React.FC = () => {
   return (
-    <div className="min-h-screen w-full relative bg-background pt-48 pb-32 selection:bg-white selection:text-black overflow-hidden">
+    <div className="min-h-screen w-full bg-zinc-950 pt-40 pb-32 px-6 text-zinc-100 selection:bg-primary/30">
       
-      {/* Ambient Background */}
-      <div className="absolute inset-0 z-0">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] bg-purple-600/5 rounded-full blur-[160px]" />
-          <div className="absolute inset-0 bg-dot-matrix opacity-[0.1]" />
+      {/* Background Texture */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] bg-gradient-to-b from-zinc-900/20 to-transparent" />
+          <div className="absolute inset-0 bg-dot-matrix opacity-[0.05]" />
       </div>
 
-      <div className="container mx-auto px-6 max-w-5xl relative z-10 animate-fade-in">
+      <div className="max-w-6xl mx-auto relative z-10 space-y-24 animate-fade-in">
         
-        {/* Header */}
-        <div className="text-center mb-24">
-            <h1 className="text-white text-5xl md:text-7xl font-serif font-bold italic mb-6">Contact Us</h1>
-            <p className="text-zinc-500 text-lg font-medium italic">We're here to help you with anything you need.</p>
-        </div>
+        {/* Header Section */}
+        <header className="space-y-8 text-center md:text-left">
+            <div className="flex items-center justify-center md:justify-start gap-3 text-zinc-500">
+                <div className="w-8 h-[1px] bg-zinc-800" />
+                <span className="text-[10px] font-black uppercase tracking-[0.4em]">Support Interface v2.0</span>
+            </div>
+            <div className="space-y-4">
+                <h1 className="text-6xl md:text-9xl font-black tracking-tighter leading-[0.85]">Contact <br/><span className="text-zinc-500">Us.</span></h1>
+                <p className="text-zinc-500 text-lg md:text-xl font-medium max-w-2xl">
+                    We're here to optimize your creative workflow and resolve any system discrepancies.
+                </p>
+            </div>
+        </header>
 
+        {/* Contact Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-            {/* Contact Card */}
-            <div className="lg:col-span-8 bg-white/5 border border-white/5 rounded-[3.5rem] p-12 md:p-16 backdrop-blur-3xl shadow-3xl">
-                <h3 className="text-3xl text-white font-serif font-bold italic mb-12">Our Office</h3>
-                
-                <div className="space-y-12">
-                    <div>
-                        <h4 className="text-[10px] font-bold text-zinc-600 uppercase tracking-[0.4em] mb-4 italic">Company Name</h4>
-                        <p className="text-3xl text-white font-serif font-bold italic">{APP_NAME}</p>
-                    </div>
-
-                    <div>
-                        <h4 className="text-[10px] font-bold text-zinc-600 uppercase tracking-[0.4em] mb-4 italic">Registered Office</h4>
-                        <p className="text-lg text-zinc-400 font-medium leading-relaxed italic">
+            
+            {/* Primary Details */}
+            <div className="lg:col-span-8 bg-zinc-900/40 border border-zinc-800 rounded-2xl p-10 md:p-16 space-y-16">
+                <section className="space-y-6">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600">Registered Office</h4>
+                    <div className="space-y-2">
+                        <p className="text-3xl font-black tracking-tight text-zinc-100">{APP_NAME}</p>
+                        <p className="text-zinc-400 text-lg font-medium leading-relaxed">
                             Gala No. 1, 1st Floor, Patanwala Estate,<br/>
                             LBS Marg, Ghatkopar West,<br/>
                             Mumbai - 400086, MH.
                         </p>
                     </div>
+                </section>
 
-                    <div>
-                        <h4 className="text-[10px] font-bold text-zinc-600 uppercase tracking-[0.4em] mb-6 italic">Get in Touch</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <a href="mailto:opendev-labs.help@gmail.com" className="flex items-center gap-6 p-8 bg-white/5 rounded-[2rem] border border-white/5 group hover:bg-white/10 transition-all shadow-inner">
-                                <div className="w-14 h-14 rounded-2xl bg-white text-black flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
-                                    <IconSend className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1 italic">Email Support</p>
-                                    <p className="text-xs font-bold text-white group-hover:text-purple-400 transition-colors italic">opendev-labs.help@gmail.com</p>
-                                </div>
-                            </a>
-                            <a href="https://ebookstudio.vercel.app" target="_blank" rel="noopener noreferrer" className="flex items-center gap-6 p-8 bg-white/5 rounded-[2rem] border border-white/5 group hover:bg-white/10 transition-all shadow-inner">
-                                <div className="w-14 h-14 rounded-2xl bg-black border border-white/10 text-white flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
-                                    <IconGlobe className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1 italic">Website</p>
-                                    <p className="text-xs font-bold text-white group-hover:text-purple-400 transition-colors italic">ebookstudio.vercel.app</p>
-                                </div>
-                            </a>
+                <section className="space-y-8">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600">Communication Channels</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <a href="mailto:opendev-labs.help@gmail.com" className="group p-8 bg-zinc-950 border border-zinc-800 rounded-xl hover:border-zinc-600 transition-all">
+                            <div className="w-12 h-12 bg-zinc-900 rounded-lg flex items-center justify-center mb-6 group-hover:bg-zinc-100 group-hover:text-zinc-950 transition-all">
+                                <IconSend className="w-5 h-5" />
+                            </div>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-1">Email Protocol</p>
+                            <p className="text-sm font-bold text-zinc-200 group-hover:text-white transition-colors">opendev-labs.help@gmail.com</p>
+                        </a>
+                        <a href="https://ebookstudio.vercel.app" className="group p-8 bg-zinc-950 border border-zinc-800 rounded-xl hover:border-zinc-600 transition-all">
+                            <div className="w-12 h-12 bg-zinc-900 rounded-lg flex items-center justify-center mb-6 group-hover:bg-zinc-100 group-hover:text-zinc-950 transition-all">
+                                <IconGlobe className="w-5 h-5" />
+                            </div>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-1">Digital Domain</p>
+                            <p className="text-sm font-bold text-zinc-200 group-hover:text-white transition-colors">ebookstudio.vercel.app</p>
+                        </a>
+                    </div>
+                </section>
+            </div>
+
+            {/* Sidebar Stats */}
+            <div className="lg:col-span-4 space-y-8">
+                <div className="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-10 space-y-10">
+                    <div className="space-y-4">
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600">Response Latency</h4>
+                        <div className="flex items-end gap-3">
+                            <p className="text-5xl font-black tracking-tighter text-zinc-100">&lt;24h</p>
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 mb-2 shadow-glow-sm" />
+                        </div>
+                        <p className="text-sm text-zinc-500 font-medium">Average turnaround time for support tickets.</p>
+                    </div>
+
+                    <div className="pt-8 border-t border-zinc-800 space-y-4">
+                        <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600">Operational Hours</h4>
+                        <div className="space-y-1">
+                            <p className="text-sm font-bold text-zinc-200 uppercase tracking-widest">Mon — Fri</p>
+                            <p className="text-xs text-zinc-500 font-medium tracking-wider">09:00 — 18:00 IST</p>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Sidebar Info */}
-            <div className="lg:col-span-4 flex flex-col gap-10">
-                <div className="bg-white/5 border border-white/5 rounded-[3rem] p-10 flex flex-col justify-between flex-grow shadow-3xl backdrop-blur-2xl">
-                    <div>
-                        <h3 className="text-2xl text-white font-serif font-bold italic mb-6">Response Time</h3>
-                        <p className="text-sm font-medium text-zinc-500 leading-relaxed italic mb-10">
-                            We typically respond to all messages within 24 hours. For questions about your purchase, please include your Order ID.
-                        </p>
-                    </div>
-                    
-                    <div className="bg-white/5 rounded-2xl p-8 border border-white/5 shadow-inner">
-                        <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-3 italic">Hours of Operation</p>
-                        <p className="text-sm font-bold text-white italic mb-1">Mon - Fri</p>
-                        <p className="text-xs font-medium text-zinc-500 italic">09:00 - 18:00 IST</p>
-                    </div>
-                </div>
-
-                {/* Social Profiles */}
-                <div className="bg-white/5 border border-white/5 rounded-[2.5rem] p-10 shadow-3xl backdrop-blur-2xl">
-                     <h3 className="text-2xl text-white font-serif font-bold italic mb-8">Follow Us</h3>
-                     <div className="space-y-6">
-                        <a href="https://instagram.com/iamyash.io" target="_blank" rel="noopener noreferrer" className="flex items-center gap-5 text-zinc-500 hover:text-white transition-all group">
-                            <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-rose-500/10 group-hover:text-rose-400 transition-all border border-white/5 shadow-inner">
-                                <IconInstagram className="w-6 h-6" />
+                <div className="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-10">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600 mb-6">Social Integration</h4>
+                    <div className="space-y-4">
+                        {['Instagram', 'Twitter', 'LinkedIn'].map(platform => (
+                            <div key={platform} className="flex items-center justify-between group cursor-pointer">
+                                <span className="text-sm font-bold text-zinc-500 group-hover:text-zinc-100 transition-colors uppercase tracking-widest">{platform}</span>
+                                <div className="w-8 h-8 bg-zinc-950 border border-zinc-800 rounded flex items-center justify-center text-zinc-700 group-hover:text-zinc-100 transition-all">
+                                    <IconActivity className="w-3.5 h-3.5" />
+                                </div>
                             </div>
-                            <span className="text-sm font-bold italic">@iamyash.io</span>
-                        </a>
-                        <a href="https://instagram.com/opendev-labs" target="_blank" rel="noopener noreferrer" className="flex items-center gap-5 text-zinc-500 hover:text-white transition-all group">
-                             <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-rose-500/10 group-hover:text-rose-400 transition-all border border-white/5 shadow-inner">
-                                <IconInstagram className="w-6 h-6" />
-                            </div>
-                            <span className="text-sm font-bold italic">@opendev-labs</span>
-                        </a>
-                     </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
+
+        {/* Footer Note */}
+        <footer className="pt-24 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-8">
+            <div className="space-y-1 text-center md:text-left">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-700">EbookStudio Enterprise Support</p>
+                <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-zinc-800">Part of the OpenDev-Labs Infrastructure</p>
+            </div>
+            <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+                <IconActivity className="w-4 h-4 text-zinc-500" />
+            </div>
+        </footer>
+
       </div>
     </div>
   );

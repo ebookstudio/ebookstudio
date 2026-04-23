@@ -15,7 +15,19 @@ import {
     IconBriefcase,
     IconUsers,
     IconFileText,
-    IconMail
+    IconMail,
+    IconLayout,
+    IconTag,
+    IconReceipt,
+    IconTicket,
+    IconRotateCcw,
+    IconDownload,
+    IconPenTip,
+    IconCreditCard,
+    IconLock,
+    IconCheck,
+    IconStar,
+    IconDashboard as IconGrid
 } from '../../constants';
 import * as ReactRouterDOM from 'react-router-dom';
 
@@ -83,55 +95,102 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ userType, activeSec
                     </div>
                 </div>
 
-                <div className="space-y-6">
-                    <div>
-                        <SidebarItem 
-                            icon={IconHome} 
-                            label="Dashboard" 
-                            isActive={activeSection === 'stats'} 
-                            onClick={() => onSectionChange(userType === 'USER' ? 'library' : 'stats')} 
-                        />
-                        <SidebarItem 
-                            icon={IconActivity} 
-                            label="Lifecycle" 
-                        />
-                        <SidebarItem 
-                            icon={IconTrendingUp} 
-                            label="Analytics" 
-                        />
-                        <SidebarItem 
-                            icon={IconBriefcase} 
-                            label="Projects" 
-                        />
-                        <SidebarItem 
-                            icon={IconUsers} 
-                            label="Team" 
-                        />
-                    </div>
+                <div className="space-y-8 pb-8">
+                    {userType === 'SELLER' ? (
+                        <>
+                            {/* Create Section */}
+                            <div>
+                                <p className="px-3 mb-2 text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">Create</p>
+                                <SidebarItem icon={IconLayout} label="Templates" isActive={activeSection === 'templates'} onClick={() => onSectionChange('templates')} />
+                                <SidebarItem icon={IconPenTip} label="My Drafts" isActive={activeSection === 'drafts'} onClick={() => onSectionChange('drafts')} />
+                                <SidebarItem icon={IconCloudUpload} label="Import Document" isActive={activeSection === 'import'} onClick={() => onSectionChange('import')} />
+                            </div>
 
-                    <div>
-                        <p className="px-3 mb-2 text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Documents</p>
-                        <SidebarItem 
-                            icon={IconBook} 
-                            label="Data Library" 
-                            isActive={activeSection === 'library'} 
-                            onClick={() => onSectionChange('library')} 
-                        />
-                        <SidebarItem 
-                            icon={IconFileText} 
-                            label="Reports" 
-                        />
-                        <SidebarItem 
-                            icon={IconSettings} 
-                            label="Studio Settings" 
-                            isActive={activeSection === 'settings'} 
-                            onClick={() => onSectionChange('settings')} 
-                        />
-                        <SidebarItem 
-                            icon={IconLogout} 
-                            label="More..." 
-                        />
-                    </div>
+                            {/* Store Management Section */}
+                            <div>
+                                <p className="px-3 mb-2 text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">Store Management</p>
+                                <SidebarItem icon={IconBook} label="All Ebooks" isActive={activeSection === 'books'} onClick={() => onSectionChange('books')} />
+                                <SidebarItem icon={IconTag} label="Categories" isActive={activeSection === 'categories'} onClick={() => onSectionChange('categories')} />
+                                <SidebarItem icon={IconBriefcase} label="Inventory" isActive={activeSection === 'inventory'} onClick={() => onSectionChange('inventory')} />
+                            </div>
+
+                            {/* Payments (Razorpay) Section */}
+                            <div>
+                                <p className="px-3 mb-2 text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">Payments (Razorpay)</p>
+                                <SidebarItem icon={IconReceipt} label="Orders & Transactions" isActive={activeSection === 'orders'} onClick={() => onSectionChange('orders')} />
+                                <SidebarItem icon={IconWallet} label="Pricing Plans" isActive={activeSection === 'pricing'} onClick={() => onSectionChange('pricing')} />
+                                <SidebarItem icon={IconTicket} label="Coupons / Discounts" isActive={activeSection === 'coupons'} onClick={() => onSectionChange('coupons')} />
+                                <SidebarItem icon={IconCreditCard} label="Payout Settings" isActive={activeSection === 'payouts'} onClick={() => onSectionChange('payouts')} />
+                                <SidebarItem icon={IconRotateCcw} label="Refunds" isActive={activeSection === 'refunds'} onClick={() => onSectionChange('refunds')} />
+                            </div>
+
+                            {/* Customers Section */}
+                            <div>
+                                <p className="px-3 mb-2 text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">Customers</p>
+                                <SidebarItem icon={IconUsers} label="Customer List" isActive={activeSection === 'customers'} onClick={() => onSectionChange('customers')} />
+                                <SidebarItem icon={IconDownload} label="Downloads" isActive={activeSection === 'downloads'} onClick={() => onSectionChange('downloads')} />
+                                <SidebarItem icon={IconStar} label="Reviews & Ratings" isActive={activeSection === 'reviews'} onClick={() => onSectionChange('reviews')} />
+                            </div>
+
+                            {/* Analytics Section */}
+                            <div>
+                                <p className="px-3 mb-2 text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">Analytics</p>
+                                <SidebarItem icon={IconTrendingUp} label="Sales Overview" isActive={activeSection === 'stats'} onClick={() => onSectionChange('stats')} />
+                                <SidebarItem icon={IconStar} label="Top Selling Ebooks" isActive={activeSection === 'top-selling'} onClick={() => onSectionChange('top-selling')} />
+                                <SidebarItem icon={IconActivity} label="Conversion Funnel" isActive={activeSection === 'funnel'} onClick={() => onSectionChange('funnel')} />
+                                <SidebarItem icon={IconCheck} label="Payment Success" isActive={activeSection === 'payment-health'} onClick={() => onSectionChange('payment-health')} />
+                            </div>
+
+                            {/* Settings Section */}
+                            <div>
+                                <p className="px-3 mb-2 text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">Settings</p>
+                                <SidebarItem icon={IconSettings} label="Store Settings" isActive={activeSection === 'settings'} onClick={() => onSectionChange('settings')} />
+                                <SidebarItem icon={IconLock} label="Payment Gateway" isActive={activeSection === 'gateway'} onClick={() => onSectionChange('gateway')} />
+                                <SidebarItem icon={IconMail} label="Email Notifications" isActive={activeSection === 'notifications'} onClick={() => onSectionChange('notifications')} />
+                                <SidebarItem icon={IconUsers} label="Team Members" isActive={activeSection === 'team'} onClick={() => onSectionChange('team')} />
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            {/* Reader Sidebar */}
+                            <div>
+                                <p className="px-3 mb-2 text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">Reader Hub</p>
+                                <SidebarItem 
+                                    icon={IconHome} 
+                                    label="My Library" 
+                                    isActive={activeSection === 'library'} 
+                                    onClick={() => onSectionChange('library')} 
+                                />
+                                <SidebarItem 
+                                    icon={IconHeart} 
+                                    label="Favorites" 
+                                    isActive={activeSection === 'wishlist'} 
+                                    onClick={() => onSectionChange('wishlist')} 
+                                />
+                                <SidebarItem 
+                                    icon={IconTrendingUp} 
+                                    label="Activity" 
+                                    isActive={activeSection === 'activity'} 
+                                    onClick={() => onSectionChange('activity')} 
+                                />
+                            </div>
+
+                            <div>
+                                <p className="px-3 mb-2 text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">Account</p>
+                                <SidebarItem 
+                                    icon={IconSettings} 
+                                    label="Identity" 
+                                    isActive={activeSection === 'settings'} 
+                                    onClick={() => onSectionChange('settings')} 
+                                />
+                                <SidebarItem 
+                                    icon={IconStore} 
+                                    label="Marketplace" 
+                                    onClick={() => navigate('/store')} 
+                                />
+                            </div>
+                        </>
+                    )}
                 </div>
             </ScrollArea>
 

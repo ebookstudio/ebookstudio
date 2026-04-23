@@ -29,6 +29,7 @@ const defaultAppContext: AppContextType = {
   upgradeToSeller: () => {},
   verifyUser: () => {},
   isInitialAuthCheck: true,
+  isAuthenticating: false,
   logout: async () => {},
 };
 
@@ -75,6 +76,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [geminiChat, setGeminiChat] = useState<any>(null);
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [isInitialAuthCheck, setIsInitialAuthCheck] = useState(true);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   // 2. Firebase Auth Listener
   useEffect(() => {
@@ -122,6 +124,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             setUserTypeState(UserType.GUEST);
         }
         setIsInitialAuthCheck(false);
+        setIsAuthenticating(false);
     });
 
     return () => unsubscribe();
@@ -237,10 +240,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const handleGoogleLogin = async () => {
     try {
+        setIsAuthenticating(true);
         const result = await signInWithPopup(auth, googleProvider);
         console.log("Google Login Success:", result.user.displayName);
         return true;
     } catch (e: any) {
+        setIsAuthenticating(false);
         console.error("Google Login Failed Error Code:", e.code);
         console.error("Google Login Failed Message:", e.message);
         if (e.code === 'auth/configuration-not-found') {
@@ -268,9 +273,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   // ADDED: Email Login for Admin/Owner and Paid Writers
   const handleEmailLogin = async (email: string, password: string): Promise<{success: boolean, message?: string}> => {
       try {
+          setIsAuthenticating(true);
           await signInWithEmailAndPassword(auth, email, password);
           return { success: true };
       } catch (e: any) {
+          setIsAuthenticating(false);
           console.error("Email Login Failed", e);
           return { success: false, message: e.message || "Invalid credentials." };
       }
@@ -318,7 +325,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const theme = 'dark';
 
   return (
-    <AppContext.Provider value={{ currentUser, userType, setCurrentUser, cart, addToCart, removeFromCart, clearCart, theme, geminiChat, initializeChat, isChatbotOpen, toggleChatbot, updateSellerCreatorSite, allBooks, addCreatedBook, updateEBook, handleGoogleLogin, handleEmailLogin, upgradeToSeller, verifyUser, isInitialAuthCheck, logout }}>
+    <AppContext.Provider value={{ currentUser, userType, setCurrentUser, cart, addToCart, removeFromCart, clearCart, theme, geminiChat, initializeChat, isChatbotOpen, toggleChatbot, updateSellerCreatorSite, allBooks, addCreatedBook, updateEBook, handleGoogleLogin, handleEmailLogin, upgradeToSeller, verifyUser, isInitialAuthCheck, isAuthenticating, logout }}>
       {children}
     </AppContext.Provider>
   );

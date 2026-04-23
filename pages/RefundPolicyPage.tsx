@@ -1,91 +1,130 @@
 import React from 'react';
-import { APP_NAME, IconWallet } from '../constants';
-import CoAuthor from '../components/CoAuthor';
-import { Badge } from '../components/ui/badge';
+import { APP_NAME, IconActivity, IconWallet, IconCheck } from '../constants';
 
 const RefundPolicyPage: React.FC = () => {
   return (
-    <div className="min-h-screen w-full relative bg-background pt-48 pb-32 selection:bg-white selection:text-black overflow-hidden">
+    <div className="min-h-screen w-full bg-zinc-950 pt-40 pb-32 px-6 text-zinc-100 selection:bg-primary/30">
       
-      {/* Ambient Background */}
-      <div className="absolute inset-0 z-0">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] bg-purple-600/5 rounded-full blur-[160px]" />
-          <div className="absolute inset-0 bg-dot-matrix opacity-[0.1]" />
+      {/* Background Texture */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] bg-gradient-to-b from-zinc-900/20 to-transparent" />
+          <div className="absolute inset-0 bg-dot-matrix opacity-[0.05]" />
       </div>
 
-      <div className="container mx-auto px-6 max-w-4xl relative z-10 animate-fade-in">
+      <div className="max-w-4xl mx-auto relative z-10 space-y-24 animate-fade-in">
         
-        {/* Header */}
-        <div className="text-center mb-24">
-            <div className="w-20 h-20 mx-auto bg-white/5 rounded-3xl flex items-center justify-center border border-white/5 mb-10 shadow-3xl backdrop-blur-xl">
-                <IconWallet className="w-10 h-10 text-white" />
+        {/* Header Section */}
+        <header className="space-y-8">
+            <div className="flex items-center gap-3 text-zinc-500">
+                <div className="w-8 h-[1px] bg-zinc-800" />
+                <span className="text-[10px] font-black uppercase tracking-[0.4em]">Billing Integrity v2.0</span>
             </div>
-            <h1 className="text-white text-5xl md:text-7xl font-serif font-bold italic mb-6">Refund Policy</h1>
-            <p className="text-zinc-600 text-xs font-bold uppercase tracking-[0.4em] italic">
-                Digital Product Returns
-            </p>
-        </div>
+            <div className="space-y-4">
+                <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85]">Refund <br/><span className="text-zinc-500">Policy.</span></h1>
+                <p className="text-zinc-500 text-sm font-bold uppercase tracking-widest">Digital Marketplace Standards</p>
+            </div>
+        </header>
 
-        {/* Content Card */}
-        <div className="bg-white/5 border border-white/5 rounded-[4rem] p-12 md:p-24 relative overflow-hidden backdrop-blur-3xl shadow-3xl">
-             <div className="space-y-16 text-zinc-400 leading-relaxed italic">
-                  
-                  <div className="p-10 bg-rose-500/5 border border-rose-500/10 rounded-[2.5rem] shadow-inner">
-                      <Badge className="bg-rose-500 text-white mb-6 px-6 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-full border-none shadow-lg">
-                          Important Information
-                      </Badge>
-                      <p className="text-xl font-medium text-zinc-300 leading-relaxed">
-                         Since our books are digital products and delivered instantly, all purchases are generally <strong className="text-white italic">final and non-refundable</strong> once the book is added to your library.
-                      </p>
-                  </div>
-
-                <section>
-                    <h3 className="text-3xl text-white font-serif font-bold mb-8 flex items-center gap-6 italic">
-                        <span className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-xs font-bold border border-white/5 text-white">01</span>
-                        Cancelling an Order
-                    </h3>
-                    <p className="text-lg font-medium leading-relaxed">
-                        Orders cannot be cancelled once the payment is successful and the book has been added to your library.
+        {/* Content Section */}
+        <div className="space-y-20">
+            
+            {/* 01. Eligibility */}
+            <section className="space-y-6">
+                <div className="flex items-center gap-4">
+                    <span className="text-zinc-800 font-black text-4xl">01</span>
+                    <h2 className="text-xl font-bold uppercase tracking-widest text-zinc-100">Customer Eligibility</h2>
+                </div>
+                <div className="bg-zinc-900/30 border border-zinc-800 p-8 rounded-xl space-y-6">
+                    <p className="text-zinc-400 leading-relaxed font-medium">
+                        Refunds are evaluated on a case-by-case basis. You may be eligible for a refund within <span className="text-zinc-100 font-bold">7 days</span> of purchase if:
                     </p>
-                </section>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {[
+                            "Ebook file is corrupted/unreadable",
+                            "Content significantly differs from description",
+                            "Duplicate accidental purchase (within 24h)",
+                            "Unauthorized transaction reported"
+                        ].map((item, i) => (
+                            <li key={i} className="flex items-center gap-3 p-4 bg-zinc-950/50 border border-zinc-800 rounded-lg text-xs font-bold text-zinc-400 uppercase tracking-tight">
+                                <IconCheck className="w-4 h-4 text-emerald-500" />
+                                {item}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </section>
 
-                <section>
-                    <h3 className="text-3xl text-white font-serif font-bold mb-8 flex items-center gap-6 italic">
-                        <span className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-xs font-bold border border-white/5 text-white">02</span>
-                        Exceptions
-                    </h3>
-                    <p className="text-lg font-medium mb-10">We may offer a refund in the following cases:</p>
-                    <ul className="space-y-6 text-sm font-bold uppercase tracking-widest text-zinc-600">
-                        <li className="flex items-center gap-4">
-                            <div className="w-2 h-2 rounded-full bg-rose-500"></div>
-                            The book file is broken or corrupted.
+            {/* 02. Non-Refundable Items */}
+            <section className="space-y-6">
+                <div className="flex items-center gap-4">
+                    <span className="text-zinc-800 font-black text-4xl">02</span>
+                    <h2 className="text-xl font-bold uppercase tracking-widest text-zinc-100">Non-Refundable Cases</h2>
+                </div>
+                <div className="bg-zinc-900/30 border border-zinc-800 p-8 rounded-xl space-y-4">
+                    <p className="text-zinc-400 leading-relaxed font-medium">
+                        Due to the digital nature of our assets, we cannot offer refunds for the following:
+                    </p>
+                    <ul className="space-y-3 text-sm text-zinc-500 font-medium">
+                        <li className="flex items-start gap-4">
+                            <div className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0 mt-2" />
+                            <span>Subjective preferences ("I didn't like the book").</span>
                         </li>
-                        <li className="flex items-center gap-4">
-                            <div className="w-2 h-2 rounded-full bg-rose-500"></div>
-                            You were charged twice for the same book.
+                        <li className="flex items-start gap-4">
+                            <div className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0 mt-2" />
+                            <span>Books that have been downloaded multiple times.</span>
+                        </li>
+                        <li className="flex items-start gap-4">
+                            <div className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0 mt-2" />
+                            <span className="text-rose-400 font-bold italic">AI Subscription Fees (Non-refundable).</span>
                         </li>
                     </ul>
-                    <p className="mt-12 text-xs font-bold text-zinc-700 italic">Issues must be reported within 7 days of purchase.</p>
-                </section>
+                </div>
+            </section>
 
-                <section>
-                    <h3 className="text-3xl text-white font-serif font-bold mb-8 flex items-center gap-6 italic">
-                        <span className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-xs font-bold border border-white/5 text-white">03</span>
-                        Refund Time
-                    </h3>
-                    <p className="text-lg font-medium leading-relaxed">
-                        Approved refunds are processed within 5-7 business days. The money will be returned to your original payment method.
+            {/* 03. Refund Process */}
+            <section className="space-y-6">
+                <div className="flex items-center gap-4">
+                    <span className="text-zinc-800 font-black text-4xl">03</span>
+                    <h2 className="text-xl font-bold uppercase tracking-widest text-zinc-100">Process & Timelines</h2>
+                </div>
+                <div className="bg-zinc-900/30 border border-zinc-800 p-8 rounded-xl space-y-4">
+                    <p className="text-zinc-400 leading-relaxed font-medium">
+                        If approved, your refund will be processed via <span className="text-zinc-100 font-bold">Razorpay</span> to your original payment method. Funds typically reflect in your account within <span className="text-zinc-100 font-bold text-lg">5-7 business days</span>.
                     </p>
-                </section>
-             </div>
+                </div>
+            </section>
 
-             {/* Footer Note */}
-             <div className="mt-24 pt-12 border-t border-white/5 text-center">
-                 <p className="text-[10px] font-bold text-zinc-700 uppercase tracking-[0.5em] italic">
-                     EBOOKSTUDIO SECURE BILLING
-                 </p>
-             </div>
+            {/* 04. Author Impact */}
+            <section className="space-y-6">
+                <div className="flex items-center gap-4">
+                    <span className="text-zinc-800 font-black text-4xl">04</span>
+                    <h2 className="text-xl font-bold uppercase tracking-widest text-zinc-100">Author Account Adjustment</h2>
+                </div>
+                <div className="bg-zinc-900/30 border border-zinc-800 p-8 rounded-xl space-y-4">
+                    <p className="text-zinc-400 leading-relaxed font-medium italic">
+                        "If a refund is granted to a customer, the corresponding platform commission and author payout will be reversed. The amount will be deducted from the author's future payouts."
+                    </p>
+                </div>
+            </section>
+
         </div>
+
+        {/* Footer Note */}
+        <footer className="pt-24 border-t border-zinc-900 flex flex-col md:flex-row justify-between items-center gap-8">
+            <div className="space-y-1 text-center md:text-left">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-700">EbookStudio Transaction Safety</p>
+                <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-zinc-800">Powered by Razorpay Ecosystem</p>
+            </div>
+            <div className="flex gap-4">
+                <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+                    <IconWallet className="w-4 h-4 text-zinc-500" />
+                </div>
+                <div className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center">
+                    <IconActivity className="w-4 h-4 text-zinc-500" />
+                </div>
+            </div>
+        </footer>
+
       </div>
     </div>
   );

@@ -65,7 +65,7 @@ const StatCard = ({ label, value, badge, sub, icon: Icon }: any) => (
 export const SellerDashboardContent: React.FC = () => {
   const { currentUser, updateSellerCreatorSite, addCreatedBook, setCurrentUser, userType } = useAppContext();
   const seller = currentUser as Seller; 
-  const [activeTab, setActiveTab] = useState<'stats' | 'books' | 'audience' | 'settings' | 'admin'>('stats');
+  const [activeTab, setActiveTab] = useState<string>('stats');
   const navigate = useNavigate();
   const [isDeploying, setIsDeploying] = useState(false);
   const [deploymentUrl, setDeploymentUrl] = useState<string | null>(null);
@@ -126,11 +126,28 @@ export const SellerDashboardContent: React.FC = () => {
 
   const getTitle = () => {
     switch(activeTab) {
-        case 'stats': return 'Documents';
-        case 'books': return 'My Library';
-        case 'audience': return 'Analytics';
-        case 'settings': return 'Settings';
-        case 'admin': return 'Administration';
+        case 'stats': return 'Sales Overview';
+        case 'books': return 'Ebook Inventory';
+        case 'settings': return 'Store Settings';
+        case 'templates': return 'Creative Templates';
+        case 'drafts': return 'My Drafts';
+        case 'import': return 'Import Document';
+        case 'categories': return 'Store Categories';
+        case 'inventory': return 'Stock Management';
+        case 'orders': return 'Orders & Transactions';
+        case 'pricing': return 'Pricing Architecture';
+        case 'coupons': return 'Marketing Coupons';
+        case 'payouts': return 'Payout Configuration';
+        case 'refunds': return 'Refund Management';
+        case 'customers': return 'Customer Database';
+        case 'downloads': return 'Download Tracking';
+        case 'reviews': return 'Ratings & Feedback';
+        case 'top-selling': return 'Performance Metrics';
+        case 'funnel': return 'Conversion Funnel';
+        case 'payment-health': return 'Razorpay Health';
+        case 'gateway': return 'Payment Gateway';
+        case 'notifications': return 'Email Notifications';
+        case 'team': return 'Collaboration';
         default: return 'Dashboard';
     }
   };
@@ -362,6 +379,27 @@ export const SellerDashboardContent: React.FC = () => {
                                     </div>
                                 </div>
                              </div>
+                        </div>
+                    )}
+
+                    {/* Placeholder for new tabs */}
+                    {!['stats', 'books', 'settings'].includes(activeTab) && (
+                        <div className="py-32 text-center border border-dashed border-border rounded-2xl bg-zinc-900/30 animate-fade-in">
+                            <div className="w-16 h-16 bg-zinc-950 rounded-full flex items-center justify-center mx-auto mb-8 border border-border shadow-xl">
+                                <IconSparkles className="w-6 h-6 text-zinc-500" />
+                            </div>
+                            <h3 className="text-xl font-bold text-zinc-100 mb-2">
+                                {getTitle()} Module
+                            </h3>
+                            <p className="text-sm text-zinc-500 mb-8 max-w-sm mx-auto">
+                                The {getTitle().toLowerCase()} system is currently synchronizing with the Razorpay API and Ebook Studio core.
+                            </p>
+                            <Button 
+                                onClick={() => setActiveTab('stats')}
+                                className="h-10 px-8 bg-zinc-800 text-zinc-400 hover:text-zinc-100 border border-border text-xs font-bold uppercase tracking-widest"
+                            >
+                                Return to Overview
+                            </Button>
                         </div>
                     )}
                 </div>

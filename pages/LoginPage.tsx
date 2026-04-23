@@ -7,26 +7,37 @@ import { cn } from '../lib/utils';
 const { useNavigate, Link } = ReactRouterDOM as any;
 
 const LoginPage: React.FC = () => {
-    const { handleEmailLogin, handleGoogleLogin } = useAppContext();
+    const { handleEmailLogin, handleGoogleLogin, currentUser } = useAppContext();
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
 
+    // Auto-navigate when login is confirmed in context
+    React.useEffect(() => {
+        if (currentUser) {
+            navigate('/dashboard');
+        }
+    }, [currentUser, navigate]);
+
     const onEmailLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsProcessing(true);
-        const success = await handleEmailLogin(email, password);
-        if (success) navigate('/dashboard');
-        else alert('Invalid credentials');
-        setIsProcessing(false);
+        const result = await handleEmailLogin(email, password);
+        if (!result.success) {
+            alert(result.message || 'Invalid credentials');
+            setIsProcessing(false);
+        }
+        // Navigation is handled by the useEffect
     };
 
     const onGoogleLogin = async () => {
         setIsProcessing(true);
         const success = await handleGoogleLogin();
-        if (success) navigate('/dashboard');
-        setIsProcessing(false);
+        if (!success) {
+            setIsProcessing(false);
+        }
+        // Navigation is handled by the useEffect
     };
 
     return (
