@@ -5,13 +5,13 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig: any = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY || import.meta.env.VITE_API_KEY,
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "ebooklabs.firebaseapp.com",
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "ebooklabs",
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "ebooklabs.firebasestorage.app",
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_FIREBASE_APP_ID,
-    measurementId: import.meta.env.VITE_GA_MEASUREMENT_ID
+    apiKey: "AIzaSyDn57R2oX8KINPOnwI2TTG2wpMGxdurY4o",
+    authDomain: "ebooklabs.firebaseapp.com",
+    projectId: "ebooklabs",
+    storageBucket: "ebooklabs.firebasestorage.app",
+    messagingSenderId: "872644278150",
+    appId: "1:872644278150:web:cdbc149ebac592a05fde07",
+    measurementId: "G-66VFZ22PKV"
 };
 
 // Production Hardening: Fallback environment variable check
