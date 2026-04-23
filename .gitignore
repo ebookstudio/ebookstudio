@@ -34,3 +34,4 @@ dist/
 build_output.txt
 
 .vercel
+.env*.local
