@@ -34,9 +34,8 @@ const LoginPage: React.FC = () => {
     const onGoogleLogin = async () => {
         setIsProcessing(true);
         const success = await handleGoogleLogin();
-        if (!success) {
-            setIsProcessing(false);
-        }
+        // Reset processing state regardless of outcome to keep UI responsive
+        setIsProcessing(false);
         // Navigation is handled by the useEffect
     };
 

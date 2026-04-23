@@ -83,12 +83,13 @@ const EbookReaderPage: React.FC = () => {
                  let hasAccess = isFree;
 
                  if (!hasAccess && currentUser) {
-                     if (userType === UserType.SELLER) {
-                         hasAccess = foundBook.sellerId === currentUser.id; 
-                     } else if (userType === UserType.USER) {
-                         hasAccess = (currentUser as User).purchaseHistory?.some(b => b.id === bookId);
-                     }
-                 }
+                      if (userType === UserType.SELLER) {
+                          hasAccess = foundBook.sellerId === currentUser.id; 
+                      } else if (userType === UserType.USER) {
+                          const user = currentUser as User;
+                          hasAccess = user.purchaseHistory?.some(b => b.id === bookId) || user.purchasedBookIds?.includes(bookId || '');
+                      }
+                  }
                  
                  if (hasAccess) {
                      setBook(foundBook);

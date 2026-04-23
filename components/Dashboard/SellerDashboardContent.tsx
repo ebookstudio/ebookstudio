@@ -63,7 +63,7 @@ const StatCard = ({ label, value, badge, sub, icon: Icon }: any) => (
 );
 
 export const SellerDashboardContent: React.FC = () => {
-  const { currentUser, updateSellerCreatorSite, addCreatedBook, setCurrentUser, userType } = useAppContext();
+  const { currentUser, updateSellerCreatorSite, addCreatedBook, setCurrentUser, userType, updatePayoutUpi, updateSubscription } = useAppContext();
   const seller = currentUser as Seller; 
   const [activeTab, setActiveTab] = useState<string>('stats');
   const navigate = useNavigate();
@@ -127,27 +127,24 @@ export const SellerDashboardContent: React.FC = () => {
   const getTitle = () => {
     switch(activeTab) {
         case 'stats': return 'Sales Overview';
-        case 'books': return 'Ebook Inventory';
-        case 'settings': return 'Store Settings';
-        case 'templates': return 'Creative Templates';
-        case 'drafts': return 'My Drafts';
-        case 'import': return 'Import Document';
-        case 'categories': return 'Store Categories';
-        case 'inventory': return 'Stock Management';
+        case 'books': return 'All Ebooks';
+        case 'add-book': return 'Add New Ebook';
+        case 'categories': return 'Categories';
+        case 'inventory': return 'Inventory';
         case 'orders': return 'Orders & Transactions';
-        case 'pricing': return 'Pricing Architecture';
-        case 'coupons': return 'Marketing Coupons';
-        case 'payouts': return 'Payout Configuration';
-        case 'refunds': return 'Refund Management';
-        case 'customers': return 'Customer Database';
-        case 'downloads': return 'Download Tracking';
-        case 'reviews': return 'Ratings & Feedback';
-        case 'top-selling': return 'Performance Metrics';
+        case 'pricing': return 'Pricing Plans';
+        case 'coupons': return 'Coupons / Discounts';
+        case 'payouts': return 'Payout Settings';
+        case 'refunds': return 'Refunds';
+        case 'customers': return 'Customer List';
+        case 'downloads': return 'Downloads';
+        case 'reviews': return 'Reviews & Ratings';
+        case 'top-selling': return 'Top Selling Ebooks';
         case 'funnel': return 'Conversion Funnel';
-        case 'payment-health': return 'Razorpay Health';
+        case 'payment-health': return 'Razorpay Payment Success/Failure Rate';
+        case 'settings': return 'Store Settings';
         case 'gateway': return 'Payment Gateway';
         case 'notifications': return 'Email Notifications';
-        case 'team': return 'Collaboration';
         default: return 'Dashboard';
     }
   };
@@ -339,6 +336,19 @@ export const SellerDashboardContent: React.FC = () => {
                         </div>
                     )}
                     
+                    {activeTab === 'add-book' && (
+                        <div className="max-w-4xl mx-auto">
+                            <div className="bg-zinc-900 border border-border rounded-xl p-10 space-y-12 shadow-2xl relative overflow-hidden">
+                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-zinc-700 to-transparent opacity-20" />
+                                <div className="text-center space-y-2">
+                                    <h3 className="text-xl font-bold text-zinc-100">Manual Asset Upload</h3>
+                                    <p className="text-sm text-zinc-500">Upload your existing ebook assets directly to the store.</p>
+                                </div>
+                                <BookUploadForm onBookUploaded={handleBookUploaded} />
+                            </div>
+                        </div>
+                    )}
+                    
                     {activeTab === 'settings' && (
                         <div className="space-y-8">
                              <div className="max-w-4xl mx-auto">
@@ -362,6 +372,23 @@ export const SellerDashboardContent: React.FC = () => {
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <div className="space-y-3">
+                                            <label className="text-[10px] font-bold text-zinc-600 uppercase tracking-[0.2em] ml-1">Razorpay Payout UPI ID</label>
+                                            <div className="flex gap-4">
+                                                <input 
+                                                    placeholder="e.g. yourname@upi" 
+                                                    value={seller.payoutUpiId || ''} 
+                                                    onChange={(e) => updatePayoutUpi(e.target.value)}
+                                                    className="flex-1 h-11 bg-zinc-950 border border-border rounded-md px-4 text-xs font-bold text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-700 transition-all font-mono" 
+                                                />
+                                                <div className="px-4 h-11 bg-zinc-900 border border-border rounded-md flex items-center justify-center">
+                                                    <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Active</span>
+                                                </div>
+                                            </div>
+                                            <p className="text-[9px] text-zinc-600 font-medium ml-1">Your 70% earnings will be auto-transferred to this ID via Razorpay Payouts.</p>
+                                        </div>
+
                                         <div className="space-y-3">
                                             <label className="text-[10px] font-bold text-zinc-600 uppercase tracking-[0.2em] ml-1">Professional Tagline</label>
                                             <textarea name="tagline" value={creatorSiteForm.tagline} onChange={handleCreatorSiteFormChange} rows={3} className="w-full bg-zinc-950 border border-border rounded-md p-4 text-xs font-bold text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-700 transition-all resize-none leading-relaxed" />
@@ -381,9 +408,125 @@ export const SellerDashboardContent: React.FC = () => {
                              </div>
                         </div>
                     )}
+                    {activeTab === 'payouts' && (
+                        <div className="space-y-12 animate-fade-in">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <StatCard label="Total Earnings" value={`₹${(seller.payoutHistory?.reduce((s,p) => s+p.amount, 0) || 0).toFixed(2)}`} badge="70% Split" sub="Lifetime writer revenue" icon={IconTrendingUp} />
+                                <StatCard label="Pending Payouts" value="₹0.00" badge="Automated" sub="Processed on each sale" icon={IconActivity} />
+                                <StatCard label="Platform Commission" value="30%" badge="Active" sub="Fixed marketplace fee" icon={IconShieldCheck} />
+                            </div>
+
+                            <div className="bg-zinc-900 border border-border rounded-xl overflow-hidden shadow-2xl">
+                                <div className="p-8 border-b border-border bg-zinc-950/50">
+                                    <h4 className="text-base font-bold text-zinc-100">Payout Ledger</h4>
+                                    <p className="text-xs text-zinc-500 font-medium">Real-time record of all transfers to {seller.payoutUpiId || 'your UPI ID'}.</p>
+                                </div>
+                                <div className="p-0">
+                                    <Table>
+                                        <TableHeader className="bg-zinc-950">
+                                            <TableRow className="border-border hover:bg-transparent">
+                                                <TableHead className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 h-12">Transaction ID</TableHead>
+                                                <TableHead className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 h-12">Date</TableHead>
+                                                <TableHead className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 h-12">Amount</TableHead>
+                                                <TableHead className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 h-12">Status</TableHead>
+                                                <TableHead className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 h-12 text-right">Receipt</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {seller.payoutHistory && seller.payoutHistory.length > 0 ? (
+                                                seller.payoutHistory.map((payout) => (
+                                                    <TableRow key={payout.id} className="border-border hover:bg-zinc-950/50 transition-colors">
+                                                        <TableCell className="font-mono text-[10px] text-zinc-400">{payout.razorpayPayoutId || payout.id}</TableCell>
+                                                        <TableCell className="text-xs font-medium text-zinc-300">{new Date(payout.timestamp).toLocaleDateString()}</TableCell>
+                                                        <TableCell className="text-xs font-bold text-zinc-100">₹{payout.amount.toFixed(2)}</TableCell>
+                                                        <TableCell>
+                                                            <div className="inline-flex items-center gap-2 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-[9px] font-bold uppercase tracking-widest text-emerald-500">
+                                                                {payout.status}
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="text-right">
+                                                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-zinc-600 hover:text-zinc-100">
+                                                                <IconLink className="w-3.5 h-3.5" />
+                                                            </Button>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))
+                                            ) : (
+                                                <TableRow>
+                                                    <TableCell colSpan={5} className="h-48 text-center">
+                                                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-700">No payout history detected.</p>
+                                                    </TableCell>
+                                                </TableRow>
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'pricing' && (
+                        <div className="max-w-4xl mx-auto space-y-12 animate-fade-in">
+                            <header className="text-center space-y-4 mb-16">
+                                <h2 className="text-4xl font-bold tracking-tighter text-zinc-100">AI Subscription Plans</h2>
+                                <p className="text-zinc-500 text-sm font-medium max-w-sm mx-auto leading-relaxed">
+                                    Unlock advanced agentic workflows and high-fidelity generation tools.
+                                </p>
+                            </header>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="bg-zinc-900 border border-border p-10 rounded-2xl space-y-8 relative overflow-hidden group hover:border-zinc-700 transition-all">
+                                    <div className="space-y-2">
+                                        <h3 className="text-xl font-bold text-zinc-100">Creator Free</h3>
+                                        <p className="text-xs text-zinc-500 font-medium">Basic marketplace listing & storage.</p>
+                                    </div>
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-4xl font-bold text-zinc-100">₹0</span>
+                                        <span className="text-zinc-600 text-[10px] font-bold uppercase">/ lifetime</span>
+                                    </div>
+                                    <ul className="space-y-4">
+                                        {['70/30 Marketplace Split', 'Basic Cover Templates', 'Manual Asset Upload', 'Public Creator Site'].map(f => (
+                                            <li key={f} className="flex items-center gap-3 text-xs font-medium text-zinc-400">
+                                                <IconShieldCheck className="w-3.5 h-3.5 text-zinc-700" /> {f}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                    <Button disabled className="w-full h-11 bg-zinc-800 text-zinc-500 text-[10px] font-black uppercase tracking-widest border border-border">Default Plan</Button>
+                                </div>
+
+                                <div className="bg-zinc-900 border-2 border-zinc-100 p-10 rounded-2xl space-y-8 relative overflow-hidden shadow-2xl">
+                                    <div className="absolute top-4 right-4 px-3 py-1 bg-zinc-100 rounded-full text-zinc-950 text-[9px] font-black uppercase tracking-widest">Recommended</div>
+                                    <div className="space-y-2">
+                                        <h3 className="text-xl font-bold text-zinc-100">Studio Pro</h3>
+                                        <p className="text-xs text-zinc-500 font-medium">Full agentic AI generation ecosystem.</p>
+                                    </div>
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-4xl font-bold text-zinc-100">₹499</span>
+                                        <span className="text-zinc-600 text-[10px] font-bold uppercase">/ monthly</span>
+                                    </div>
+                                    <ul className="space-y-4">
+                                        {['Agentic Chapter Planning', 'Infinite AI Generations', 'Premium Layout Engines', 'Custom Domains (BETA)', 'Priority SEO Indexing'].map(f => (
+                                            <li key={f} className="flex items-center gap-3 text-xs font-medium text-zinc-200">
+                                                <IconShieldCheck className="w-3.5 h-3.5 text-zinc-100" /> {f}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                    <Button 
+                                        onClick={() => updateSubscription('pro_monthly')}
+                                        className={cn(
+                                            "w-full h-11 text-[10px] font-black uppercase tracking-widest transition-all",
+                                            seller.subscription?.isActive ? "bg-zinc-800 text-zinc-100 border border-zinc-700" : "bg-zinc-100 text-zinc-950 hover:bg-zinc-200"
+                                        )}
+                                    >
+                                        {seller.subscription?.isActive ? "Currently Active" : "Initialize Subscription"}
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Placeholder for new tabs */}
-                    {!['stats', 'books', 'settings'].includes(activeTab) && (
+                    {!['stats', 'books', 'settings', 'add-book', 'payouts', 'pricing'].includes(activeTab) && (
                         <div className="py-32 text-center border border-dashed border-border rounded-2xl bg-zinc-900/30 animate-fade-in">
                             <div className="w-16 h-16 bg-zinc-950 rounded-full flex items-center justify-center mx-auto mb-8 border border-border shadow-xl">
                                 <IconSparkles className="w-6 h-6 text-zinc-500" />

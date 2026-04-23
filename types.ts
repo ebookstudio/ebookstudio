@@ -23,14 +23,35 @@ export interface EBook {
   isDraft?: boolean; // Added draft status
 }
 
+export interface Purchase {
+  id: string;
+  userId: string;
+  bookId: string;
+  amount: number;
+  timestamp: string;
+  sellerId: string;
+  status: 'pending' | 'completed' | 'failed';
+  payoutStatus: 'pending' | 'completed';
+}
+
+export interface Payout {
+  id: string;
+  sellerId: string;
+  amount: number;
+  upiId: string;
+  timestamp: string;
+  status: 'pending' | 'completed' | 'failed';
+  razorpayPayoutId?: string;
+}
+
 export interface User {
   id: string;
   name: string;
   email: string;
   purchaseHistory: EBook[];
+  purchasedBookIds: string[]; // Added for fast access control
   wishlist: EBook[];
-  isVerified?: boolean; // Added for Blue Tick
-  // Social Profile Fields
+  isVerified?: boolean; 
   username?: string;
   profileImageUrl?: string;
   coverImageUrl?: string;
@@ -49,21 +70,30 @@ export interface CreatorSiteConfig {
   showcasedBookIds: string[]; // IDs of EBooks to display
 }
 
+export interface SubscriptionStatus {
+  isActive: boolean;
+  planId: string;
+  startDate: string;
+  endDate: string;
+  razorpaySubscriptionId?: string;
+}
+
 export interface Seller {
   id: string;
   name: string;
   email: string;
-  payoutEmail: string; // For Razorpay or other payout methods
-  payoutUpiId?: string; // Added UPI ID for 70% split
+  payoutEmail: string; 
+  payoutUpiId?: string; 
   uploadedBooks: EBook[];
   creatorSite?: CreatorSiteConfig;
-  isVerified?: boolean; // Added for Blue Tick
-  isAdmin?: boolean; // ADDED: For the Owner (subatomicerror@gmail.com)
-  // Social Profile Fields
+  isVerified?: boolean; 
+  isAdmin?: boolean; 
   username?: string;
   profileImageUrl?: string;
   coverImageUrl?: string;
   bio?: string;
+  payoutHistory?: Payout[]; // Added payout history
+  subscription?: SubscriptionStatus; // Added AI subscription status
 }
 
 export enum UserType {
@@ -104,7 +134,10 @@ export interface AppContextType {
   upgradeToSeller: () => void; // Upgrade User to Seller
   verifyUser: () => void; // Added for Blue Tick Verification
   isInitialAuthCheck: boolean; // Added
-  logout: () => Promise<void>; // Added
+  logout: () => Promise<void>; 
+  finalizePurchase: (books: EBook[]) => Promise<void>; // Added for marketplace
+  updatePayoutUpi: (upiId: string) => Promise<void>; // Added for payouts
+  updateSubscription: (planId: string) => Promise<void>; // Added for AI subscriptions
 }
 
 export interface GroundingChunkWeb {

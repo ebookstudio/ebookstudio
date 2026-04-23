@@ -9,8 +9,8 @@ export const CARD_DARK_CLASS = "brand-card-dark";
 export const BORDER_CLASS = "border-brand-border"; // For sharp square elements
 
 // Updated to the latest high-performance models
-export const GEMINI_TEXT_MODEL = "gemini-3-flash-preview"; 
-export const GEMINI_IMAGE_MODEL = "gemini-2.5-flash-image";
+export const GEMINI_TEXT_MODEL = "gemini-1.5-flash"; 
+export const GEMINI_IMAGE_MODEL = "gemini-1.5-flash"; // Fallback for multimodal/image understanding
 
 // UPDATED KEYS FROM USER PROMPT
 export const RAZORPAY_KEY_ID = "rzp_live_RR5721D6h6BMt4"; 

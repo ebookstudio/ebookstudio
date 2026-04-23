@@ -7,6 +7,7 @@ import {
 } from '../constants';
 import * as ReactRouterDOM from 'react-router-dom';
 import CoAuthor from '../components/CoAuthor';
+import { razorpayService } from '../services/razorpayService';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Separator } from '../components/ui/separator';
@@ -15,7 +16,7 @@ import { cn } from '../lib/utils';
 const { useNavigate } = ReactRouterDOM as any;
 
 const CheckoutPage: React.FC = () => {
-    const { cart, removeFromCart, currentUser, RAZORPAY_KEY_ID, clearCart } = useAppContext();
+    const { cart, removeFromCart, currentUser, RAZORPAY_KEY_ID, clearCart, finalizePurchase } = useAppContext();
     const navigate = useNavigate();
     const [isProcessing, setIsProcessing] = useState(false);
 
@@ -45,28 +46,51 @@ const CheckoutPage: React.FC = () => {
 
         setIsProcessing(true);
 
-        const options = {
-            key: RAZORPAY_KEY_ID,
-            amount: Math.round(total * 100), 
-            currency: "INR",
-            name: "EbookStudio",
-            description: `Asset Purchase (${cart.length} items)`,
-            image: "https://ebookstudio.vercel.app/logo.png",
-            handler: function (response: any) {
-                clearCart();
-                navigate('/dashboard');
-                setIsProcessing(false);
-            },
-            prefill: {
-                name: currentUser.name,
-                email: currentUser.email,
-            },
-            theme: {
-                color: "#09090b",
-            },
-        };
-
         try {
+            // 1. Create Razorpay Order via Real API Service
+            const firstBook = cart[0];
+            const order = await razorpayService.createOrder(
+                total, 
+                currentUser.id, 
+                cart.map(item => item.id),
+                firstBook.sellerId,
+                (firstBook as any).sellerUpiId // Assuming this exists or retrieve from context
+            );
+
+            const options = {
+                key: RAZORPAY_KEY_ID,
+                amount: order.amount,
+                currency: order.currency,
+                name: "EbookStudio",
+                description: `Acquisition of ${cart.length} High-Fidelity Publications`,
+                image: "https://ebookstudio.vercel.app/logo.png",
+                order_id: order.id,
+                handler: async function (response: any) {
+                    // 2. Verify Payment (Simulated)
+                    const isVerified = await razorpayService.verifyPayment(response, order.id);
+                    
+                    if (isVerified) {
+                        // 3. Finalize Purchase in App Context
+                        await finalizePurchase([...cart]);
+                        clearCart();
+                        navigate('/dashboard');
+                    }
+                    setIsProcessing(false);
+                },
+                prefill: {
+                    name: currentUser.name,
+                    email: currentUser.email,
+                },
+                theme: {
+                    color: "#09090b",
+                },
+                modal: {
+                    ondismiss: function() {
+                        setIsProcessing(false);
+                    }
+                }
+            };
+
             const rzp = new (window as any).Razorpay(options);
             rzp.on('payment.failed', function (response: any) {
                 alert(`Payment Failed: ${response.error.description}`);

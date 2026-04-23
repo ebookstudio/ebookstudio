@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useAppContext } from '../contexts/AppContext';
-import { EBook, EBookPage } from '../types';
+import { EBook, EBookPage, UserType } from '../types';
 import * as ReactRouterDOM from 'react-router-dom';
 import {
     IconSparkles, IconSend, IconPlus, IconArrowLeft,
@@ -9,6 +9,8 @@ import {
 import {
     createStudioSession, generateBookCover, transcribeAudio
 } from '../services/aiService';
+import { razorpayService } from '../services/razorpayService';
+import { Seller } from '../types';
 import CoAuthor from '../components/CoAuthor';
 import NovelEditor from '../components/NovelEditor';
 import CinematicWriterOverlay from '../components/CinematicWriterOverlay';
@@ -31,7 +33,7 @@ interface ChatMessage {
 }
 
 const EbookStudioPage: React.FC = () => {
-  const { currentUser, addCreatedBook } = useAppContext();
+  const { currentUser, userType, addCreatedBook } = useAppContext();
   const navigate = useNavigate();
   const location = useLocation();
   const initialPrompt = location.state?.initialPrompt || '';
@@ -70,6 +72,19 @@ const EbookStudioPage: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    // Subscription Check for Sellers
+    if (userType === UserType.SELLER) {
+        const seller = currentUser as Seller;
+        if (!razorpayService.checkSubscriptionStatus(seller.subscription)) {
+            const confirm = window.confirm("Agentic AI Studio requires an active Studio Pro subscription. Would you like to upgrade now?");
+            if (confirm) {
+                navigate('/dashboard/pricing');
+            } else {
+                navigate('/dashboard');
+            }
+        }
+    }
+
     if (!chatSessionRef.current) {
         const initialContext = `You are the Co-Author AI assistant for EbookStudio.
         Current Author: ${currentUser?.name || 'Writer'}.

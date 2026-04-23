@@ -6,6 +6,8 @@ import { initializeGeminiChat } from '../services/aiService';
 import { auth, googleProvider, signInWithPopup, signOut, db } from '../services/firebase';
 import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { razorpayService } from '../services/razorpayService';
+import { RAZORPAY_KEY_ID } from '../constants';
 
 const defaultAppContext: AppContextType = {
   currentUser: null,
@@ -31,6 +33,9 @@ const defaultAppContext: AppContextType = {
   isInitialAuthCheck: true,
   isAuthenticating: false,
   logout: async () => {},
+  finalizePurchase: async () => {},
+  updatePayoutUpi: async () => {},
+  updateSubscription: async () => {},
 };
 
 const AppContext = createContext<AppContextType>(defaultAppContext);
@@ -78,6 +83,41 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [isInitialAuthCheck, setIsInitialAuthCheck] = useState(true);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
+  const syncWithNeon = useCallback(async (userId: string) => {
+    try {
+      const response = await fetch(`/api/get-user-status?userId=${userId}`);
+      if (!response.ok) return;
+      
+      const data = await response.json();
+      
+      setCurrentUserState(prev => {
+        if (!prev) return null;
+        
+        // Merge Neon data into existing user/seller object
+        if (userType === UserType.SELLER) {
+          return {
+            ...prev,
+            subscription: data.subscription ? {
+              isActive: data.subscription.status === 'active',
+              planId: data.subscription.plan_id,
+              startDate: data.subscription.created_at,
+              endDate: data.subscription.current_period_end,
+              razorpaySubscriptionId: data.subscription.razorpay_subscription_id
+            } : (prev as Seller).subscription,
+            payoutHistory: data.payoutHistory || (prev as Seller).payoutHistory
+          } as Seller;
+        } else {
+          return {
+            ...prev,
+            purchasedBookIds: data.purchasedBookIds || prev.purchasedBookIds
+          } as User;
+        }
+      });
+    } catch (error) {
+      console.error("Neon Sync Failed:", error);
+    }
+  }, [userType]);
+
   // 2. Firebase Auth Listener
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -87,54 +127,45 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             // Try to load full profile from Firestore
             try {
                 const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+                let userData: any = null;
+
                 if (userDoc.exists()) {
-                    const userData = userDoc.data();
-                    setCurrentUserState(userData as User | Seller);
-                    setUserTypeState(userData.uploadedBooks ? UserType.SELLER : UserType.USER);
+                    userData = userDoc.data();
                 } else {
-                    // New user or missing profile, create a basic one
-                    const newUser: User = {
+                    userData = {
                         id: firebaseUser.uid,
-                        name: firebaseUser.displayName || 'Unknown User',
+                        name: firebaseUser.displayName || 'Writer',
                         email: firebaseUser.email || '',
                         purchaseHistory: [],
+                        purchasedBookIds: [],
                         wishlist: [],
-                        isVerified: firebaseUser.emailVerified,
-                        profileImageUrl: firebaseUser.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${firebaseUser.uid}`
                     };
-                    setCurrentUser(newUser, UserType.USER);
-                    // Optionally save to Firestore here if needed
+                    await setDoc(doc(db, 'users', firebaseUser.uid), userData);
                 }
-            } catch (e) {
-                console.error("Failed to fetch user profile", e);
-                // Fallback to basic info from firebaseUser
-                const fallbackUser: User = {
-                    id: firebaseUser.uid,
-                    name: firebaseUser.displayName || 'User',
-                    email: firebaseUser.email || '',
-                    purchaseHistory: [],
-                    wishlist: [],
-                    isVerified: firebaseUser.emailVerified,
-                };
-                setCurrentUser(fallbackUser, UserType.USER);
+                setCurrentUserState(userData);
+                setUserTypeState(userData.uploadedBooks ? UserType.SELLER : UserType.USER);
+                
+                // Sync with Neon immediately after login
+                syncWithNeon(firebaseUser.uid);
+            } catch (error) {
+                console.error("Profile Load Error:", error);
             }
         } else {
-            console.log("Firebase Auth State: Logged Out");
             setCurrentUserState(null);
             setUserTypeState(UserType.GUEST);
         }
         setIsInitialAuthCheck(false);
-        setIsAuthenticating(false);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [syncWithNeon]);
 
   // 3. Persistence Effect: Save state on any change (excluding sensitive auth)
   useEffect(() => {
       const stateToSave = {
           cart,
-          allBooks
+          allBooks,
+          currentUser
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
   }, [cart, allBooks]);
@@ -243,6 +274,20 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setIsAuthenticating(true);
         const result = await signInWithPopup(auth, googleProvider);
         console.log("Google Login Success:", result.user.displayName);
+        
+        // Optimistically set a basic user state while Firestore/Neon sync happens
+        const basicUser: User = {
+            id: result.user.uid,
+            name: result.user.displayName || 'User',
+            email: result.user.email || '',
+            purchaseHistory: [],
+            purchasedBookIds: [],
+            wishlist: [],
+        };
+        setCurrentUserState(basicUser);
+        setUserTypeState(UserType.USER);
+
+        setIsAuthenticating(false);
         return true;
     } catch (e: any) {
         setIsAuthenticating(false);
@@ -272,6 +317,40 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   // ADDED: Email Login for Admin/Owner and Paid Writers
   const handleEmailLogin = async (email: string, password: string): Promise<{success: boolean, message?: string}> => {
+      // 1. RAZORPAY REVIEWER BYPASS
+      // This allows the Razorpay team to verify the checkout flow and dashboard
+      if (email === 'reviewer@ebookstudio.com' && password === 'EbookReviewer2024!') {
+          console.log("RAZORPAY REVIEWER AUTH ACTIVATED");
+          const reviewerUser: Seller = {
+              id: 'razorpay-reviewer-id',
+              name: 'Razorpay Reviewer',
+              email: 'reviewer@ebookstudio.com',
+              payoutEmail: 'reviewer@ebookstudio.com',
+              uploadedBooks: allBooks.slice(0, 3), // Show some books
+              isVerified: true,
+              isAdmin: false,
+              username: '@reviewer',
+              profileImageUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=100',
+              creatorSite: {
+                   isEnabled: true,
+                   slug: 'reviewer-site',
+                   theme: 'dark-minimal',
+                   displayName: 'Razorpay Reviewer',
+                   tagline: 'Quality Assurance Unit',
+                   showcasedBookIds: [allBooks[0]?.id]
+              },
+              subscription: {
+                  isActive: true,
+                  planId: 'plan_studio_pro',
+                  startDate: new Date().toISOString(),
+                  endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+                  razorpaySubscriptionId: 'sub_test_reviewer'
+              }
+          };
+          setCurrentUser(reviewerUser, UserType.SELLER);
+          return { success: true };
+      }
+
       try {
           setIsAuthenticating(true);
           await signInWithEmailAndPassword(auth, email, password);
@@ -322,10 +401,80 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       }
   };
 
+  const finalizePurchase = async (books: EBook[]) => {
+    if (!currentUser) return;
+    
+    console.log(`[AppContext] Finalizing Purchase for ${books.length} books`);
+    const user = currentUser as User;
+    const purchasedBookIds = user.purchasedBookIds || [];
+    const newBookIds = books.map(b => b.id);
+    
+    const updatedUser: User = {
+        ...user,
+        purchaseHistory: [...(user.purchaseHistory || []), ...books],
+        purchasedBookIds: [...purchasedBookIds, ...newBookIds]
+    };
+    
+    setCurrentUserState(updatedUser);
+    
+    // Process Payouts for Sellers
+    for (const book of books) {
+        // In a real app, this would be handled by a webhook on the server
+        // Here we simulate the split and record the payout for the seller
+        const sellerId = book.sellerId;
+        // In this simulated environment, we don't have easy access to all sellers 
+        // to update their payoutHistory unless they are the current user
+        // But we can simulate the platform commission logic
+    }
+  };
+
+  const updatePayoutUpi = async (upiId: string) => {
+    if (!currentUser || userType !== UserType.SELLER) return;
+    const seller = currentUser as Seller;
+    const updatedSeller: Seller = { ...seller, payoutUpiId: upiId };
+    setCurrentUserState(updatedSeller);
+    console.log(`[AppContext] UPI ID Updated: ${upiId}`);
+  };
+
+  const updateSubscription = async (planId: string) => {
+    if (!currentUser || userType !== UserType.SELLER) return;
+    const seller = currentUser as Seller;
+    
+    try {
+        const subscription = await razorpayService.createSubscription(planId, seller.id, seller.email);
+        
+        const options = {
+            key: RAZORPAY_KEY_ID,
+            subscription_id: subscription.razorpaySubscriptionId,
+            name: "EbookStudio Pro",
+            description: "Monthly Agentic AI Subscription",
+            image: "https://ebookstudio.vercel.app/logo.png",
+            handler: function (response: any) {
+                // Verification will be handled by webhook
+                const updatedSeller: Seller = { ...seller, subscription: subscription };
+                setCurrentUserState(updatedSeller);
+                alert("Subscription activated successfully!");
+            },
+            prefill: {
+                name: seller.name,
+                email: seller.email,
+            },
+            theme: {
+                color: "#09090b",
+            },
+        };
+
+        const rzp = new (window as any).Razorpay(options);
+        rzp.open();
+    } catch (error: any) {
+        alert("Subscription failed: " + error.message);
+    }
+  };
+
   const theme = 'dark';
 
   return (
-    <AppContext.Provider value={{ currentUser, userType, setCurrentUser, cart, addToCart, removeFromCart, clearCart, theme, geminiChat, initializeChat, isChatbotOpen, toggleChatbot, updateSellerCreatorSite, allBooks, addCreatedBook, updateEBook, handleGoogleLogin, handleEmailLogin, upgradeToSeller, verifyUser, isInitialAuthCheck, isAuthenticating, logout }}>
+    <AppContext.Provider value={{ currentUser, userType, setCurrentUser, cart, addToCart, removeFromCart, clearCart, theme, geminiChat, initializeChat, isChatbotOpen, toggleChatbot, updateSellerCreatorSite, allBooks, addCreatedBook, updateEBook, handleGoogleLogin, handleEmailLogin, upgradeToSeller, verifyUser, isInitialAuthCheck, isAuthenticating, logout, finalizePurchase, updatePayoutUpi, updateSubscription }}>
       {children}
     </AppContext.Provider>
   );
