@@ -17,6 +17,7 @@ import { AppProvider } from './contexts/AppContext';
 import CreatorSitePage from './pages/CreatorSitePage'; 
 import EditEBookPage from './pages/EditEBookPage'; 
 import EbookStudioPage from './pages/EbookStudioPage';
+import NewEbookStudioPage from './pages/NewEbookStudioPage';
 import EbookReaderPage from './pages/EbookReaderPage';
 import HostingPreviewPage from './pages/HostingPreviewPage';
 import LoadingScreen from './components/LoadingScreen';
@@ -59,6 +60,7 @@ const AnimatedRoutes = () => {
                     <Route path="/site/:username" element={<HostingPreviewPage />} />
                     <Route path="/edit-ebook/:bookId" element={<EditEBookPage />} />
                     <Route path="/ebook-studio" element={<EbookStudioPage />} />
+                    <Route path="/ebookstudio" element={<NewEbookStudioPage />} />
                     <Route path="/read/:bookId" element={<EbookReaderPage />} />
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/shipping-policy" element={<ShippingPolicyPage />} />
@@ -77,6 +79,7 @@ const AppContent: React.FC = () => {
   
   const isDashboardRoute = location.pathname.startsWith('/dashboard') || 
                            location.pathname.startsWith('/ebook-studio') ||
+                           location.pathname.startsWith('/ebookstudio') ||
                            location.pathname.startsWith('/read/') ||
                            location.pathname.startsWith('/edit-ebook/');
 

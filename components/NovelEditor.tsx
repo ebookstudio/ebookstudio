@@ -21,6 +21,50 @@ interface NovelEditorProps {
   onTriggerImageGen: (prompt: string) => void;
 }
 
+interface EditableBlockProps {
+    block: Block;
+    index: number;
+    onKeyDown: (e: React.KeyboardEvent, index: number) => void;
+    onInput: (e: React.FormEvent<HTMLDivElement>, index: number) => void;
+    onFocus: () => void;
+    blockRef: (el: HTMLDivElement | null) => void;
+}
+
+const EditableBlock = React.memo(({ block, index, onKeyDown, onInput, onFocus, blockRef }: EditableBlockProps) => {
+    const elRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        if (elRef.current && elRef.current.innerText !== block.content) {
+            elRef.current.innerText = block.content;
+        }
+    }, [block.content]);
+
+    return (
+        <div
+            ref={(el) => {
+                elRef.current = el;
+                blockRef(el);
+            }}
+            contentEditable
+            suppressContentEditableWarning
+            onKeyDown={(e) => onKeyDown(e, index)}
+            onInput={(e) => onInput(e, index)}
+            onFocus={onFocus}
+            className={cn(
+                "w-full outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-zinc-800 transition-all leading-relaxed",
+                block.type === 'h1' ? 'text-3xl font-bold text-zinc-100 mb-4 mt-8' : 
+                block.type === 'h2' ? 'text-xl font-bold text-zinc-200 mb-3 mt-6' : 
+                block.type === 'ul' ? 'list-disc list-inside text-sm font-medium text-zinc-400 pl-2 mb-3' :
+                block.type === 'blockquote' ? 'text-lg font-medium text-zinc-500 border-l border-zinc-800 pl-6 py-2 my-6' :
+                'text-sm font-medium text-zinc-400 mb-3'
+            )}
+            data-placeholder="Type '/' for commands..."
+        />
+    );
+}, (prev, next) => {
+    return prev.block.id === next.block.id && prev.block.type === next.block.type;
+});
+
 const NovelEditor: React.FC<NovelEditorProps> = ({ 
     title, 
     onTitleChange, 
@@ -260,25 +304,14 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
                              <div className="text-[8px] font-bold uppercase tracking-widest text-zinc-700">Enter to Generate</div>
                          </div>
                      ) : (
-                         <div
-                            ref={el => { blockRefs.current[index] = el; }}
-                            contentEditable
-                            suppressContentEditableWarning
-                            onKeyDown={(e) => handleKeyDown(e, index)}
-                            onInput={(e) => handleInput(e, index)}
-                            onFocus={() => setActiveBlockIndex(index)}
-                            className={cn(
-                                "w-full outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-zinc-800 transition-all leading-relaxed",
-                                block.type === 'h1' ? 'text-3xl font-bold text-zinc-100 mb-4 mt-8' : 
-                                block.type === 'h2' ? 'text-xl font-bold text-zinc-200 mb-3 mt-6' : 
-                                block.type === 'ul' ? 'list-disc list-inside text-sm font-medium text-zinc-400 pl-2 mb-3' :
-                                block.type === 'blockquote' ? 'text-lg font-medium text-zinc-500 border-l border-zinc-800 pl-6 py-2 my-6' :
-                                'text-sm font-medium text-zinc-400 mb-3'
-                            )}
-                            data-placeholder="Type '/' for commands..."
-                         >
-                             {block.content}
-                         </div>
+                         <EditableBlock
+                             block={block}
+                             index={index}
+                             onKeyDown={handleKeyDown}
+                             onInput={handleInput}
+                             onFocus={() => setActiveBlockIndex(index)}
+                             blockRef={(el) => { blockRefs.current[index] = el; }}
+                         />
                      )}
                  </div>
              ))}
