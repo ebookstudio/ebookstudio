@@ -6,6 +6,7 @@ import * as ReactRouterDOM from 'react-router-dom';
 import BookCard from '../BookCard';
 import DashboardSidebar from './DashboardSidebar';
 import DashboardHeader from './DashboardHeader';
+import MobileSidebar from './MobileSidebar';
 import { Button } from '../../components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
 import { cn } from '../../lib/utils';
@@ -72,6 +73,16 @@ const UserDashboardContent: React.FC = () => {
                 searchQuery={searchQuery} 
                 onSearchChange={setSearchQuery}
                 showSearch={activeTab !== 'settings'}
+                mobileSidebar={
+                    <MobileSidebar>
+                        <DashboardSidebar 
+                            userType="USER" 
+                            activeSection={activeTab} 
+                            onSectionChange={setActiveTab} 
+                            isMobile={true}
+                        />
+                    </MobileSidebar>
+                }
             />
 
             <main className="flex-1 overflow-y-auto">
