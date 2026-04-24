@@ -419,7 +419,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
               isVerified: true,
               isAdmin: false,
               username: '@reviewer',
-              profileImageUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=100',
+              profileImageUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=100', // Default fallback image
               creatorSite: {
                    isEnabled: true,
                    slug: 'reviewer-site',
@@ -463,12 +463,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             uploadedBooks: [],
             isVerified: user.isVerified || false,
             username: user.username || `@${user.name.replace(/\s+/g, '').toLowerCase()}`,
-            profileImageUrl: user.profileImageUrl,
+            profileImageUrl: user.profileImageUrl || null,
             creatorSite: {
                  isEnabled: false,
                  slug: user.name.toLowerCase().replace(/\s+/g, '-'),
                  theme: 'dark-minimal',
-                 profileImageUrl: user.profileImageUrl,
+                  profileImageUrl: user.profileImageUrl || null,
                  displayName: user.name,
                  tagline: 'Digital Creator',
                  showcasedBookIds: []

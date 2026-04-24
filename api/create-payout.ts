@@ -1,7 +1,7 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { neon } from '@neondatabase/serverless';
 
-const sql = neon(process.env.DATABASE_URL!);
+const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : null;
 const PAYOUT_AUTH_TOKEN = process.env.PAYOUT_AUTH_TOKEN;
 
 // Helper for direct Razorpay API calls
@@ -35,12 +35,22 @@ async function razorpayFetch(endpoint: string, options: any = {}) {
 }
 
 async function getOrCreateFundAccount(sellerId: string, upiId: string) {
-    const [method] = await sql`
-        SELECT razorpay_fund_account_id FROM seller_payment_methods 
-        WHERE seller_id = ${sellerId} AND upi_id = ${upiId}
-    ` as any[];
+    if (!sql) {
+        console.warn(`[Payout] No database connection. Skipping DB check for ${sellerId}.`);
+        return null; 
+    }
 
-    if (method?.razorpay_fund_account_id) return method.razorpay_fund_account_id;
+    try {
+        const [method] = await sql`
+            SELECT razorpay_fund_account_id FROM seller_payment_methods 
+            WHERE seller_id = ${sellerId} AND upi_id = ${upiId}
+        ` as any[];
+
+        if (method?.razorpay_fund_account_id) return method.razorpay_fund_account_id;
+    } catch (e) {
+        console.error(`[Payout] Database query failed:`, e);
+        // Continue without DB cache
+    }
 
     console.log(`[Payout] Step 1.1: Creating Contact for ${sellerId}`);
     const contact = await razorpayFetch('/contacts', {
@@ -63,15 +73,21 @@ async function getOrCreateFundAccount(sellerId: string, upiId: string) {
         })
     });
 
-    await sql`
-        INSERT INTO seller_payment_methods (seller_id, razorpay_contact_id, razorpay_fund_account_id, upi_id)
-        VALUES (${sellerId}, ${contact.id}, ${fundAccount.id}, ${upiId})
-        ON CONFLICT (seller_id) DO UPDATE SET
-            razorpay_contact_id = EXCLUDED.razorpay_contact_id,
-            razorpay_fund_account_id = EXCLUDED.razorpay_fund_account_id,
-            upi_id = EXCLUDED.upi_id,
-            updated_at = CURRENT_TIMESTAMP
-    `;
+    if (sql) {
+        try {
+            await sql`
+                INSERT INTO seller_payment_methods (seller_id, razorpay_contact_id, razorpay_fund_account_id, upi_id)
+                VALUES (${sellerId}, ${contact.id}, ${fundAccount.id}, ${upiId})
+                ON CONFLICT (seller_id) DO UPDATE SET
+                    razorpay_contact_id = EXCLUDED.razorpay_contact_id,
+                    razorpay_fund_account_id = EXCLUDED.razorpay_fund_account_id,
+                    upi_id = EXCLUDED.upi_id,
+                    updated_at = CURRENT_TIMESTAMP
+            `;
+        } catch (e) {
+            console.error(`[Payout] Failed to save payment method:`, e);
+        }
+    }
 
     return fundAccount.id;
 }
@@ -113,11 +129,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             })
         });
 
-        await sql`
-            UPDATE payouts 
-            SET razorpay_payout_id = ${payout.id}, status = ${payout.status}, updated_at = CURRENT_TIMESTAMP
-            WHERE purchase_id = ${purchaseId} OR sale_id = ${purchaseId}
-        `;
+        if (sql) {
+            try {
+                await sql`
+                    UPDATE payouts 
+                    SET razorpay_payout_id = ${payout.id}, status = ${payout.status}, updated_at = CURRENT_TIMESTAMP
+                    WHERE purchase_id = ${purchaseId} OR sale_id = ${purchaseId}
+                `;
+            } catch (e) {
+                console.error(`[Payout] Failed to update payout status in DB:`, e);
+            }
+        }
 
         return res.json({ success: true, payout_id: payout.id, status: payout.status });
 

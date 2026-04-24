@@ -194,7 +194,7 @@ export const generateBookCover = async (prompt: string, style: string = 'Cinemat
 };
 
 // Enhanced session for real streaming via Vercel AI SDK
-export const createStudioSession = (initialContext: string): any => {
+export const createStudioSession = (initialContext: string, userId?: string): any => {
     return {
         sendMessageStream: async ({ message }: { message: any }) => {
             const prompt = Array.isArray(message) ? message.map((m: any) => m.text || "").join("\n") : (message.text || message);
@@ -203,15 +203,17 @@ export const createStudioSession = (initialContext: string): any => {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    messages: [{ role: "user", content: prompt }],
-                    systemPrompt: initialContext
+                    messages: Array.isArray(message) ? message : [message],
+                    systemPrompt: initialContext,
+                    userId: userId
                 })
             });
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 console.error("AI API Error:", errorData);
-                throw new Error(errorData.error || "AI Studio connection failed");
+                // Throw the error data so the frontend can check `errorData.requiresUpgrade`
+                throw errorData;
             }
 
             return (async function* () {

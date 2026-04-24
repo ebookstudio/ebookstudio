@@ -11,12 +11,14 @@ import {
     IconArrowUpRight,
     IconUsers,
     IconFileText,
-    IconArrowRight
+    IconArrowRight,
+    IconShieldCheck
 } from '../../constants'; 
 import * as ReactRouterDOM from 'react-router-dom';
 import { saveUserDataToGitHub } from '../../services/cloudService';
 import DashboardSidebar from './DashboardSidebar';
 import DashboardHeader from './DashboardHeader';
+import MobileSidebar from './MobileSidebar';
 import { Button } from '../../components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
 import {
@@ -169,6 +171,16 @@ export const SellerDashboardContent: React.FC = () => {
                 searchQuery="" 
                 onSearchChange={() => {}}
                 showSearch={true}
+                mobileSidebar={
+                    <MobileSidebar>
+                        <DashboardSidebar 
+                            userType="SELLER" 
+                            activeSection={activeTab} 
+                            onSectionChange={setActiveTab} 
+                            isMobile={true}
+                        />
+                    </MobileSidebar>
+                }
             />
 
             <main className="flex-1 overflow-y-auto custom-scrollbar">
@@ -380,7 +392,7 @@ export const SellerDashboardContent: React.FC = () => {
 
                                         <div className="space-y-3">
                                             <label className="text-[10px] font-bold text-zinc-600 uppercase tracking-[0.2em] ml-1">Razorpay Payout UPI ID</label>
-                                            <div className="flex gap-4">
+                                            <div className="flex flex-col md:flex-row gap-4">
                                                 <input 
                                                     placeholder="e.g. yourname@upi" 
                                                     value={seller.payoutUpiId || ''} 
@@ -426,8 +438,8 @@ export const SellerDashboardContent: React.FC = () => {
                                     <h4 className="text-base font-bold text-zinc-100">Payout Ledger</h4>
                                     <p className="text-xs text-zinc-500 font-medium">Real-time record of all transfers to {seller.payoutUpiId || 'your UPI ID'}.</p>
                                 </div>
-                                <div className="p-0">
-                                    <Table>
+                                <div className="p-0 overflow-x-auto w-full">
+                                    <Table className="min-w-[600px]">
                                         <TableHeader className="bg-zinc-950">
                                             <TableRow className="border-border hover:bg-transparent">
                                                 <TableHead className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 h-12">Transaction ID</TableHead>

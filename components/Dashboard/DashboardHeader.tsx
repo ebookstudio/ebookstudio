@@ -15,6 +15,7 @@ interface DashboardHeaderProps {
     searchQuery: string;
     onSearchChange: (query: string) => void;
     showSearch?: boolean;
+    mobileSidebar?: React.ReactNode;
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({ 
@@ -22,16 +23,18 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     title, 
     searchQuery, 
     onSearchChange,
-    showSearch = true
+    showSearch = true,
+    mobileSidebar
 }) => {
     return (
-        <header className="h-14 border-b border-border bg-zinc-950 sticky top-0 z-30 flex items-center justify-between px-6">
-            <div className="flex items-center gap-6 flex-1">
+        <header className="h-14 border-b border-border bg-zinc-950 sticky top-0 z-30 flex items-center justify-between px-4 lg:px-6">
+            <div className="flex items-center gap-4 lg:gap-6 flex-1">
                 <div className="flex items-center gap-3">
-                    <div className="w-4 h-4 flex items-center justify-center border border-zinc-700 rounded bg-zinc-900">
+                    {mobileSidebar}
+                    <div className="hidden lg:flex w-4 h-4 items-center justify-center border border-zinc-700 rounded bg-zinc-900">
                         <div className="w-2.5 h-px bg-zinc-500" />
                     </div>
-                    <div className="w-px h-4 bg-zinc-800" />
+                    <div className="hidden lg:block w-px h-4 bg-zinc-800" />
                     <h1 className="text-xs font-bold tracking-widest text-zinc-100 uppercase">{title}</h1>
                 </div>
                 

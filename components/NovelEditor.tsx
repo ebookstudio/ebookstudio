@@ -36,9 +36,12 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
       
       lines.forEach((line, index) => {
           const trimmed = line.trim();
-          if (!trimmed && lines.length > 1) return;
+          if (!trimmed && lines.length > 1 && index !== lines.length - 1) return;
 
-          const id = `block-${index}`; // Stable ID based on position
+          // Stable ID generation using a hash of the content + index for uniqueness
+          const content = line.replace(/^(# |## |- |> |!\[)/, '').replace(/\]\(.*?\)$/, '');
+          const id = `block-${index}-${btoa(content.substring(0, 10)).replace(/=/g, '')}`; 
+          
           if (line.startsWith('# ')) blocks.push({ id, type: 'h1', content: line.replace('# ', '') });
           else if (line.startsWith('## ')) blocks.push({ id, type: 'h2', content: line.replace('## ', '') });
           else if (line.startsWith('- ')) blocks.push({ id, type: 'ul', content: line.replace('- ', '') });
@@ -78,7 +81,10 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
   useEffect(() => {
       if (isTypingRef.current) return;
       const currentMd = serializeToMarkdown(blocks);
-      if (content !== currentMd) setBlocks(parseMarkdown(content));
+      // Only update blocks if content changed significantly from outside
+      if (content !== currentMd && Math.abs(content.length - currentMd.length) > 5) {
+          setBlocks(parseMarkdown(content));
+      }
   }, [content, parseMarkdown, serializeToMarkdown]);
 
   useEffect(() => {
@@ -199,7 +205,13 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
           const slashIndex = text.lastIndexOf('/');
           setMenuQuery(text.substring(slashIndex + 1));
       }
-      setTimeout(() => { isTypingRef.current = false; }, 100);
+      if (isTypingRef.current) {
+          clearTimeout((isTypingRef as any).timeout);
+          (isTypingRef as any).timeout = setTimeout(() => { isTypingRef.current = false; }, 2000);
+      } else {
+          isTypingRef.current = true;
+          (isTypingRef as any).timeout = setTimeout(() => { isTypingRef.current = false; }, 2000);
+      }
   };
 
   return (

@@ -69,9 +69,10 @@ interface DashboardSidebarProps {
     userType: 'USER' | 'SELLER';
     activeSection: string;
     onSectionChange: (section: any) => void;
+    isMobile?: boolean;
 }
 
-const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ userType, activeSection, onSectionChange }) => {
+const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ userType, activeSection, onSectionChange, isMobile }) => {
     const { isSidebarCollapsed: isCollapsed, setIsSidebarCollapsed: setIsCollapsed, logout } = useAppContext();
     const navigate = useNavigate();
 
@@ -83,8 +84,10 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ userType, activeSec
     return (
         <aside 
             className={cn(
-                "flex-shrink-0 border-r border-border hidden lg:flex flex-col bg-zinc-950 h-[100dvh] fixed left-0 top-0 z-40 transition-all duration-300 ease-in-out overflow-hidden",
-                isCollapsed ? "w-16" : "w-64"
+                "flex-shrink-0 flex flex-col bg-zinc-950 transition-all duration-300 ease-in-out overflow-hidden",
+                isMobile 
+                    ? "w-full h-full" 
+                    : cn("border-r border-border hidden lg:flex h-[100dvh] fixed left-0 top-0 z-40", isCollapsed ? "w-16" : "w-64")
             )}
         >
             {/* Logo Section */}

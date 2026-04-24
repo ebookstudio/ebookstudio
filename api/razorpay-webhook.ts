@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { neon } from '@neondatabase/serverless';
 
 // Initialize Neon connection
-const sql = neon(process.env.DATABASE_URL!);
+const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : null;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method !== 'POST') {

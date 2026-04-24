@@ -45,12 +45,20 @@
 }
 
 @layer base {
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+  }
   body {
     background-color: #09090b;
     color: #fafafa;
     @apply font-sans antialiased;
     margin: 0;
     padding: 0;
+  }
+  * {
+    -webkit-tap-highlight-color: transparent;
   }
 }
 

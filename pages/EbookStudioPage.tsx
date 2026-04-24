@@ -73,26 +73,13 @@ const EbookStudioPage: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // Subscription Check for Sellers
-    if (userType === UserType.SELLER) {
-        const seller = currentUser as Seller;
-        if (!razorpayService.checkSubscriptionStatus(seller.subscription)) {
-            const confirm = window.confirm("Agentic AI Studio requires an active Studio Pro subscription. Would you like to upgrade now?");
-            if (confirm) {
-                navigate('/dashboard/pricing');
-            } else {
-                navigate('/dashboard');
-            }
-        }
-    }
-
     if (!chatSessionRef.current) {
         const initialContext = `You are the Co-Author AI assistant for EbookStudio.
         Current Author: ${currentUser?.name || 'Writer'}.
         Active Chapter: "${activePage.title}".
         Goal: Helping the author write a beautiful, professional e-book with clarity and precision.`;
 
-        const session = createStudioSession(initialContext);
+        const session = createStudioSession(initialContext, currentUser?.id);
         if (session) {
             chatSessionRef.current = session;
             setMessages([{ id: 'sys-init', role: 'ai', text: "Welcome to the Studio. I'm your Co-Author, ready to help you draft your masterpiece." }]);
@@ -269,13 +256,23 @@ const EbookStudioPage: React.FC = () => {
 
       try {
           if (!chatSessionRef.current) throw new Error("Connection lost");
-          const parts: (string | any)[] = [];
-          if (text.trim()) parts.push({ text });
+          // Construct full message history for agentic memory
+          const history = messages.map(m => ({
+              role: m.role === 'ai' ? 'assistant' : 'user',
+              content: m.text
+          }));
+          
+          // Add the current message with attachments
+          const currentParts: any[] = [];
+          if (text.trim()) currentParts.push({ type: 'text', text });
           for (const file of currentAttachments) {
-              parts.push(await fileToPart(file));
+              const part = await fileToPart(file);
+              currentParts.push(part);
           }
+          
+          history.push({ role: 'user', content: text });
 
-          const result = await chatSessionRef.current.sendMessageStream({ message: parts as any });
+          const result = await chatSessionRef.current.sendMessageStream({ message: history });
           let fullText = "";
           let finalFunctionCalls: any[] | undefined = undefined;
 
@@ -303,8 +300,16 @@ const EbookStudioPage: React.FC = () => {
               }
           }
           setMessages(prev => prev.map(m => m.id === aiMsgId ? { ...m, isStreaming: false } : m));
-      } catch (e) {
-          setMessages(prev => prev.map(m => m.id === aiMsgId ? { ...m, text: "The studio encountered an interruption. Please retry.", isStreaming: false } : m));
+      } catch (e: any) {
+          if (e && e.requiresUpgrade) {
+              const confirm = window.confirm("You've used your 5 free prompts. Upgrade to Pro for unlimited AI generation.");
+              if (confirm) {
+                  navigate('/dashboard/pricing');
+              }
+              setMessages(prev => prev.map(m => m.id === aiMsgId ? { ...m, text: "Free limit reached. Please upgrade to Studio Pro.", isStreaming: false } : m));
+          } else {
+              setMessages(prev => prev.map(m => m.id === aiMsgId ? { ...m, text: "The studio encountered an interruption. Please retry.", isStreaming: false } : m));
+          }
       } finally {
           setIsBusy(false);
       }
@@ -425,10 +430,10 @@ const EbookStudioPage: React.FC = () => {
             </div>
         </header>
 
-        <div className="flex-1 flex overflow-hidden relative min-h-0">
+        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative min-h-0">
             
             {/* --- PREMIUM STUDIO SIDEBAR (FIXED ARCHITECTURE) --- */}
-            <aside className="hidden lg:flex fixed top-16 left-0 bottom-0 w-[380px] bg-zinc-950 border-r border-zinc-900/50 flex-col z-[40] shadow-[20px_0_60px_rgba(0,0,0,0.5)]">
+            <aside className="w-full lg:w-[380px] shrink-0 h-[45vh] lg:h-full bg-zinc-950 border-b lg:border-b-0 lg:border-r border-zinc-900/50 flex flex-col z-[40] shadow-[20px_0_60px_rgba(0,0,0,0.5)]">
                 
                 {/* Sidebar Header */}
                 <div className="h-14 border-b border-zinc-900/50 flex items-center justify-between px-6 bg-zinc-950/80 backdrop-blur-xl shrink-0 z-20">
@@ -556,52 +561,53 @@ const EbookStudioPage: React.FC = () => {
                                         />
 
                                         <div className="flex items-center justify-between pt-0.5">
-                                            <div className="flex items-center gap-0.5">
+                                            <div className="flex items-center gap-1 md:gap-1.5">
                                                 <button 
                                                     onClick={() => fileInputRef.current?.click()} 
-                                                    className="w-7 h-7 rounded-full bg-transparent hover:bg-zinc-800/80 flex items-center justify-center text-zinc-500 hover:text-zinc-300 transition-all active:scale-90"
+                                                    className="w-11 h-11 md:w-7 md:h-7 rounded-full bg-transparent hover:bg-zinc-800/80 flex items-center justify-center text-zinc-500 hover:text-zinc-300 transition-all active:scale-90"
                                                     title="Attach Asset"
                                                 >
-                                                    <IconPlus className="w-3.5 h-3.5" />
+                                                    <IconPlus className="w-5 h-5 md:w-3.5 md:h-3.5" />
                                                 </button>
                                                 <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileSelect} accept="image/*,application/pdf" multiple />
                                                 
-                                                <div className="w-px h-3 bg-zinc-800/80 mx-1" />
+                                                <div className="hidden md:block w-px h-3 bg-zinc-800/80 mx-1" />
 
-                                                <button className="w-7 h-7 rounded-full bg-transparent hover:bg-zinc-800/80 flex items-center justify-center text-zinc-500 hover:text-zinc-300 transition-all active:scale-90">
+                                                <button className="hidden md:flex w-7 h-7 rounded-full bg-transparent hover:bg-zinc-800/80 items-center justify-center text-zinc-500 hover:text-zinc-300 transition-all active:scale-90">
                                                     <IconSparkles className="w-3.5 h-3.5" />
                                                 </button>
 
-                                                <div className="w-px h-3 bg-zinc-800/80 mx-1" />
+                                                <div className="hidden md:block w-px h-3 bg-zinc-800/80 mx-1" />
 
-                                                <button className="w-7 h-7 rounded-full bg-transparent hover:bg-zinc-800/80 flex items-center justify-center text-zinc-500 hover:text-zinc-300 transition-all active:scale-90">
+                                                <button className="hidden md:flex w-7 h-7 rounded-full bg-transparent hover:bg-zinc-800/80 items-center justify-center text-zinc-500 hover:text-zinc-300 transition-all active:scale-90">
                                                     <IconBrain className="w-3.5 h-3.5" />
                                                 </button>
                                             </div>
 
-                                            <div className="flex items-center gap-1.5">
+                                            <div className="flex items-center gap-1 md:gap-1.5">
                                                 <button
                                                     onMouseDown={startRecording} onMouseUp={stopRecording}
+                                                    onTouchStart={startRecording} onTouchEnd={stopRecording}
                                                     className={cn(
-                                                        "w-7 h-7 rounded-full flex items-center justify-center transition-all active:scale-90",
+                                                        "w-11 h-11 md:w-7 md:h-7 rounded-full flex items-center justify-center transition-all active:scale-90",
                                                         isListening ? 'bg-red-500/10 text-red-500' : 'bg-transparent text-zinc-500 hover:text-zinc-300'
                                                     )}
                                                     title="Voice Command"
                                                 >
-                                                    {isListening ? <IconStop className="w-3.5 h-3.5 animate-pulse" /> : <IconMic className="w-3.5 h-3.5" />}
+                                                    {isListening ? <IconStop className="w-5 h-5 md:w-3.5 md:h-3.5 animate-pulse" /> : <IconMic className="w-5 h-5 md:w-3.5 md:h-3.5" />}
                                                 </button>
                                                 
                                                 <button 
                                                     onClick={() => handleSendMessage()} 
                                                     disabled={isBusy || (!input.trim() && attachments.length === 0)}
                                                     className={cn(
-                                                        "w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 active:scale-90",
+                                                        "w-11 h-11 md:w-7 md:h-7 rounded-full flex items-center justify-center transition-all duration-300 active:scale-90",
                                                         (input.trim() || attachments.length > 0) 
                                                             ? 'bg-zinc-100 text-zinc-950 hover:bg-white shadow-[0_0_15px_rgba(255,255,255,0.2)]' 
                                                             : 'bg-zinc-800/50 text-zinc-700 opacity-20'
                                                     )}
                                                 >
-                                                    {isBusy ? <div className="w-3 h-3 border-2 border-zinc-950/20 border-t-zinc-950 rounded-full animate-spin"></div> : <IconSend className="w-3 h-3" />}
+                                                    {isBusy ? <div className="w-4 h-4 md:w-3 md:h-3 border-2 border-zinc-950/20 border-t-zinc-950 rounded-full animate-spin"></div> : <IconSend className="w-5 h-5 md:w-3 md:h-3" />}
                                                 </button>
                                             </div>
                                         </div>
@@ -655,8 +661,8 @@ const EbookStudioPage: React.FC = () => {
             </aside>
 
             {/* --- STUDIO EDITOR (REPOSITIONED & OFFSET) --- */}
-            <main className="flex-1 flex flex-col min-w-0 bg-zinc-950 relative lg:ml-[380px] z-10">
-                <div className="h-12 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-900/50 flex items-center justify-between px-10 shrink-0 z-20">
+            <main className="flex-1 flex flex-col min-w-0 bg-zinc-950 relative z-10 h-[55vh] lg:h-full">
+                <div className="h-12 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-900/50 flex items-center justify-between px-4 lg:px-10 shrink-0 z-20">
                      <div className="flex items-center gap-6">
                          <div className="flex items-center gap-3">
                             <div className="w-1.5 h-1.5 rounded-full bg-zinc-600" />
@@ -673,13 +679,13 @@ const EbookStudioPage: React.FC = () => {
                 </div>
                 
                 <ScrollArea className="flex-1 custom-scrollbar">
-                    <div className="max-w-4xl mx-auto py-28 px-12">
-                        <div className="mb-20">
+                    <div className="max-w-4xl mx-auto py-12 lg:py-28 px-4 lg:px-12">
+                        <div className="mb-10 lg:mb-20">
                              <input 
                                 type="text"
                                 value={activePage.title}
                                 onChange={(e) => setPages(prev => prev.map(p => p.id === activePageId ? {...p, title: e.target.value} : p))}
-                                className="w-full bg-transparent border-none outline-none text-5xl font-black tracking-tighter placeholder:text-zinc-900 text-zinc-100 mb-6 focus:ring-0"
+                                className="w-full bg-transparent border-none outline-none text-3xl lg:text-5xl font-black tracking-tighter placeholder:text-zinc-900 text-zinc-100 mb-6 focus:ring-0"
                                 placeholder="Blueprint Title..."
                              />
                              <div className="flex items-center gap-6 text-[11px] font-black uppercase tracking-[0.3em] text-zinc-700">

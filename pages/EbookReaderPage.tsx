@@ -209,7 +209,7 @@ const EbookReaderPage: React.FC = () => {
                             <img 
                                 src={imageMatch[2]} 
                                 alt={imageMatch[1]} 
-                                className="max-h-[700px] w-auto object-contain transition-transform duration-1000 group-hover:scale-[1.03]" 
+                                className="max-w-[200px] md:max-w-none md:max-h-[700px] w-auto object-contain transition-transform duration-1000 group-hover:scale-[1.03]" 
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                         </div>
@@ -487,13 +487,13 @@ const EbookReaderPage: React.FC = () => {
                     </div>
                 ) : (
                     <div ref={contentRef} className="flex-1 overflow-y-auto custom-scrollbar">
-                        <div className="max-w-4xl mx-auto py-32 px-8">
+                        <div className="max-w-4xl mx-auto py-24 md:py-32 px-4 md:px-8">
                             <motion.div 
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 1 }}
                                 className={cn(
-                                    "min-h-[calc(100vh-400px)] p-10 md:p-24 rounded-[3rem] transition-all duration-1000 border relative overflow-hidden",
+                                    "min-h-[calc(100vh-400px)] p-6 md:p-24 rounded-3xl md:rounded-[3rem] transition-all duration-1000 border relative overflow-hidden",
                                     getPageThemeClasses()
                                 )}
                             >
@@ -515,7 +515,7 @@ const EbookReaderPage: React.FC = () => {
                                 </div>
 
                                 <article 
-                                    className={cn("prose prose-zinc max-w-none transition-all duration-1000", getFontFamily())}
+                                    className={cn("prose prose-zinc max-w-prose mx-auto transition-all duration-1000", getFontFamily())}
                                     style={{ 
                                         fontSize: `${settings.fontSize}px`, 
                                         lineHeight: settings.lineHeight,
