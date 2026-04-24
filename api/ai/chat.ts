@@ -92,7 +92,9 @@ Output should be direct, professional, and inspiring. Start by acknowledging the
         });
 
         console.log("Streaming response started");
-        return result.pipeTextStreamToResponse(res);
+        
+        // Use Data Stream Protocol required by useChat / useCompletion hooks
+        return result.pipeDataStreamToResponse(res);
     } catch (error: any) {
         console.error("AI API Error Details:", error);
         return res.status(500).json({ error: "AI processing failed", details: error.message });

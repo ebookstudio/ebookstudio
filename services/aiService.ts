@@ -221,11 +221,27 @@ export const createStudioSession = (initialContext: string, userId?: string): an
                 const decoder = new TextDecoder();
                 if (!reader) return;
 
+                let buffer = '';
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) break;
-                    const chunk = decoder.decode(value, { stream: true });
-                    yield { text: chunk };
+                    
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    
+                    // Keep the last partial line in the buffer
+                    buffer = lines.pop() || '';
+                    
+                    for (const line of lines) {
+                        if (line.startsWith('0:')) {
+                            try {
+                                const textChunk = JSON.parse(line.slice(2));
+                                yield { text: textChunk };
+                            } catch (e) {
+                                // Ignore incomplete JSON parses
+                            }
+                        }
+                    }
                 }
             })();
         }

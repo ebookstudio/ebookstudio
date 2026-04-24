@@ -114,6 +114,24 @@ export const SellerDashboardContent: React.FC = () => {
     setIsDeploying(false);
   };
 
+  const handlePublishBook = async (bookId: string) => {
+      try {
+          const res = await fetch('/api/publish-book', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ bookId, price: 499 })
+          });
+          if (res.ok) {
+              alert("Book published successfully to the marketplace!");
+              window.location.reload();
+          } else {
+              alert("Failed to publish book.");
+          }
+      } catch (e) {
+          console.error(e);
+      }
+  };
+
   const handleCreatorSiteFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     if (type === 'checkbox') {
@@ -313,7 +331,9 @@ export const SellerDashboardContent: React.FC = () => {
                                             <div className="flex items-center gap-8">
                                                 <div className="relative">
                                                     <img src={book.coverImageUrl} className="w-20 h-32 object-cover rounded-md border border-border shadow-2xl" alt="" />
-                                                    <div className="absolute top-2 left-2 px-1.5 py-0.5 bg-zinc-950/80 backdrop-blur-md rounded border border-border text-[8px] font-black uppercase text-emerald-500">Active</div>
+                                                    <div className={`absolute top-2 left-2 px-1.5 py-0.5 bg-zinc-950/80 backdrop-blur-md rounded border border-border text-[8px] font-black uppercase ${book.isDraft ? 'text-amber-500' : 'text-emerald-500'}`}>
+                                                        {book.isDraft ? 'Draft' : 'Active'}
+                                                    </div>
                                                 </div>
                                                 <div className="space-y-2">
                                                     <h4 className="text-xl font-bold text-zinc-100 group-hover:text-zinc-300 transition-colors">{book.title}</h4>
@@ -325,7 +345,12 @@ export const SellerDashboardContent: React.FC = () => {
                                                     <p className="text-xs text-zinc-500 font-medium line-clamp-1 max-w-xl">{book.description}</p>
                                                 </div>
                                             </div>
-                                            <div className="flex items-center gap-3">
+                                            <div className="flex flex-col md:flex-row items-center gap-3">
+                                                {book.isDraft && (
+                                                    <Button variant="default" size="sm" onClick={() => handlePublishBook(book.id)} className="h-9 bg-emerald-500 text-zinc-950 hover:bg-emerald-600 text-[10px] font-bold uppercase tracking-widest px-4 shadow-[0_0_15px_rgba(16,185,129,0.3)] border border-emerald-400">
+                                                        <IconRocket className="w-3 h-3 mr-2" /> Publish
+                                                    </Button>
+                                                )}
                                                 <Button variant="outline" size="sm" onClick={() => navigate(`/read/${book.id}`)} className="h-9 border-zinc-800 text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 px-4">View</Button>
                                                 <Button variant="outline" size="sm" onClick={() => navigate(`/edit-ebook/${book.id}`)} className="h-9 border-zinc-800 text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 px-4">Edit</Button>
                                             </div>

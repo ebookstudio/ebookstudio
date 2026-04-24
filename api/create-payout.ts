@@ -118,7 +118,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const payout = await razorpayFetch('/payouts', {
             method: 'POST',
             body: JSON.stringify({
-                account_number: process.env.RAZORPAY_X_ACCOUNT_NUMBER,
+                account_number: process.env.RAZORPAYX_ACCOUNT_NUMBER,
                 fund_account_id: fundAccountId,
                 amount: amount,
                 currency: 'INR',
