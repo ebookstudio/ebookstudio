@@ -44,6 +44,7 @@ const EbookReaderPage: React.FC = () => {
     // UI State
     const [showSidebar, setShowSidebar] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
+    const [isUiVisible, setIsUiVisible] = useState(true);
     const [scrolled, setScrolled] = useState(0);
     const [settings, setSettings] = useState<ReaderSettings>({
         theme: 'dark',
@@ -282,7 +283,8 @@ const EbookReaderPage: React.FC = () => {
 
             <header className={cn(
                 "fixed top-0 left-0 right-0 h-16 flex items-center justify-between px-8 z-50 transition-all duration-500",
-                scrolled > 2 ? 'bg-zinc-950/60 backdrop-blur-2xl border-b border-white/5' : 'bg-transparent'
+                scrolled > 2 ? 'bg-zinc-950/60 backdrop-blur-2xl border-b border-white/5' : 'bg-transparent',
+                !isUiVisible && '-translate-y-full opacity-0 pointer-events-none'
             )}>
                 <div className="flex items-center gap-6 flex-1 min-w-0">
                     <button 
@@ -486,16 +488,22 @@ const EbookReaderPage: React.FC = () => {
                         </div>
                     </div>
                 ) : (
-                    <div ref={contentRef} className="flex-1 overflow-y-auto custom-scrollbar">
+                    <div 
+                        ref={contentRef} 
+                        className="flex-1 overflow-y-auto custom-scrollbar"
+                        onClick={(e) => {
+                            // Don't toggle if they clicked a link or image
+                            if ((e.target as HTMLElement).tagName !== 'IMG' && (e.target as HTMLElement).tagName !== 'A') {
+                                setIsUiVisible(!isUiVisible);
+                            }
+                        }}
+                    >
                         <div className="max-w-4xl mx-auto py-24 md:py-32 px-4 md:px-8">
                             <motion.div 
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 1 }}
-                                className={cn(
-                                    "min-h-[calc(100vh-400px)] p-6 md:p-24 rounded-3xl md:rounded-[3rem] transition-all duration-1000 border relative overflow-hidden",
-                                    getPageThemeClasses()
-                                )}
+                                className="min-h-[calc(100vh-100px)] py-6 md:py-12 transition-all duration-1000 relative overflow-hidden"
                             >
                                 {/* Page Accent */}
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-zinc-100/5 blur-[80px] rounded-full pointer-events-none" />
@@ -522,7 +530,7 @@ const EbookReaderPage: React.FC = () => {
                                         color: 'currentColor' 
                                     }}
                                 >
-                                    <div className="opacity-90">
+                                    <div className="opacity-90 leading-relaxed tracking-wide">
                                         {renderMarkdownContent(currentTextPage.content || "Connection active. Content pending...")}
                                     </div>
                                 </article>
@@ -541,7 +549,10 @@ const EbookReaderPage: React.FC = () => {
 
                         {/* Floating Footer Controls for Text Reader */}
                         {!book.pdfUrl && (
-                            <div className="sticky bottom-12 left-0 right-0 z-50 pointer-events-none flex justify-center pb-12">
+                            <div className={cn(
+                                "fixed bottom-12 left-0 right-0 z-50 pointer-events-none flex justify-center pb-12 transition-all duration-500",
+                                !isUiVisible && 'translate-y-[150%] opacity-0'
+                            )}>
                                 <motion.div 
                                     initial={{ y: 20, opacity: 0 }}
                                     animate={{ y: 0, opacity: 1 }}
