@@ -139,6 +139,8 @@ export interface AppContextType {
   finalizePurchase: (books: EBook[]) => Promise<void>; // Added for marketplace
   updatePayoutUpi: (upiId: string) => Promise<void>; // Added for payouts
   updateSubscription: (planId: string) => Promise<void>; // Added for AI subscriptions
+  saveBookToCloud: (book: EBook) => Promise<void>; // Added for cloud draft sync
+  loadUserBooksFromCloud: () => Promise<void>; // Added for cloud draft sync
   isSidebarCollapsed: boolean;
   setIsSidebarCollapsed: (collapsed: boolean) => void;
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { useAppContext } from '../contexts/AppContext';
-import { IconMenu, IconX, IconArrowLeft } from '../constants';
+import { IconMenu, IconX, IconArrowLeft, IconShoppingCart, IconStore } from '../constants';
 import { Button } from '../components/ui/button';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const { Link, useNavigate, useLocation } = ReactRouterDOM as any;
 
 const Navbar: React.FC = () => {
-  const { currentUser, logout } = useAppContext();
+  const { currentUser, logout, cart } = useAppContext();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -59,34 +59,54 @@ const Navbar: React.FC = () => {
 
             {/* Navigation Links */}
             <div className="hidden md:flex items-center gap-8 h-full">
-                <div className="flex items-center gap-6">
-                    <Link to="/store" className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-zinc-100 transition-all">Library</Link>
-                    <Link to="/pricing" className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-zinc-100 transition-all">Pricing</Link>
+                <div className="flex items-center gap-8 h-full">
+                    <Link to="/store" className="flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 hover:text-zinc-100 transition-all group py-2">
+                        <IconStore className="w-4 h-4 group-hover:scale-110 transition-transform text-zinc-600 group-hover:text-zinc-100" />
+                        Library
+                    </Link>
+                    <Link to="/pricing" className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 hover:text-zinc-100 transition-all py-2">
+                        Pricing
+                    </Link>
                 </div>
                 
-                <div className="h-4 w-[1px] bg-zinc-800" />
+                <div className="h-6 w-px bg-zinc-800/50" />
 
-                {currentUser ? (
-                    <div className="flex items-center gap-4">
-                        <Link to="/dashboard" className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-zinc-100 transition-all">Dashboard</Link>
-                        <Button 
-                          onClick={() => navigate('/ebook-studio')}
-                          className="rounded h-8 px-4 bg-zinc-100 text-zinc-950 hover:bg-zinc-200 text-[10px] font-bold uppercase tracking-widest transition-all"
-                        >
-                          Create
-                        </Button>
-                    </div>
-                ) : (
-                    <div className="flex items-center gap-6">
-                       <Link to="/login" className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-zinc-100 transition-all">Login</Link>
-                       <Button 
-                         onClick={() => navigate('/login')}
-                         className="rounded h-8 px-4 bg-zinc-100 text-zinc-950 hover:bg-zinc-200 text-[10px] font-bold uppercase tracking-widest transition-all"
-                       >
-                         Get Started
-                       </Button>
-                    </div>
-                )}
+                <div className="flex items-center gap-6">
+                    <button 
+                        onClick={() => navigate('/checkout')}
+                        className="relative group w-10 h-10 flex items-center justify-center rounded-xl bg-zinc-900/50 border border-zinc-800 text-zinc-500 hover:text-zinc-100 hover:border-zinc-100 hover:bg-zinc-100 hover:text-zinc-950 transition-all duration-300 shadow-xl"
+                        title="View Cart"
+                    >
+                        <IconShoppingCart className="w-4 h-4 transition-transform duration-500 group-hover:scale-110" />
+                        {cart.length > 0 && (
+                            <span className="absolute -top-1.5 -right-1.5 bg-zinc-100 text-zinc-950 w-5 h-5 text-[9px] font-black flex items-center justify-center rounded-full border-2 border-zinc-950 shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+                                {cart.length}
+                            </span>
+                        )}
+                    </button>
+
+                    {currentUser ? (
+                        <div className="flex items-center gap-4">
+                            <Link to="/dashboard" className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 hover:text-zinc-100 transition-all">Dashboard</Link>
+                            <Button 
+                              onClick={() => navigate('/ebook-studio')}
+                              className="rounded-lg h-9 px-5 bg-zinc-100 text-zinc-950 hover:bg-white text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-xl"
+                            >
+                              Create
+                            </Button>
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-6">
+                           <Link to="/login" className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 hover:text-zinc-100 transition-all">Login</Link>
+                           <Button 
+                             onClick={() => navigate('/login')}
+                             className="rounded-lg h-9 px-5 bg-zinc-100 text-zinc-950 hover:bg-white text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-xl"
+                           >
+                             Get Started
+                           </Button>
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* Mobile Trigger */}

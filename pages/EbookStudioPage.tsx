@@ -46,6 +46,7 @@ const EbookStudioPage: React.FC = () => {
   const [pages, setPages] = useState<EBookPage[]>([
     { id: '1', title: 'Chapter 1: The Beginning', content: '', pageNumber: 1 }
   ]);
+  const [draftId] = useState<string>(() => `draft-${Date.now()}`);
   const [activePageId, setActivePageId] = useState<string>('1');
   const activePage = useMemo(() => pages.find(p => p.id === activePageId) || pages[0], [pages, activePageId]);
 
@@ -134,6 +135,37 @@ const EbookStudioPage: React.FC = () => {
           }
       }
   }, [isBusy, autoPilotMode, pages]);
+
+  // --- CLOUD AUTO-SYNC ---
+  const { saveBookToCloud } = useAppContext();
+  const syncTimeoutRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (!currentUser) return;
+
+    if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+
+    syncTimeoutRef.current = setTimeout(() => {
+        const draft: EBook = {
+            id: draftId,
+            title: pages[0].title || "Untitled Masterpiece",
+            author: currentUser?.name || 'Author',
+            description: 'Draft in Progress',
+            price: 0,
+            coverImageUrl: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=800',
+            genre: 'Draft',
+            sellerId: currentUser?.id || 'guest',
+            publicationDate: new Date().toISOString().split('T')[0],
+            pages: pages,
+            isDraft: true
+        };
+        saveBookToCloud(draft);
+    }, 3000); // Debounce 3 seconds
+
+    return () => {
+        if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+    };
+  }, [pages, draftId, currentUser, saveBookToCloud]);
 
   const triggerNextWrite = (currentQueue: string[]) => {
       if (currentQueue.length === 0) return;
@@ -322,18 +354,20 @@ const EbookStudioPage: React.FC = () => {
   };
 
   const handleExport = () => {
-      addCreatedBook({
-          id: `gen-${Date.now()}`,
+      const finalBook: EBook = {
+          id: draftId, // Use the same ID to update the draft to a published book
           title: pages[0].title || "Untitled Masterpiece",
           author: currentUser?.name || 'Author',
           description: 'Authored with AI Precision',
-          price: 0,
+          price: 299, // Default price for published books
           coverImageUrl: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=800',
-          genre: 'Draft',
+          genre: 'Literature',
           sellerId: currentUser?.id || 'guest',
           publicationDate: new Date().toISOString().split('T')[0],
-          pages: pages
-      });
+          pages: pages,
+          isDraft: false
+      };
+      addCreatedBook(finalBook);
       navigate('/dashboard');
   };
 

@@ -13,7 +13,7 @@ export const GEMINI_TEXT_MODEL = "gemini-1.5-flash";
 export const GEMINI_IMAGE_MODEL = "gemini-1.5-flash"; // Fallback for multimodal/image understanding
 
 // UPDATED KEYS FROM USER PROMPT
-export const RAZORPAY_KEY_ID = "rzp_live_RR5721D6h6BMt4"; 
+export const RAZORPAY_KEY_ID = "rzp_live_SgmFEvMl1lXpkD"; 
 export const GOOGLE_CLIENT_ID = "399711702378-437l1ouof6p9hvnoo3uud7acfr1h5k12.apps.googleusercontent.com";
 
 // Tabler Icons (as JSX) - Ensure all use stroke="currentColor"

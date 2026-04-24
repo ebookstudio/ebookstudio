@@ -35,6 +35,7 @@ const StorePage: React.FC = () => {
 
   const filteredBooks = useMemo(() => {
     return allBooks.filter(book => {
+      if (book.isDraft) return false;
       const matchesSearch = book.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           book.author.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesGenre = selectedGenre === 'All' || book.genre === selectedGenre;
@@ -62,18 +63,7 @@ const StorePage: React.FC = () => {
                   </p>
               </div>
               <div className="flex items-center gap-4">
-                  <Button 
-                      onClick={() => navigate('/checkout')}
-                      className="h-12 px-8 rounded-md bg-zinc-100 text-zinc-950 hover:bg-zinc-200 transition-all relative font-bold text-xs uppercase tracking-wider flex items-center gap-3 shadow-xl"
-                  >
-                      <IconShoppingCart className="w-4 h-4" />
-                      Cart
-                      {cart.length > 0 && (
-                          <span className="bg-primary text-primary-foreground w-5 h-5 text-[10px] font-bold flex items-center justify-center rounded-full">
-                              {cart.length}
-                          </span>
-                      )}
-                  </Button>
+                  {/* Cart moved to global Navbar */}
               </div>
           </header>
 

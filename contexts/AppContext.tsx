@@ -36,6 +36,8 @@ const defaultAppContext: AppContextType = {
   finalizePurchase: async () => {},
   updatePayoutUpi: async () => {},
   updateSubscription: async () => {},
+  saveBookToCloud: async () => {},
+  loadUserBooksFromCloud: async () => {},
 };
 
 const AppContext = createContext<AppContextType>(defaultAppContext);
@@ -163,6 +165,83 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return () => unsubscribe();
   }, [syncWithNeon]);
 
+  const saveBookToCloud = async (book: EBook) => {
+    if (!currentUser) return;
+    try {
+        console.log(`[CloudSync] Saving book ${book.id} to Neon...`);
+        const response = await fetch('/api/save-book', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(book)
+        });
+        if (!response.ok) throw new Error("Cloud save failed");
+        console.log(`[CloudSync] Book ${book.id} saved successfully.`);
+    } catch (error) {
+        console.error("Cloud Sync Error:", error);
+    }
+  };
+
+  const loadUserBooksFromCloud = useCallback(async () => {
+    if (!currentUser) return;
+    try {
+        console.log(`[CloudSync] Loading books for ${currentUser.id} from Neon...`);
+        const response = await fetch(`/api/get-user-books?userId=${currentUser.id}`);
+        if (!response.ok) return;
+        const cloudBooks = await response.json();
+        
+        if (cloudBooks && Array.isArray(cloudBooks)) {
+            setAllBooks(prev => {
+                const merged = [...prev];
+                cloudBooks.forEach(cb => {
+                    const idx = merged.findIndex(b => b.id === cb.id);
+                    if (idx >= 0) merged[idx] = cb;
+                    else merged.unshift(cb);
+                });
+                return merged;
+            });
+
+            if (userType === UserType.SELLER) {
+                setCurrentUserState(prev => {
+                    const seller = prev as Seller;
+                    return { ...seller, uploadedBooks: cloudBooks };
+                });
+            }
+        }
+    } catch (error) {
+        console.error("Cloud Load Error:", error);
+    }
+  }, [currentUser, userType]);
+
+  const loadMarketplaceBooks = useCallback(async () => {
+    try {
+        console.log(`[Marketplace] Fetching dynamic catalog...`);
+        const response = await fetch('/api/get-marketplace-books');
+        if (!response.ok) return;
+        const marketBooks = await response.json();
+        if (marketBooks && Array.isArray(marketBooks)) {
+            setAllBooks(prev => {
+                const merged = [...prev];
+                marketBooks.forEach(mb => {
+                    const idx = merged.findIndex(b => b.id === mb.id);
+                    if (idx >= 0) merged[idx] = mb;
+                    else merged.push(mb);
+                });
+                return merged;
+            });
+        }
+    } catch (error) {
+        console.error("Marketplace Load Error:", error);
+    }
+  }, []);
+
+  // Sync books on auth or mount
+  useEffect(() => {
+    if (currentUser) {
+        loadUserBooksFromCloud();
+    }
+    loadMarketplaceBooks();
+  }, [currentUser, loadUserBooksFromCloud, loadMarketplaceBooks]);
+
   // 3. Persistence Effect: Save state on any change
   useEffect(() => {
       const stateToSave = {
@@ -254,6 +333,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             };
         });
     }
+
+    // Sync to cloud
+    saveBookToCloud(book);
   };
 
   const updateEBook = (updatedBook: EBook) => {
@@ -269,6 +351,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             };
         });
     }
+
+    // Sync to cloud
+    saveBookToCloud(updatedBook);
   };
 
   // --- AUTH METHODS ---
@@ -484,7 +569,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const theme = 'dark';
 
   return (
-    <AppContext.Provider value={{ currentUser, userType, setCurrentUser, cart, addToCart, removeFromCart, clearCart, theme, geminiChat, initializeChat, isChatbotOpen, toggleChatbot, updateSellerCreatorSite, allBooks, addCreatedBook, updateEBook, handleGoogleLogin, handleEmailLogin, upgradeToSeller, verifyUser, isInitialAuthCheck, isAuthenticating, logout, finalizePurchase, updatePayoutUpi, updateSubscription, isSidebarCollapsed, setIsSidebarCollapsed }}>
+    <AppContext.Provider value={{ currentUser, userType, setCurrentUser, cart, addToCart, removeFromCart, clearCart, theme, geminiChat, initializeChat, isChatbotOpen, toggleChatbot, updateSellerCreatorSite, allBooks, addCreatedBook, updateEBook, handleGoogleLogin, handleEmailLogin, upgradeToSeller, verifyUser, isInitialAuthCheck, isAuthenticating, logout, finalizePurchase, updatePayoutUpi, updateSubscription, saveBookToCloud, loadUserBooksFromCloud, isSidebarCollapsed, setIsSidebarCollapsed }}>
       {children}
     </AppContext.Provider>
   );

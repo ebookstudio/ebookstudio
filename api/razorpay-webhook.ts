@@ -54,24 +54,42 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             const amountRupees = amountPaise / 100;
 
             if (sellerId) {
-                // Calculation: 
                 // 1. Deduct 2% + 18% GST on fee (~2.36%)
                 const gatewayFee = amountRupees * 0.02 * 1.18;
                 const netAmount = amountRupees - gatewayFee;
                 
                 // 2. 70% for the writer
-                const writerEarnings = Math.floor(netAmount * 0.70 * 100); // Store in paise for precision
+                const writerEarningsPaise = Math.floor(netAmount * 0.70 * 100); 
 
-                console.log(`[Webhook] Recording Payout for Seller: ${sellerId}, Amount: ${writerEarnings} paise`);
+                console.log(`[Webhook] Processing Automated Payout for Seller: ${sellerId}, Amount: ${writerEarningsPaise} paise`);
 
-                // Retrieve Writer's UPI ID from Neon (assuming a 'users' or 'sellers' table)
-                // For now, we'll use a placeholder or check if it's in notes
                 const upiId = payment.notes?.payoutUpiId || 'UPI_PENDING';
 
+                // Record initial pending payout
                 await sql`
-                    INSERT INTO payouts (seller_id, amount, upi_id, status)
-                    VALUES (${sellerId}, ${writerEarnings}, ${upiId}, 'pending')
+                    INSERT INTO payouts (seller_id, amount, upi_id, status, purchase_id)
+                    VALUES (${sellerId}, ${writerEarningsPaise}, ${upiId}, 'pending', ${paymentId})
+                    ON CONFLICT (purchase_id) DO NOTHING
                 `;
+
+                // Trigger the Payout Internal Logic
+                // In production, you might call your internal API or a worker
+                try {
+                    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+                    const host = req.headers.host;
+                    fetch(`${protocol}://${host}/api/create-payout`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            amount: writerEarningsPaise,
+                            upiId: upiId,
+                            sellerId: sellerId,
+                            purchaseId: paymentId
+                        })
+                    }).catch(e => console.error("[Webhook] Async Payout Trigger Failed:", e));
+                } catch (triggerError) {
+                    console.error("[Webhook] Payout Trigger Error:", triggerError);
+                }
             } else {
                 console.warn(`[Webhook] No sellerId found in notes for Order: ${orderId}. Payout skip.`);
             }
