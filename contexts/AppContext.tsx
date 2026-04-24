@@ -144,7 +144,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                     await setDoc(doc(db, 'users', firebaseUser.uid), userData);
                 }
                 setCurrentUserState(userData);
-                setUserTypeState(userData.uploadedBooks ? UserType.SELLER : UserType.USER);
+                // Detect seller status from explicit field or uploadedBooks array
+                const isSeller = userData.userType === UserType.SELLER || (userData.uploadedBooks && Array.isArray(userData.uploadedBooks));
+                setUserTypeState(isSeller ? UserType.SELLER : UserType.USER);
                 
                 // Sync with Neon immediately after login
                 syncWithNeon(firebaseUser.uid);
@@ -161,15 +163,16 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return () => unsubscribe();
   }, [syncWithNeon]);
 
-  // 3. Persistence Effect: Save state on any change (excluding sensitive auth)
+  // 3. Persistence Effect: Save state on any change
   useEffect(() => {
       const stateToSave = {
           cart,
           allBooks,
-          currentUser
+          currentUser,
+          userType
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
-  }, [cart, allBooks]);
+  }, [cart, allBooks, currentUser, userType]);
 
   const setCurrentUser = (user: User | Seller | null, type: UserType) => {
     setCurrentUserState(user);
@@ -388,6 +391,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         };
         
         setCurrentUser(newSeller, UserType.SELLER);
+        
+        // Persist to Firestore with explicit userType
+        setDoc(doc(db, 'users', user.id), { ...newSeller, userType: UserType.SELLER, uploadedBooks: [] }, { merge: true })
+            .then(() => console.log("Upgraded to Seller in Firestore"))
+            .catch(err => console.error("Firestore Upgrade Failed:", err));
+
         // Update runtime cache
         mockUsers[user.id] = newSeller;
         
