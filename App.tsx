@@ -79,10 +79,6 @@ const AppContent: React.FC = () => {
                            location.pathname.startsWith('/read/') ||
                            location.pathname.startsWith('/edit-ebook/');
 
-  if (isInitialAuthCheck) {
-    return <LoadingScreen />;
-  }
-
   return (
     <div className="flex flex-col min-h-screen bg-zinc-950 font-sans text-zinc-100 overflow-x-hidden relative selection:bg-zinc-100/10">
       <div className="flex-grow relative z-10 flex flex-col w-full"> 
