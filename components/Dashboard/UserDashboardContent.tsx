@@ -13,7 +13,7 @@ import { cn } from '../../lib/utils';
 const { useNavigate } = ReactRouterDOM as any;
 
 const UserDashboardContent: React.FC = () => {
-  const { currentUser, setCurrentUser, userType, upgradeToSeller } = useAppContext();
+  const { currentUser, userType, upgradeToSeller, logout, setCurrentUser } = useAppContext();
   const user = currentUser as User; 
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'library' | 'wishlist' | 'settings'>('library');
@@ -22,8 +22,8 @@ const UserDashboardContent: React.FC = () => {
 
   if (!user) return null;
 
-  const handleLogout = () => {
-    setCurrentUser(null, userType);
+  const handleLogout = async () => {
+    await logout();
     navigate('/');
   };
 

@@ -72,8 +72,13 @@ interface DashboardSidebarProps {
 }
 
 const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ userType, activeSection, onSectionChange }) => {
-    const { isSidebarCollapsed: isCollapsed, setIsSidebarCollapsed: setIsCollapsed } = useAppContext();
+    const { isSidebarCollapsed: isCollapsed, setIsSidebarCollapsed: setIsCollapsed, logout } = useAppContext();
     const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        await logout();
+        navigate('/login');
+    };
 
     return (
         <aside 
@@ -226,7 +231,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ userType, activeSec
                         "flex items-center h-9 px-3 rounded-md text-[11px] font-medium text-zinc-600 hover:text-zinc-200 hover:bg-zinc-900 transition-all group",
                         isCollapsed ? "w-9 p-0 justify-center" : "w-full"
                     )}
-                    onClick={() => navigate('/login')}
+                    onClick={handleLogout}
                 >
                     <IconLogout className={cn("h-4 w-4 text-zinc-600 group-hover:text-zinc-300", !isCollapsed && "mr-3")} />
                     {!isCollapsed && <span>Sign Out</span>}

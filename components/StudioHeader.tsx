@@ -13,14 +13,14 @@ interface StudioHeaderProps {
 }
 
 const StudioHeader: React.FC<StudioHeaderProps> = ({ children }) => {
-    const { currentUser, userType, setCurrentUser } = useAppContext();
+    const { currentUser, userType, logout } = useAppContext();
     const navigate = useNavigate();
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
     if (!currentUser) return null;
 
-    const handleLogout = () => {
-        setCurrentUser(null, UserType.GUEST);
+    const handleLogout = async () => {
+        await logout();
         navigate('/login');
     };
 
