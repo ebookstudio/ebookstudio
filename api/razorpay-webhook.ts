@@ -73,13 +73,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 `;
 
                 // Trigger the Payout Internal Logic
-                // In production, you might call your internal API or a worker
                 try {
                     const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
                     const host = req.headers.host;
                     fetch(`${protocol}://${host}/api/create-payout`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${process.env.PAYOUT_AUTH_TOKEN}`
+                        },
                         body: JSON.stringify({
                             amount: writerEarningsPaise,
                             upiId: upiId,

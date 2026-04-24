@@ -89,7 +89,6 @@ const AppContent: React.FC = () => {
         </main>
         {!isDashboardRoute && <Footer />}
       </div>
-      <Analytics />
     </div>
   );
 };
@@ -99,6 +98,7 @@ const App: React.FC = () => {
     <AppProvider>
       <BrowserRouter>
         <AppContent />
+        <Analytics />
       </BrowserRouter>
     </AppProvider>
   );

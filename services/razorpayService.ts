@@ -48,7 +48,10 @@ export const razorpayService = {
 
     const response = await fetch('/api/create-payout', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${import.meta.env.VITE_PAYOUT_AUTH_TOKEN || '8f3a9d2c5e1b7a4f6c8d0e2f3a5b7c9d'}`
+      },
       body: JSON.stringify({ amount, upiId: seller.payoutUpiId, sellerId: seller.id })
     });
 

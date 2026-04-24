@@ -53,3 +53,12 @@ CREATE TABLE IF NOT EXISTS subscriptions (
     current_period_end TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 5. Seller Payment Methods (For Razorpay X Payouts)
+CREATE TABLE IF NOT EXISTS seller_payment_methods (
+    seller_id TEXT PRIMARY KEY,
+    razorpay_contact_id TEXT,
+    razorpay_fund_account_id TEXT,
+    upi_id TEXT,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

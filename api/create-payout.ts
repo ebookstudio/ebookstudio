@@ -1,68 +1,128 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { neon } from '@neondatabase/serverless';
-import razorpayInstance from './razorpayClient';
 
 const sql = neon(process.env.DATABASE_URL!);
+const PAYOUT_AUTH_TOKEN = process.env.PAYOUT_AUTH_TOKEN;
+
+// Helper for direct Razorpay API calls
+async function razorpayFetch(endpoint: string, options: any = {}) {
+    const keyId = process.env.RAZORPAY_KEY_ID;
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    
+    if (!keyId || !keySecret) {
+        throw new Error('RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET is missing in environment.');
+    }
+
+    const auth = Buffer.from(`${keyId}:${keySecret}`).toString('base64');
+    const url = `https://api.razorpay.com/v1${endpoint}`;
+    console.log(`[Razorpay] Fetching: ${url}`);
+
+    const response = await fetch(url, {
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Basic ${auth}`,
+            ...options.headers,
+        },
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+        console.error(`[Razorpay] Error from ${endpoint}:`, data);
+        throw new Error(data.error?.description || `Razorpay API Error (${response.status})`);
+    }
+    return data;
+}
+
+async function getOrCreateFundAccount(sellerId: string, upiId: string) {
+    const [method] = await sql`
+        SELECT razorpay_fund_account_id FROM seller_payment_methods 
+        WHERE seller_id = ${sellerId} AND upi_id = ${upiId}
+    ` as any[];
+
+    if (method?.razorpay_fund_account_id) return method.razorpay_fund_account_id;
+
+    console.log(`[Payout] Step 1.1: Creating Contact for ${sellerId}`);
+    const contact = await razorpayFetch('/contacts', {
+        method: 'POST',
+        body: JSON.stringify({
+            name: `Seller ${sellerId}`,
+            email: `seller_${sellerId}@ebookstudio.app`,
+            type: 'vendor',
+            reference_id: sellerId
+        })
+    });
+
+    console.log(`[Payout] Step 1.2: Creating Fund Account for Contact ${contact.id}`);
+    const fundAccount = await razorpayFetch('/fund_accounts', {
+        method: 'POST',
+        body: JSON.stringify({
+            contact_id: contact.id,
+            account_type: 'vpa',
+            vpa: { address: upiId }
+        })
+    });
+
+    await sql`
+        INSERT INTO seller_payment_methods (seller_id, razorpay_contact_id, razorpay_fund_account_id, upi_id)
+        VALUES (${sellerId}, ${contact.id}, ${fundAccount.id}, ${upiId})
+        ON CONFLICT (seller_id) DO UPDATE SET
+            razorpay_contact_id = EXCLUDED.razorpay_contact_id,
+            razorpay_fund_account_id = EXCLUDED.razorpay_fund_account_id,
+            upi_id = EXCLUDED.upi_id,
+            updated_at = CURRENT_TIMESTAMP
+    `;
+
+    return fundAccount.id;
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method Not Allowed' });
-    }
-
-    const { amount, upiId, sellerId, purchaseId } = req.body;
-
-    if (!amount || !upiId || !sellerId) {
-        return res.status(400).json({ error: 'Amount, UPI ID, and Seller ID are required' });
-    }
-
     try {
-        console.log(`[Payout] Initiating Razorpay Payout: ${amount} paise to ${upiId}`);
+        if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
 
-        // 1. Create a Payout in Razorpay (Structural Implementation)
-        // Note: This requires Razorpay X Payouts to be enabled on the account
-        let razorpayPayoutId = `payout_sim_${Date.now()}`;
-        let status = 'processed';
-
-        try {
-            // This is the actual API call for Razorpay X Payouts
-            // In a real production environment, you'd need the Fund Account ID
-            /*
-            const payout = await razorpayInstance.payouts.create({
-                account_number: process.env.RAZORPAY_X_ACCOUNT_NUMBER,
-                fund_account_id: fundAccountId, // You'd first create/fetch this for the UPI ID
-                amount: amount,
-                currency: "INR",
-                mode: "UPI",
-                purpose: "payout",
-                queue_if_low_balance: true,
-                reference_id: purchaseId || `ref_${Date.now()}`,
-            });
-            razorpayPayoutId = payout.id;
-            status = payout.status;
-            */
-        } catch (apiError: any) {
-            console.error('[Payout] Razorpay API Error:', apiError);
-            status = 'failed';
-            // We still want to record the failure in our DB
+        const authHeader = req.headers.authorization;
+        
+        if (!PAYOUT_AUTH_TOKEN) {
+            console.error('[Payout] CRITICAL: PAYOUT_AUTH_TOKEN is not defined in the environment.');
         }
 
-        // 2. Record/Update payout in Neon
+        if (authHeader !== `Bearer ${PAYOUT_AUTH_TOKEN}`) {
+            console.error('[Payout] Unauthorized: Token mismatch or missing');
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        const { amount, upiId, sellerId, purchaseId } = req.body;
+        if (!amount || !upiId || !sellerId) return res.status(400).json({ error: 'Missing fields' });
+
+        console.log(`[Payout] Starting payout process for ${sellerId}`);
+
+        const fundAccountId = await getOrCreateFundAccount(sellerId, upiId);
+
+        console.log(`[Payout] Step 2: Initiating Payout with Fund Account ${fundAccountId}`);
+        const payout = await razorpayFetch('/payouts', {
+            method: 'POST',
+            body: JSON.stringify({
+                account_number: process.env.RAZORPAY_X_ACCOUNT_NUMBER,
+                fund_account_id: fundAccountId,
+                amount: amount,
+                currency: 'INR',
+                mode: 'UPI',
+                purpose: 'payout',
+                queue_if_low_balance: true,
+                reference_id: purchaseId || `payout_${Date.now()}`
+            })
+        });
+
         await sql`
-            INSERT INTO payouts (seller_id, amount, upi_id, razorpay_payout_id, status, purchase_id)
-            VALUES (${sellerId}, ${amount}, ${upiId}, ${razorpayPayoutId}, ${status}, ${purchaseId || null})
-            ON CONFLICT (purchase_id) DO UPDATE SET
-                status = EXCLUDED.status,
-                razorpay_payout_id = EXCLUDED.razorpay_payout_id,
-                updated_at = CURRENT_TIMESTAMP
+            UPDATE payouts 
+            SET razorpay_payout_id = ${payout.id}, status = ${payout.status}, updated_at = CURRENT_TIMESTAMP
+            WHERE purchase_id = ${purchaseId} OR sale_id = ${purchaseId}
         `;
 
-        return res.status(200).json({
-            success: status !== 'failed',
-            payoutId: razorpayPayoutId,
-            status: status
-        });
+        return res.json({ success: true, payout_id: payout.id, status: payout.status });
+
     } catch (error: any) {
-        console.error('[Payout] Internal System Error:', error);
-        return res.status(500).json({ error: error.message || 'Internal Server Error' });
+        console.error('[Payout] Failure:', error.message);
+        return res.status(500).json({ error: 'Payout failed', details: error.message });
     }
 }

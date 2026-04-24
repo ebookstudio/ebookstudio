@@ -17,7 +17,11 @@ const getOpenRouterKey = () => {
 
 const getGeminiKey = () => {
     const key = import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.VITE_API_KEY || "";
-    if (!key) console.warn("AI SERVICE: VITE_GEMINI_API_KEY is missing in environment.");
+    if (!key) {
+        console.error("AI SERVICE: No Gemini API Key found. AI will not function.");
+    } else {
+        console.log("AI SERVICE: Gemini API Key loaded successfully.");
+    }
     return key;
 };
 

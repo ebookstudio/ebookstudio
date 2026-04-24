@@ -30,25 +30,27 @@ const NovelEditor: React.FC<NovelEditorProps> = ({
     onTriggerImageGen
 }) => {
   const parseMarkdown = useCallback((md: string): Block[] => {
-      if (!md) return [{ id: Date.now().toString(), type: 'p', content: '' }];
+      if (!md) return [{ id: 'initial-p', type: 'p', content: '' }];
       const lines = md.split('\n');
       const blocks: Block[] = [];
       
-      for (const line of lines) {
+      lines.forEach((line, index) => {
           const trimmed = line.trim();
-          if (!trimmed && lines.length > 1) continue;
+          if (!trimmed && lines.length > 1) return;
 
-          if (line.startsWith('# ')) blocks.push({ id: Math.random().toString(), type: 'h1', content: line.replace('# ', '') });
-          else if (line.startsWith('## ')) blocks.push({ id: Math.random().toString(), type: 'h2', content: line.replace('## ', '') });
-          else if (line.startsWith('- ')) blocks.push({ id: Math.random().toString(), type: 'ul', content: line.replace('- ', '') });
-          else if (line.startsWith('> ')) blocks.push({ id: Math.random().toString(), type: 'blockquote', content: line.replace('> ', '') });
+          const id = `block-${index}`; // Stable ID based on position
+          if (line.startsWith('# ')) blocks.push({ id, type: 'h1', content: line.replace('# ', '') });
+          else if (line.startsWith('## ')) blocks.push({ id, type: 'h2', content: line.replace('## ', '') });
+          else if (line.startsWith('- ')) blocks.push({ id, type: 'ul', content: line.replace('- ', '') });
+          else if (line.startsWith('> ')) blocks.push({ id, type: 'blockquote', content: line.replace('> ', '') });
           else if (line.startsWith('![')) {
               const match = line.match(/\((.*?)\)/);
-              if (match) blocks.push({ id: Math.random().toString(), type: 'image', content: match[1] });
+              if (match) blocks.push({ id, type: 'image', content: match[1] });
           }
-          else blocks.push({ id: Math.random().toString(), type: 'p', content: line });
-      }
-      if (blocks.length === 0) blocks.push({ id: Date.now().toString(), type: 'p', content: '' });
+          else blocks.push({ id, type: 'p', content: line });
+      });
+      
+      if (blocks.length === 0) blocks.push({ id: 'fallback-p', type: 'p', content: '' });
       return blocks;
   }, []);
 
