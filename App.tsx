@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 
 export const getAppBaseUrl = () => {
     return window.location.origin;
@@ -88,6 +89,7 @@ const AppContent: React.FC = () => {
         </main>
         {!isDashboardRoute && <Footer />}
       </div>
+      <Analytics />
     </div>
   );
 };
