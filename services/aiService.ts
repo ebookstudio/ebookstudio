@@ -193,20 +193,33 @@ export const generateBookCover = async (prompt: string, style: string = 'Cinemat
     }
 };
 
-// Enhanced session mock for chat compatibility
+// Enhanced session for real streaming via Vercel AI SDK
 export const createStudioSession = (initialContext: string): any => {
     return {
         sendMessageStream: async ({ message }: { message: any }) => {
             const prompt = Array.isArray(message) ? message.map((m: any) => m.text || "").join("\n") : (message.text || message);
-            const response = await callAI(prompt, initialContext);
             
+            const response = await fetch("/api/ai/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    messages: [{ role: "user", content: prompt }],
+                    systemPrompt: initialContext
+                })
+            });
+
+            if (!response.ok) throw new Error("AI Studio connection failed");
+
             return (async function* () {
-                // Split by small chunks to simulate streaming for better UX
-                const chunks = response.split(/(\s+)/);
-                for (const chunk of chunks) {
+                const reader = response.body?.getReader();
+                const decoder = new TextDecoder();
+                if (!reader) return;
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    const chunk = decoder.decode(value, { stream: true });
                     yield { text: chunk };
-                    // Very slight delay for visual effect
-                    await new Promise(resolve => setTimeout(resolve, 5));
                 }
             })();
         }
