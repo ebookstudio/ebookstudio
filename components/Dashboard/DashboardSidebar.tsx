@@ -99,7 +99,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ userType, activeSec
                 </button>
             </div>
 
-            <ScrollArea className="flex-1 px-3">
+            <ScrollArea className="flex-1 px-3 min-h-0" type="auto">
                 {/* Quick Create Section */}
                 <div className={cn("mb-6 flex gap-1", isCollapsed && "flex-col items-center gap-2")}>
                     <Button 
