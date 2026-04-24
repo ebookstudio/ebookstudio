@@ -82,6 +82,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [isInitialAuthCheck, setIsInitialAuthCheck] = useState(true);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const syncWithNeon = useCallback(async (userId: string) => {
     try {
@@ -474,7 +475,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const theme = 'dark';
 
   return (
-    <AppContext.Provider value={{ currentUser, userType, setCurrentUser, cart, addToCart, removeFromCart, clearCart, theme, geminiChat, initializeChat, isChatbotOpen, toggleChatbot, updateSellerCreatorSite, allBooks, addCreatedBook, updateEBook, handleGoogleLogin, handleEmailLogin, upgradeToSeller, verifyUser, isInitialAuthCheck, isAuthenticating, logout, finalizePurchase, updatePayoutUpi, updateSubscription }}>
+    <AppContext.Provider value={{ currentUser, userType, setCurrentUser, cart, addToCart, removeFromCart, clearCart, theme, geminiChat, initializeChat, isChatbotOpen, toggleChatbot, updateSellerCreatorSite, allBooks, addCreatedBook, updateEBook, handleGoogleLogin, handleEmailLogin, upgradeToSeller, verifyUser, isInitialAuthCheck, isAuthenticating, logout, finalizePurchase, updatePayoutUpi, updateSubscription, isSidebarCollapsed, setIsSidebarCollapsed }}>
       {children}
     </AppContext.Provider>
   );

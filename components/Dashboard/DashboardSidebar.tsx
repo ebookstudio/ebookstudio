@@ -71,18 +71,18 @@ interface DashboardSidebarProps {
 }
 
 const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ userType, activeSection, onSectionChange }) => {
+    const { isSidebarCollapsed: isCollapsed, setIsSidebarCollapsed: setIsCollapsed } = useAppContext();
     const navigate = useNavigate();
-    const [isCollapsed, setIsCollapsed] = useState(false);
 
     return (
         <aside 
             className={cn(
-                "flex-shrink-0 border-r border-border hidden lg:flex flex-col bg-zinc-950 h-[100dvh] sticky top-0 z-40 transition-all duration-300 ease-in-out overflow-hidden",
+                "flex-shrink-0 border-r border-border hidden lg:flex flex-col bg-zinc-950 h-[100dvh] fixed left-0 top-0 z-40 transition-all duration-300 ease-in-out overflow-hidden",
                 isCollapsed ? "w-16" : "w-64"
             )}
         >
             {/* Logo Section */}
-            <div className={cn("h-16 flex items-center mb-4 px-4", isCollapsed ? "justify-center" : "justify-between px-6")}>
+            <div className={cn("h-16 flex items-center mb-4 px-4 flex-shrink-0", isCollapsed ? "justify-center" : "justify-between px-6")}>
                 {!isCollapsed && (
                     <div className="flex items-center gap-2.5 cursor-pointer group" onClick={() => navigate('/')}>
                         <div className="w-5 h-5 rounded-full border-2 border-zinc-500 flex items-center justify-center group-hover:border-zinc-100 transition-colors">
@@ -218,7 +218,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ userType, activeSec
             </ScrollArea>
 
             {/* Footer Section */}
-            <div className={cn("p-4 border-t border-border", isCollapsed && "flex justify-center px-0")}>
+            <div className={cn("p-4 border-t border-border flex-shrink-0 bg-zinc-950", isCollapsed && "flex justify-center px-0")}>
                 <button 
                     title="Sign Out"
                     className={cn(

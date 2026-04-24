@@ -133,11 +133,14 @@ export interface AppContextType {
   handleEmailLogin: (email: string, password: string) => Promise<{success: boolean, message?: string}>; // ADDED: Email Login
   upgradeToSeller: () => void; // Upgrade User to Seller
   verifyUser: () => void; // Added for Blue Tick Verification
-  isInitialAuthCheck: boolean; // Added
+  isInitialAuthCheck: boolean; 
+  isAuthenticating: boolean;
   logout: () => Promise<void>; 
   finalizePurchase: (books: EBook[]) => Promise<void>; // Added for marketplace
   updatePayoutUpi: (upiId: string) => Promise<void>; // Added for payouts
   updateSubscription: (planId: string) => Promise<void>; // Added for AI subscriptions
+  isSidebarCollapsed: boolean;
+  setIsSidebarCollapsed: (collapsed: boolean) => void;
 }
 
 export interface GroundingChunkWeb {

@@ -52,15 +52,20 @@ const UserDashboardContent: React.FC = () => {
     }
   };
 
-  return (
-    <div className="min-h-screen w-full bg-zinc-950 flex text-zinc-100 selection:bg-primary/30">
-        <DashboardSidebar 
-            userType="USER" 
-            activeSection={activeTab} 
-            onSectionChange={setActiveTab} 
-        />
+    const { isSidebarCollapsed } = useAppContext();
 
-        <div className="flex-1 flex flex-col min-w-0">
+    return (
+        <div className="min-h-screen w-full bg-zinc-950 flex text-zinc-100 selection:bg-primary/30">
+            <DashboardSidebar 
+                userType="USER" 
+                activeSection={activeTab} 
+                onSectionChange={setActiveTab} 
+            />
+
+            <div className={cn(
+                "flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out",
+                isSidebarCollapsed ? "lg:ml-16" : "lg:ml-64"
+            )}>
             <DashboardHeader 
                 user={user} 
                 title={getTitle()} 
