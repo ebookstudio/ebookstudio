@@ -208,7 +208,11 @@ export const createStudioSession = (initialContext: string): any => {
                 })
             });
 
-            if (!response.ok) throw new Error("AI Studio connection failed");
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                console.error("AI API Error:", errorData);
+                throw new Error(errorData.error || "AI Studio connection failed");
+            }
 
             return (async function* () {
                 const reader = response.body?.getReader();
