@@ -33,6 +33,7 @@ import {
     IconChevronRight,
     IconDashboard as IconGrid
 } from '../../constants';
+import { useAppContext } from '../../contexts/AppContext';
 import * as ReactRouterDOM from 'react-router-dom';
 
 const { useNavigate } = ReactRouterDOM as any;
