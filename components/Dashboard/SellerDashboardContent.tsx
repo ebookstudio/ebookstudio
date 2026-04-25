@@ -317,7 +317,7 @@ export const SellerDashboardContent: React.FC = () => {
                                     <p className="text-sm text-zinc-500">Manage your high-fidelity publication assets.</p>
                                 </div>
                                 <Button 
-                                    onClick={() => navigate('/ebook-studio')}
+                                    onClick={() => navigate('/ebookstudio')}
                                     className="h-9 px-6 bg-zinc-100 text-zinc-950 hover:bg-zinc-200 font-bold text-[10px] uppercase tracking-[0.2em]"
                                 >
                                     New Creation
@@ -360,7 +360,7 @@ export const SellerDashboardContent: React.FC = () => {
                                     <div className="py-32 text-center border border-dashed border-border rounded-xl bg-zinc-900/20">
                                         <IconBook className="w-12 h-12 mx-auto mb-6 text-zinc-800" />
                                         <p className="text-base font-bold text-zinc-500 uppercase tracking-[0.2em] mb-6">No Active Assets</p>
-                                        <Button onClick={() => navigate('/ebook-studio')} className="h-10 px-8 bg-zinc-100 text-zinc-950 font-bold text-[10px] uppercase tracking-widest">Initialize Creation</Button>
+                                        <Button onClick={() => navigate('/ebookstudio')} className="h-10 px-8 bg-zinc-100 text-zinc-950 font-bold text-[10px] uppercase tracking-widest">Initialize Creation</Button>
                                     </div>
                                 )}
                             </div>

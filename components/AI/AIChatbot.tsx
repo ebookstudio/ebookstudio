@@ -28,7 +28,7 @@ const AIChatbot: React.FC = () => {
   }, [messages, isChatbotOpen]);
 
   // Hide global chatbot on Studio page to avoid UI overlap with Studio Agent
-  if (location.pathname === '/ebook-studio') {
+  if (location.pathname === '/ebookstudio') {
       return null;
   }
 

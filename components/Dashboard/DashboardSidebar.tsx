@@ -112,7 +112,7 @@ const DashboardSidebar: React.FC<DashboardSidebarProps> = ({ userType, activeSec
                 {/* Quick Create Section */}
                 <div className={cn("mb-6 flex gap-1", isCollapsed && "flex-col items-center gap-2")}>
                     <Button 
-                        onClick={() => navigate('/ebook-studio')}
+                        onClick={() => navigate('/ebookstudio')}
                         title="Quick Create"
                         className={cn(
                             "h-9 rounded-md bg-zinc-800 text-zinc-200 hover:bg-zinc-700 border border-zinc-700/30 shadow-sm transition-all",

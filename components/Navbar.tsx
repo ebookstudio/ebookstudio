@@ -21,7 +21,7 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const isStudio = location.pathname === '/ebook-studio';
+  const isStudio = location.pathname === '/ebookstudio';
 
   if (isStudio) {
       return (
@@ -89,7 +89,7 @@ const Navbar: React.FC = () => {
                         <div className="flex items-center gap-4">
                             <Link to="/dashboard" className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 hover:text-zinc-100 transition-all">Dashboard</Link>
                             <Button 
-                              onClick={() => navigate('/ebook-studio')}
+                              onClick={() => navigate('/ebookstudio')}
                               className="rounded-lg h-9 px-5 bg-zinc-100 text-zinc-950 hover:bg-white text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-xl"
                             >
                               Create

@@ -245,7 +245,7 @@ const PricingPage: React.FC = () => {
                     <p className="text-zinc-500 text-lg font-medium max-w-xl mx-auto">Join the next generation of digital architects today.</p>
                 </div>
                 <Button 
-                    onClick={() => navigate('/ebook-studio')}
+                    onClick={() => navigate('/ebookstudio')}
                     className="h-12 px-12 rounded-md bg-zinc-100 text-zinc-950 hover:bg-zinc-200 text-xs font-bold uppercase tracking-widest transition-all shadow-xl flex items-center justify-center gap-3 mx-auto"
                 >
                     Launch Studio <IconArrowUpRight className="w-4 h-4" />

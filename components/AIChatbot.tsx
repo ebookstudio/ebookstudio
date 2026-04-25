@@ -45,7 +45,7 @@ const AIChatbot: React.FC = () => {
     }
   }, [userInput]);
 
-  if (location.pathname === '/ebook-studio') return null;
+  if (location.pathname === '/ebookstudio') return null;
 
   const handleSendMessage = async (e?: React.FormEvent) => {
     e?.preventDefault();

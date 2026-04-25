@@ -9,7 +9,7 @@ const Footer: React.FC = () => {
 
   // HIDE FOOTER ON SPECIFIC PAGES
   if (
-    location.pathname === '/ebook-studio' || 
+    location.pathname === '/ebookstudio' ||
     location.pathname.startsWith('/site/') || 
     location.pathname === '/dashboard' || 
     location.pathname.startsWith('/read/') ||
