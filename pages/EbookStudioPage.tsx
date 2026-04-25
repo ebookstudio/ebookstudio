@@ -41,6 +41,7 @@ const EbookStudioPage: React.FC = () => {
   // Layout State
   const [leftTab, setLeftTab] = useState<'chat' | 'outline'>('chat');
   const [isCinematicMode, setIsCinematicMode] = useState(false);
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
 
   // Project State
   const [pages, setPages] = useState<EBookPage[]>([
@@ -411,14 +412,22 @@ const EbookStudioPage: React.FC = () => {
                 </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-3">
+                <Button 
+                    onClick={() => setIsMobileDrawerOpen(true)} 
+                    className="lg:hidden h-9 px-3 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 transition-all text-[10px] font-bold uppercase tracking-widest"
+                >
+                    <IconBrain className="w-3 h-3 md:mr-2" />
+                    <span className="hidden md:inline">Chat</span>
+                </Button>
+
                 <Button
                     onClick={handleAutoWrite}
                     disabled={isBusy || autoPilotMode !== 'idle'}
-                    className="h-9 px-4 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 transition-all disabled:opacity-50 text-[10px] font-bold uppercase tracking-widest"
+                    className="h-9 px-3 md:px-4 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100 transition-all disabled:opacity-50 text-[10px] font-bold uppercase tracking-widest"
                 >
-                    {isBusy ? <IconSparkles className="w-3 h-3 animate-spin mr-2" /> : <IconBrain className="w-3 h-3 mr-2" />}
-                    <span>{autoPilotMode !== 'idle' ? 'Composing...' : 'Auto-Draft'}</span>
+                    {isBusy ? <IconSparkles className="w-3 h-3 animate-spin md:mr-2" /> : <IconBrain className="w-3 h-3 md:mr-2" />}
+                    <span className="hidden md:inline">{autoPilotMode !== 'idle' ? 'Composing...' : 'Auto-Draft'}</span>
                 </Button>
                 
                 <Button 
@@ -432,8 +441,11 @@ const EbookStudioPage: React.FC = () => {
 
         <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative min-h-0">
             
-            {/* --- PREMIUM STUDIO SIDEBAR (FIXED ARCHITECTURE) --- */}
-            <aside className="w-full lg:w-[380px] shrink-0 h-[45vh] lg:h-full bg-zinc-950 border-b lg:border-b-0 lg:border-r border-zinc-900/50 flex flex-col z-[40] shadow-[20px_0_60px_rgba(0,0,0,0.5)]">
+            {/* --- PREMIUM STUDIO SIDEBAR (MOBILE DRAWER) --- */}
+            <aside className={cn(
+                "lg:w-[450px] shrink-0 lg:h-full bg-zinc-950 lg:border-r border-zinc-900/50 flex flex-col shadow-[20px_0_60px_rgba(0,0,0,0.5)] transition-all duration-300",
+                isMobileDrawerOpen ? "fixed inset-0 z-[100] w-full h-[100dvh]" : "hidden lg:flex z-[40]"
+            )}>
                 
                 {/* Sidebar Header */}
                 <div className="h-14 border-b border-zinc-900/50 flex items-center justify-between px-6 bg-zinc-950/80 backdrop-blur-xl shrink-0 z-20">
@@ -441,7 +453,12 @@ const EbookStudioPage: React.FC = () => {
                          <div className="w-2 h-2 rounded-full bg-zinc-100 shadow-[0_0_12px_rgba(255,255,255,0.6)] animate-pulse" />
                          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-100">Intelligence Unit</span>
                     </div>
-                    <Badge variant="outline" className="bg-zinc-900/50 border-zinc-800 text-zinc-500 text-[8px] font-bold uppercase tracking-[0.2em] px-2 py-0.5">v4.0.2</Badge>
+                    <div className="flex items-center gap-3">
+                        <Badge variant="outline" className="hidden lg:flex bg-zinc-900/50 border-zinc-800 text-zinc-500 text-[8px] font-bold uppercase tracking-[0.2em] px-2 py-0.5">v4.0.2</Badge>
+                        <Button variant="ghost" size="sm" onClick={() => setIsMobileDrawerOpen(false)} className="lg:hidden text-zinc-500 hover:text-white px-2">
+                            <IconX className="w-5 h-5" />
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Main Sidebar Content Area */}
@@ -531,7 +548,7 @@ const EbookStudioPage: React.FC = () => {
                                 </div>
 
                                 {/* --- REDESIGNED PREMIUM INPUT (SCREENSHOT STYLE) --- */}
-                                <div className="shrink-0 p-3 bg-[#010101] border-t border-zinc-900/40 z-10 shadow-[0_-20px_40px_rgba(0,0,0,0.4)]">
+                                <div className="shrink-0 p-3 bg-[#010101] border-t border-zinc-900/40 z-10 shadow-[0_-20px_40px_rgba(0,0,0,0.4)] pb-[calc(12px+env(safe-area-inset-bottom))]">
                                     {attachmentPreviews.length > 0 && (
                                         <div className="flex gap-2.5 mb-3 overflow-x-auto pb-2 scrollbar-hide px-2">
                                             {attachmentPreviews.map((src, idx) => (
@@ -660,8 +677,8 @@ const EbookStudioPage: React.FC = () => {
                 </div>
             </aside>
 
-            {/* --- STUDIO EDITOR (REPOSITIONED & OFFSET) --- */}
-            <main className="flex-1 flex flex-col min-w-0 bg-zinc-950 relative z-10 h-[55vh] lg:h-full">
+            {/* --- STUDIO EDITOR (FULL HEIGHT) --- */}
+            <main className="flex-1 flex flex-col min-w-0 bg-zinc-950 relative z-10 h-full">
                 <div className="h-12 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-900/50 flex items-center justify-between px-4 lg:px-10 shrink-0 z-20">
                      <div className="flex items-center gap-6">
                          <div className="flex items-center gap-3">
