@@ -3,9 +3,13 @@
 /* --- EbookStudio Design System v4.0 (Professional Dashboard Architecture) --- */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600;1,700;1,900&family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-playfair: "Playfair Display", serif;
+  --font-baskerville: "Libre Baskerville", serif;
+  --font-lato: "Lato", sans-serif;
   
   --color-background: #09090b;
   --color-foreground: #fafafa;

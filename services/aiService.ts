@@ -222,6 +222,8 @@ export const createStudioSession = (initialContext: string, userId?: string): an
                 if (!reader) return;
 
                 let buffer = '';
+                const yieldObj: any = { text: '', functionCalls: [] };
+
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) break;
@@ -233,13 +235,45 @@ export const createStudioSession = (initialContext: string, userId?: string): an
                     buffer = lines.pop() || '';
                     
                     for (const line of lines) {
-                        if (line.startsWith('0:')) {
+                        if (!line.trim()) continue;
+                        
+                        const type = line[0];
+                        const content = line.slice(2);
+
+                        if (type === '0') { // Text chunk
                             try {
-                                const textChunk = JSON.parse(line.slice(2));
+                                const textChunk = JSON.parse(content);
                                 yield { text: textChunk };
                             } catch (e) {
-                                // Ignore incomplete JSON parses
+                                console.warn("AI STREAM: Failed to parse text chunk", content);
                             }
+                        } else if (type === '9') { // Tool call chunk
+                            try {
+                                const toolCall = JSON.parse(content);
+                                console.log("AI STREAM: Tool call received", toolCall.toolName);
+                                if (!yieldObj.functionCalls) yieldObj.functionCalls = [];
+                                yieldObj.functionCalls.push({
+                                    id: toolCall.toolCallId,
+                                    name: toolCall.toolName,
+                                    args: toolCall.args
+                                });
+                                yield { ...yieldObj };
+                            } catch (e) {
+                                console.warn("AI STREAM: Failed to parse tool call", content);
+                            }
+                        } else if (type === 'e') { // Error chunk
+                            try {
+                                const errorData = JSON.parse(content);
+                                console.error("AI STREAM: Server-side error", errorData);
+                                const errorMsg = errorData.message || errorData.details || "The AI encountered an internal issue.";
+                                yield { text: `\n\n[AI Error: ${errorMsg}]` };
+                            } catch (e) {
+                                console.warn("AI STREAM: Failed to parse error chunk", content);
+                                yield { text: `\n\n[AI Error: Connection Interrupted]` };
+                            }
+                        } else {
+                            // Ignore other types like 'd' (data)
+                            console.debug(`AI STREAM: Received part type ${type}`, content);
                         }
                     }
                 }
@@ -255,4 +289,21 @@ export const initializeGeminiChat = async (): Promise<any> => {
 export const transcribeAudio = async (audioBase64: string, mimeType: string): Promise<string> => {
     console.log("Audio transcription requested", mimeType);
     return "Audio transcription is currently in maintenance mode.";
+};
+
+/**
+ * High-level orchestrator for full book projects.
+ * Detects if a user wants a full book and prepares a planning response.
+ */
+export const initializeBookProject = async (userPrompt: string): Promise<{ plan: string; requiresOutline: boolean }> => {
+    const prompt = `The user wants to write a complete ebook. Request: "${userPrompt.substring(0, 1000)}".
+    Analyze the request. If it's a request for a full book/many chapters, respond with a project plan and a suggestion to create an outline first.
+    Return JSON: { "plan": "string", "requiresOutline": boolean }`;
+    
+    try {
+        const response = await callAI(prompt, "You are an expert ebook project manager.", true);
+        return JSON.parse(cleanJsonString(response));
+    } catch (e) {
+        return { plan: "Let's start by creating an outline for your book.", requiresOutline: true };
+    }
 };

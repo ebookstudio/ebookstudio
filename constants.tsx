@@ -565,3 +565,18 @@ export const IconDownload = (props: React.SVGProps<SVGSVGElement>) => (
     <line x1="12" y1="15" x2="12" y2="3" />
   </svg>
 );
+
+export const IconLoader2 = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M12 2v4" />
+    <path d="m16.2 4.2 2.8 2.8" />
+    <path d="M18 12h4" />
+    <path d="m16.2 19.8 2.8-2.8" />
+    <path d="M12 18v4" />
+    <path d="m4.2 19.8 2.8-2.8" />
+    <path d="M2 12h4" />
+    <path d="m4.2 4.2 2.8 2.8" />
+  </svg>
+);
+
+export const IconRefresh = IconRotateCcw;
