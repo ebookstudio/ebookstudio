@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import razorpayInstance from './razorpayClient';
+import razorpayInstance from './_razorpayClient';
 import { neon } from '@neondatabase/serverless';
 
 const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : null;
