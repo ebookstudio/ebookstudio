@@ -63,13 +63,19 @@ export function AgentChat() {
             } else if (line.startsWith('9:')) {
               const toolCall = JSON.parse(line.slice(2));
               if (toolCall.toolName === 'plan_page') {
-                 addPageCard(toolCall.args);
+                 const args = toolCall.args || {
+                   pageNumber: 1,
+                   title: "Drafting Page...",
+                   summary: "The neural link is syncing the blueprint for this page.",
+                   estimatedWords: 800
+                 };
+                 addPageCard(args);
                  aiMessage.toolInvocations.push({
                    toolCallId: toolCall.callId || Math.random().toString(),
                    state: 'result',
                    toolName: 'plan_page',
-                   args: toolCall.args,
-                   result: toolCall.args
+                   args: args,
+                   result: args
                  });
               }
             }
