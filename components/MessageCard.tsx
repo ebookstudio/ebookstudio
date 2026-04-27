@@ -17,7 +17,7 @@ export const MessageCard: React.FC<{ card: PageCard }> = ({ card }) => {
 
   return (
     <div className={cn(
-      "border rounded-2xl p-6 my-4 shadow-lg transition-all duration-300 animate-in fade-in slide-in-from-right-4",
+      "border rounded-2xl p-4 my-2 shadow-lg transition-all duration-300 animate-in fade-in slide-in-from-bottom-4 w-full max-w-sm ml-auto mr-0",
       card.status === 'approved' ? "bg-zinc-900/50 border-emerald-500/30" : "bg-zinc-900 border-zinc-800 hover:border-zinc-700"
     )}>
       <div className="flex items-center justify-between mb-4">
@@ -86,10 +86,10 @@ export const MessageCard: React.FC<{ card: PageCard }> = ({ card }) => {
         {card.status === 'planned' && (
           <button 
             onClick={() => generatePage(card.id)} 
-            className="flex-1 bg-zinc-100 hover:bg-white text-zinc-950 font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-white/5"
+            className="flex-1 bg-zinc-100 hover:bg-white text-zinc-950 font-bold py-2 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-white/5 text-sm"
           >
             <IconSparkles className="w-4 h-4" />
-            Generate Page
+            Proceed
           </button>
         )}
         

@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useAgentStore } from '../stores/agentStore';
+import { MessageCard } from './MessageCard';
 import { cn } from '../lib/utils';
 import { 
   IconSend, IconBrain, IconPlus, IconMic, IconLoader2 
 } from '../constants';
 
 export function AgentChat() {
-  const { addPageCard } = useAgentStore();
+  const { addPageCard, pageCards } = useAgentStore();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const [messages, setMessages] = useState<any[]>([]);
@@ -44,7 +45,7 @@ export function AgentChat() {
         id: (Date.now() + 1).toString(), 
         role: 'assistant', 
         content: '', 
-        toolInvocations: [] 
+        plannedCardIds: [] 
       };
       
       setMessages(prev => [...prev, aiMessage]);
@@ -64,19 +65,13 @@ export function AgentChat() {
               const toolCall = JSON.parse(line.slice(2));
               if (toolCall.toolName === 'plan_page') {
                  const args = toolCall.args || {
-                   pageNumber: 1,
+                   pageNumber: (pageCards.length || 0) + 1,
                    title: "Drafting Page...",
                    summary: "The neural link is syncing the blueprint for this page.",
                    estimatedWords: 800
                  };
-                 addPageCard(args);
-                 aiMessage.toolInvocations.push({
-                   toolCallId: toolCall.callId || Math.random().toString(),
-                   state: 'result',
-                   toolName: 'plan_page',
-                   args: args,
-                   result: args
-                 });
+                 const newCardId = addPageCard(args);
+                 aiMessage.plannedCardIds.push(newCardId || args.pageNumber);
               }
             }
           } catch (e) {
@@ -92,7 +87,7 @@ export function AgentChat() {
         { 
           id: Date.now().toString(), 
           role: 'assistant', 
-          content: "I encountered a neural link interruption. Let me reset my context, please try asking that again." 
+          content: "I hit a snag on the neural link. Please check your API keys in the Vercel environment settings, then try again." 
         }
       ]);
     } finally {
@@ -100,15 +95,15 @@ export function AgentChat() {
     }
   };
 
-  // Scroll to bottom
+  // Scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, pageCards]);
 
   return (
     <div className="flex flex-col h-full bg-zinc-950 border-r border-zinc-800 w-full lg:w-[420px] shrink-0">
       {/* Header */}
-      <div className="p-6 border-b border-zinc-800 bg-zinc-950/50 backdrop-blur-xl shrink-0">
+      <div className="p-5 border-b border-zinc-800 bg-zinc-950/50 backdrop-blur-xl shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-zinc-100 flex items-center justify-center text-zinc-950">
             <IconBrain className="w-6 h-6" />
@@ -123,8 +118,8 @@ export function AgentChat() {
         </div>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+      {/* Messages + Cards */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
             <div className="w-16 h-16 rounded-2xl border-2 border-dashed border-zinc-700 flex items-center justify-center mb-4">
@@ -140,25 +135,30 @@ export function AgentChat() {
             "flex flex-col animate-in fade-in slide-in-from-bottom-2",
             m.role === 'user' ? "items-end" : "items-start"
           )}>
-            <div className={cn(
-              "max-w-[90%] px-4 py-3 rounded-2xl text-sm leading-relaxed",
-              m.role === 'user' 
-                ? "bg-zinc-100 text-zinc-950 rounded-br-sm font-medium" 
-                : "bg-zinc-900 text-zinc-200 rounded-bl-sm border border-zinc-800"
-            )}>
-              {m.content}
-              
-              {m.toolInvocations?.map((invoc: any) => (
-                <div key={invoc.toolCallId} className="mt-3 p-3 bg-zinc-950 rounded-xl border border-zinc-800 text-[10px] font-mono text-zinc-500 italic">
-                  {invoc.toolName === 'plan_page' && (
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                      Architecting Page {invoc.args.pageNumber}: {invoc.args.title}...
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+            {m.content && (
+              <div className={cn(
+                "max-w-[90%] px-4 py-3 rounded-2xl text-sm leading-relaxed",
+                m.role === 'user' 
+                  ? "bg-zinc-100 text-zinc-950 rounded-br-sm font-medium" 
+                  : "bg-zinc-900 text-zinc-200 rounded-bl-sm border border-zinc-800"
+              )}>
+                {m.content}
+              </div>
+            )}
+            
+            {/* Render page cards planned by this message inline */}
+            {m.role === 'assistant' && m.plannedCardIds?.length > 0 && (
+              <div className="w-full mt-2 space-y-2">
+                {pageCards
+                  .filter((card) => m.plannedCardIds.includes(card.id) || 
+                    m.plannedCardIds.includes(card.pageNumber))
+                  .map((card) => (
+                    <MessageCard key={card.id} card={card} />
+                  ))
+                }
+              </div>
+            )}
+
             <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-tighter mt-1 px-1">
               {m.role === 'user' ? 'You' : 'Agent'}
             </span>
@@ -168,7 +168,7 @@ export function AgentChat() {
         {isLoading && (
           <div className="flex items-center gap-2 text-zinc-500 px-1">
             <IconLoader2 className="w-3 h-3 animate-spin" />
-            <span className="text-[10px] font-bold uppercase tracking-widest">Agent is typing...</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest">Agent is writing...</span>
           </div>
         )}
         <div ref={messagesEndRef} />

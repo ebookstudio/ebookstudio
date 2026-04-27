@@ -30,7 +30,7 @@ interface AgentStore {
   // Actions
   addMessage: (message: Message) => void;
   setMessages: (messages: Message[]) => void;
-  addPageCard: (card: Omit<PageCard, 'id' | 'type' | 'status'>) => void;
+  addPageCard: (card: Omit<PageCard, 'id' | 'type' | 'status'>) => string;
   updatePageCard: (id: string, updates: Partial<PageCard>) => void;
   generatePage: (cardId: string) => Promise<void>;
   approvePage: (cardId: string) => Promise<void>;
@@ -65,6 +65,7 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
     set((state) => ({ 
       pageCards: [...state.pageCards, newCard] 
     }));
+    return id;
   },
 
   updatePageCard: (id, updates) => set((state) => ({
@@ -81,25 +82,38 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
     get().updatePageCard(cardId, { status: 'generating' });
 
     try {
+      const systemMsg = `You are a professional ebook writer. Write a detailed, engaging page for the following section. Return ONLY the written content in markdown, with NO meta-commentary or preamble.\n\nPage Title: ${card.title}\nDescription: ${card.summary}\nTarget length: 800-1500 words.`;
       const response = await fetch('/api/agent/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action: 'write_page',
-          cardId,
-          title: card.title,
-          summary: card.summary,
-          history: get().messages
+          messages: [
+            { role: 'user', content: systemMsg }
+          ]
         }),
       });
 
-      const data = await response.json();
-      if (data.content) {
-        get().updatePageCard(cardId, { 
-          status: 'ready', 
-          content: data.content 
-        });
+      if (!response.ok) throw new Error('API error');
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error('No stream');
+
+      const decoder = new TextDecoder();
+      let fullContent = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        for (const line of chunk.split('\n').filter(Boolean)) {
+          if (line.startsWith('0:')) {
+            try { fullContent += JSON.parse(line.slice(2)); } catch {}
+          }
+        }
+        // Stream content into card in real time
+        get().updatePageCard(cardId, { content: fullContent });
       }
+
+      get().updatePageCard(cardId, { status: 'ready', content: fullContent });
     } catch (error) {
       console.error('Failed to generate page:', error);
       get().updatePageCard(cardId, { status: 'planned' });
