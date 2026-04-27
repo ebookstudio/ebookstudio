@@ -288,6 +288,7 @@ export const mockUser: User = {
   username: '@admin',
   email: 'admin@ebookstudio.com',
   purchaseHistory: [mockEBooks[0]], 
+  purchasedBookIds: [mockEBooks[0].id],
   wishlist: [],
   isVerified: true,
   profileImageUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=200',

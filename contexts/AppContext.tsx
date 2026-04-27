@@ -38,6 +38,8 @@ const defaultAppContext: AppContextType = {
   updateSubscription: async () => {},
   saveBookToCloud: async () => {},
   loadUserBooksFromCloud: async () => {},
+  isSidebarCollapsed: false,
+  setIsSidebarCollapsed: () => {},
 };
 
 const AppContext = createContext<AppContextType>(defaultAppContext);

@@ -5,7 +5,7 @@ import {
   IconCheck, IconSparkles, IconEdit, IconRefresh, IconClock, IconLoader2 
 } from '../constants';
 
-export function MessageCard({ card }: { card: PageCard }) {
+export const MessageCard: React.FC<{ card: PageCard }> = ({ card }) => {
   const { generatePage, approvePage, regeneratePage, updatePageCard } = useAgentStore();
   const [isEditing, setIsEditing] = React.useState(false);
   const [editContent, setEditContent] = React.useState(card.content || '');

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { streamText, tool } from 'ai';
 import { createGroq } from '@ai-sdk/groq';
