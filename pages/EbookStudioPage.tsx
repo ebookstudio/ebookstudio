@@ -10,6 +10,24 @@ import { cn } from '../lib/utils';
 
 const { useNavigate } = ReactRouterDOM as any;
 
+// Typewriter helper — streams text char by char into a React state setter
+function typewriterAppend(
+  fullText: string,
+  setter: React.Dispatch<React.SetStateAction<string>>,
+  speedMs = 18
+) {
+  let i = 0;
+  const interval = setInterval(() => {
+    if (i < fullText.length) {
+      setter(prev => prev + fullText[i]);
+      i++;
+    } else {
+      clearInterval(interval);
+    }
+  }, speedMs);
+  return interval;
+}
+
 const INTRO_TEMPLATE = `# Your Book Title
 
 > *"A compelling quote or epigraph goes here."*
@@ -42,23 +60,34 @@ This book was written with one person in mind: you. Whether you are a complete b
 const EbookStudioPage: React.FC = () => {
   const { currentUser, addCreatedBook } = useAppContext();
   const navigate = useNavigate();
-  const { pageCards, currentBook } = useAgentStore();
+  const { pageCards, currentBook, resetStore } = useAgentStore();
   const [draftId] = React.useState<string>(() => `draft-${Date.now()}`);
+
+  // Clear stale page cards and chat on every Studio session start
+  React.useEffect(() => {
+    resetStore();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Right panel Novel Editor state
   const [editorTitle, setEditorTitle] = React.useState('My Book');
   const [editorContent, setEditorContent] = React.useState(INTRO_TEMPLATE);
 
-  // When a page gets approved, append its content to the editor
+  // When a page gets approved, typewrite its content into the editor
   const approvedPagesRef = React.useRef<Set<string>>(new Set());
   React.useEffect(() => {
     const newlyApproved = pageCards.filter(
       c => c.status === 'approved' && c.content && !approvedPagesRef.current.has(c.id)
     );
     if (newlyApproved.length > 0) {
-      const newContent = newlyApproved.map(c => `\n\n## ${c.title}\n\n${c.content}`).join('');
-      setEditorContent(prev => prev + newContent);
-      newlyApproved.forEach(c => approvedPagesRef.current.add(c.id));
+      newlyApproved.forEach(c => {
+        approvedPagesRef.current.add(c.id);
+        // Prepend the section header then stream the body
+        const header = `\n\n## ${c.title}\n\n`;
+        setEditorContent(prev => prev + header);
+        // Stream the body with a typewriter animation
+        typewriterAppend(c.content || '', setEditorContent, 12);
+      });
     }
   }, [pageCards]);
 
