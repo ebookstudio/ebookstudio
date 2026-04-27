@@ -82,13 +82,27 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
     get().updatePageCard(cardId, { status: 'generating' });
 
     try {
-      const systemMsg = `You are a professional ebook writer. Write a detailed, engaging page for the following section. Return ONLY the written content in markdown, with NO meta-commentary or preamble.\n\nPage Title: ${card.title}\nDescription: ${card.summary}\nTarget length: 800-1500 words.`;
+      // Build a writing prompt from the card details
+      // We use the main chat API but with a direct writing instruction
+      const writingPrompt = `Write the full content for the following book section.
+
+Section Title: "${card.title}"
+Description: ${card.summary}
+Target Length: ${card.estimatedWords} words
+
+Requirements:
+- Write in a professional, engaging, literary style
+- Use rich markdown formatting (## subheadings, **bold** for emphasis, > blockquotes for key ideas)
+- Include a proper opening paragraph, developed body content, and a closing thought
+- Do NOT include a title heading — just the body content
+- Return ONLY the written content, no meta-commentary or preamble`;
+
       const response = await fetch('/api/agent/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: [
-            { role: 'user', content: systemMsg }
+            { role: 'user', content: writingPrompt }
           ]
         }),
       });
@@ -109,7 +123,7 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
             try { fullContent += JSON.parse(line.slice(2)); } catch {}
           }
         }
-        // Stream content into card in real time
+        // Stream content into card in real time for live preview
         get().updatePageCard(cardId, { content: fullContent });
       }
 

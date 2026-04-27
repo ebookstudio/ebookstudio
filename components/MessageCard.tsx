@@ -57,28 +57,39 @@ export const MessageCard: React.FC<{ card: PageCard }> = ({ card }) => {
         {card.summary}
       </div>
       
-      {card.content && (
-        <div className="relative group">
+      {/* Live content preview while generating or ready */}
+      {card.content && card.status !== 'approved' && (
+        <div className="relative mb-3">
           {isEditing ? (
             <textarea
               value={editContent}
               onChange={(e) => setEditContent(e.target.value)}
-              className="w-full h-96 bg-zinc-950 border border-zinc-700 rounded-xl p-4 text-sm text-zinc-200 font-serif leading-relaxed focus:outline-none focus:ring-1 ring-emerald-500"
+              className="w-full h-52 bg-zinc-950 border border-zinc-700 rounded-xl p-3 text-xs text-zinc-200 font-mono leading-relaxed focus:outline-none focus:ring-1 ring-emerald-500 resize-none"
             />
           ) : (
-            <div className="prose prose-invert prose-sm max-h-96 overflow-y-auto mb-4 p-4 bg-zinc-950/50 rounded-xl border border-zinc-800/50 font-serif leading-relaxed whitespace-pre-wrap text-zinc-300">
+            <div className="max-h-48 overflow-y-auto p-3 bg-zinc-950/60 rounded-xl border border-zinc-800/50 font-mono text-[11px] leading-relaxed text-zinc-400 whitespace-pre-wrap relative">
               {card.content}
+              {card.status === 'generating' && (
+                <span className="inline-block w-1.5 h-3.5 bg-emerald-500 ml-0.5 animate-pulse align-middle" />
+              )}
             </div>
           )}
-          
           {card.status === 'ready' && !isEditing && (
-            <button 
+            <button
               onClick={() => { setEditContent(card.content || ''); setIsEditing(true); }}
-              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-zinc-800 p-2 rounded-lg text-zinc-400 hover:text-zinc-100"
+              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-zinc-800 p-1.5 rounded-lg text-zinc-400 hover:text-zinc-100"
             >
-              <IconEdit className="w-4 h-4" />
+              <IconEdit className="w-3 h-3" />
             </button>
           )}
+        </div>
+      )}
+
+      {/* Approved state: clean confirmation */}
+      {card.status === 'approved' && (
+        <div className="mb-3 flex items-center gap-2 text-[10px] font-bold text-emerald-500 uppercase tracking-widest bg-emerald-500/5 border border-emerald-500/20 rounded-xl px-3 py-2">
+          <IconCheck className="w-3 h-3" />
+          Written to manuscript
         </div>
       )}
       

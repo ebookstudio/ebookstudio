@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { google, createGoogleGenerativeAI } from '@ai-sdk/google';
+import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createGroq } from '@ai-sdk/groq';
 import { streamText, tool } from 'ai';
 import { z } from 'zod';
@@ -13,7 +13,7 @@ export default async function handler(req: any, res: any) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  const { messages, action, title, summary, feedback, lastApprovedTitle } = req.body;
+  const { messages } = req.body;
 
   try {
     const groqKey = (process.env.GROQ_API_KEY || "").trim();
@@ -30,43 +30,55 @@ export default async function handler(req: any, res: any) {
 
     const result = await streamText({
       model: model,
-      system: `You are EbookStudio Agent - a $10M valuation AI co-author.
-      
-      YOUR PERSONALITY:
-      - Obsessed with quality: "This will be worth every penny"
-      - Conversational: Ask questions, show enthusiasm
-      - Methodical: One page at a time, no rushing
+      system: `You are the Co-Author — a world-class literary agent and ghostwriter built into EbookStudio. You have two modes:
 
-      WORKFLOW RULES:
-      - NEVER write more than 1 page at a time
-      - ALWAYS create a page card using plan_page before writing content
-      - After user approves, automatically plan the next page
-      - Keep chat conversational while cards handle structure`,
+## MODE 1: CONVERSATION (default)
+Use this for ALL general messages. Chat naturally. Discuss ideas, give advice, brainstorm, answer questions. Be warm, witty, and encouraging. This is the default. Do NOT call any tools during casual conversation.
+
+Examples of when to stay in conversation mode:
+- Greetings ("hello", "hey", "hi")
+- General questions about writing, topics, ideas
+- User exploring what to write about
+- User asking for advice or feedback
+- User chatting about their life or interests
+
+## MODE 2: BOOK PLANNING (only when explicitly requested)
+Switch to this mode ONLY when the user explicitly says they want to start writing their book, create an outline, plan chapters, or is clearly ready to begin. Look for signals like:
+- "Let's start writing"
+- "Create my book outline"  
+- "Plan my chapters"
+- "I'm ready to write"
+- "Write a page about..."
+- Explicit requests to generate or structure content
+
+When in PLANNING mode:
+1. First confirm the book concept with a brief message
+2. Call plan_page to create ONE card at a time — never multiple at once
+3. The card appears in the chat panel with a "Proceed" button
+4. When the user clicks Proceed, the content will be written to the manuscript on the right
+5. After each card is approved, you may suggest the next section — but WAIT for the user to confirm
+
+## CRITICAL RULES:
+- DO NOT call plan_page during casual conversation. Ever.
+- DO NOT call plan_page unless the user is clearly asking to write or plan their book.
+- NEVER create multiple page cards in one response.
+- Be a collaborator, not a machine. Listen first, write second.
+- Keep responses concise in chat — save the long-form writing for the manuscript.`,
       messages: messages || [],
+      maxTokens: 1024,
       tools: {
         plan_page: tool({
-          description: 'Creates a page card for the book outline.',
+          description: 'Creates a structured page card in the chat panel. ONLY call this when the user explicitly wants to plan or write a specific section of their book. Each call creates one card with a Proceed button the user must click to generate the content.',
           parameters: z.object({
-            pageNumber: z.number(),
-            title: z.string(),
-            summary: z.string(),
-            estimatedWords: z.number(),
+            pageNumber: z.number().describe('The sequential page or chapter number'),
+            title: z.string().describe('A clear, specific title for this page/chapter'),
+            summary: z.string().describe('A 1-2 sentence description of what this page will cover'),
+            estimatedWords: z.number().describe('Estimated word count, typically 600-1200 for a chapter page'),
           }),
           execute: async (args) => {
             return { ...args, status: 'planned' };
           },
         }),
-        write_page_content: tool({
-          description: 'Generates full markdown content for an approved page card.',
-          parameters: z.object({
-            cardId: z.string(),
-            title: z.string(),
-            summary: z.string(),
-          }),
-          execute: async (args) => {
-             return { success: true };
-          }
-        })
       },
     });
 
@@ -81,7 +93,7 @@ export default async function handler(req: any, res: any) {
       } else if (chunk.type === 'tool-call') {
         res.write(`9:${JSON.stringify({ toolCallId: chunk.toolCallId, toolName: chunk.toolName, args: chunk.args || chunk.input })}\n`);
       } else if (chunk.type === 'error') {
-        console.error("AI SDK Stream Error Chunk:", chunk.error);
+        console.error("Agent Stream Error:", chunk.error);
         res.write(`e:${JSON.stringify({ message: chunk.error?.message || String(chunk.error) })}\n`);
       }
     }
