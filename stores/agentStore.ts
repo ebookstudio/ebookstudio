@@ -3,12 +3,11 @@ import { create } from 'zustand';
 export interface PageCard {
   id: string;
   type: "page_plan";
-  status: "planned" | "generating" | "ready" | "approved";
+  status: "planned" | "generating" | "approved";
   pageNumber: number;
   title: string;
   summary: string;
   estimatedWords: number;
-  content?: string;
 }
 
 export interface Message {
@@ -26,15 +25,17 @@ interface AgentStore {
     approvedPages: string[];
   };
   isLoading: boolean;
-  
+
+  // Manuscript streaming callback — registered by EbookStudioPage
+  _manuscriptCallback: ((chunk: string, cardId: string) => void) | null;
+
   // Actions
   addMessage: (message: Message) => void;
   setMessages: (messages: Message[]) => void;
   addPageCard: (card: Omit<PageCard, 'id' | 'type' | 'status'>) => string;
   updatePageCard: (id: string, updates: Partial<PageCard>) => void;
   generatePage: (cardId: string) => Promise<void>;
-  approvePage: (cardId: string) => Promise<void>;
-  regeneratePage: (cardId: string, feedback: string) => Promise<void>;
+  registerManuscriptCallback: (cb: ((chunk: string, cardId: string) => void) | null) => void;
   resetStore: () => void;
 }
 
@@ -47,9 +48,10 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
     approvedPages: [],
   },
   isLoading: false,
+  _manuscriptCallback: null,
 
-  addMessage: (message) => set((state) => ({ 
-    messages: [...state.messages, message] 
+  addMessage: (message) => set((state) => ({
+    messages: [...state.messages, message]
   })),
 
   setMessages: (messages) => set({ messages }),
@@ -62,17 +64,19 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
       type: "page_plan",
       status: "planned",
     };
-    set((state) => ({ 
-      pageCards: [...state.pageCards, newCard] 
+    set((state) => ({
+      pageCards: [...state.pageCards, newCard]
     }));
     return id;
   },
 
   updatePageCard: (id, updates) => set((state) => ({
-    pageCards: state.pageCards.map((card) => 
+    pageCards: state.pageCards.map((card) =>
       card.id === id ? { ...card, ...updates } : card
     )
   })),
+
+  registerManuscriptCallback: (cb) => set({ _manuscriptCallback: cb }),
 
   generatePage: async (cardId) => {
     const card = get().pageCards.find(c => c.id === cardId);
@@ -81,10 +85,7 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
     set({ isLoading: true });
     get().updatePageCard(cardId, { status: 'generating' });
 
-    try {
-      // Build a writing prompt from the card details
-      // We use the main chat API but with a direct writing instruction
-      const writingPrompt = `Write the full content for the following book section.
+    const writingPrompt = `Write the full content for the following book section.
 
 Section Title: "${card.title}"
 Description: ${card.summary}
@@ -97,13 +98,12 @@ Requirements:
 - Do NOT include a title heading — just the body content
 - Return ONLY the written content, no meta-commentary or preamble`;
 
+    try {
       const response = await fetch('/api/agent/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: [
-            { role: 'user', content: writingPrompt }
-          ]
+          messages: [{ role: 'user', content: writingPrompt }]
         }),
       });
 
@@ -112,7 +112,11 @@ Requirements:
       if (!reader) throw new Error('No stream');
 
       const decoder = new TextDecoder();
-      let fullContent = '';
+      const callback = get()._manuscriptCallback;
+
+      // Send the heading to the manuscript first
+      const heading = `\n\n## ${card.title}\n\n`;
+      if (callback) callback(heading, cardId);
 
       while (true) {
         const { done, value } = await reader.read();
@@ -120,78 +124,22 @@ Requirements:
         const chunk = decoder.decode(value, { stream: true });
         for (const line of chunk.split('\n').filter(Boolean)) {
           if (line.startsWith('0:')) {
-            try { fullContent += JSON.parse(line.slice(2)); } catch {}
+            try {
+              const text = JSON.parse(line.slice(2));
+              // Stream each chunk directly to the Novel Editor via callback
+              if (callback && text) callback(text, cardId);
+            } catch {}
           }
         }
-        // Stream content into card in real time for live preview
-        get().updatePageCard(cardId, { content: fullContent });
       }
 
-      get().updatePageCard(cardId, { status: 'ready', content: fullContent });
+      // Auto-approve the card when writing is complete
+      get().updatePageCard(cardId, { status: 'approved' });
+
     } catch (error) {
       console.error('Failed to generate page:', error);
+      // Revert to planned so user can retry
       get().updatePageCard(cardId, { status: 'planned' });
-    } finally {
-      set({ isLoading: false });
-    }
-  },
-
-  approvePage: async (cardId) => {
-    const card = get().pageCards.find(c => c.id === cardId);
-    if (!card) return;
-
-    get().updatePageCard(cardId, { status: 'approved' });
-    
-    set((state) => ({
-      currentBook: {
-        ...state.currentBook,
-        approvedPages: [...state.currentBook.approvedPages, card.content || '']
-      }
-    }));
-
-    // Automatically trigger next page planning via AI
-    const lastMessage = get().messages[get().messages.length - 1];
-    await fetch('/api/agent/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'plan_next',
-        lastApprovedTitle: card.title,
-        history: get().messages
-      }),
-    });
-  },
-
-  regeneratePage: async (cardId, feedback) => {
-    const card = get().pageCards.find(c => c.id === cardId);
-    if (!card) return;
-
-    set({ isLoading: true });
-    get().updatePageCard(cardId, { status: 'generating' });
-
-    try {
-      const response = await fetch('/api/agent/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'regenerate_page',
-          cardId,
-          title: card.title,
-          feedback,
-          history: get().messages
-        }),
-      });
-
-      const data = await response.json();
-      if (data.content) {
-        get().updatePageCard(cardId, { 
-          status: 'ready', 
-          content: data.content 
-        });
-      }
-    } catch (error) {
-      console.error('Failed to regenerate page:', error);
-      get().updatePageCard(cardId, { status: 'ready' });
     } finally {
       set({ isLoading: false });
     }
@@ -201,6 +149,7 @@ Requirements:
     messages: [],
     pageCards: [],
     currentBook: { title: '', pages: [], approvedPages: [] },
-    isLoading: false
-  })
+    isLoading: false,
+    _manuscriptCallback: null,
+  }),
 }));

@@ -10,24 +10,6 @@ import { cn } from '../lib/utils';
 
 const { useNavigate } = ReactRouterDOM as any;
 
-// Typewriter helper — streams text char by char into a React state setter
-function typewriterAppend(
-  fullText: string,
-  setter: React.Dispatch<React.SetStateAction<string>>,
-  speedMs = 18
-) {
-  let i = 0;
-  const interval = setInterval(() => {
-    if (i < fullText.length) {
-      setter(prev => prev + fullText[i]);
-      i++;
-    } else {
-      clearInterval(interval);
-    }
-  }, speedMs);
-  return interval;
-}
-
 const INTRO_TEMPLATE = `# Your Book Title
 
 > *"A compelling quote or epigraph goes here."*
@@ -60,10 +42,10 @@ This book was written with one person in mind: you. Whether you are a complete b
 const EbookStudioPage: React.FC = () => {
   const { currentUser, addCreatedBook } = useAppContext();
   const navigate = useNavigate();
-  const { pageCards, currentBook, resetStore } = useAgentStore();
+  const { pageCards, resetStore, registerManuscriptCallback } = useAgentStore();
   const [draftId] = React.useState<string>(() => `draft-${Date.now()}`);
 
-  // Clear stale page cards and chat on every Studio session start
+  // Clear stale page cards on every Studio session start
   React.useEffect(() => {
     resetStore();
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -72,23 +54,28 @@ const EbookStudioPage: React.FC = () => {
   // Right panel Novel Editor state
   const [editorTitle, setEditorTitle] = React.useState('My Book');
   const [editorContent, setEditorContent] = React.useState(INTRO_TEMPLATE);
+  const [isGhostWriting, setIsGhostWriting] = React.useState(false);
 
-  // When a page gets approved, typewrite its content into the editor
-  const approvedPagesRef = React.useRef<Set<string>>(new Set());
+  // Register the manuscript streaming callback once on mount
+  // Every chunk streamed by generatePage flows here in real time
   React.useEffect(() => {
-    const newlyApproved = pageCards.filter(
-      c => c.status === 'approved' && c.content && !approvedPagesRef.current.has(c.id)
-    );
-    if (newlyApproved.length > 0) {
-      newlyApproved.forEach(c => {
-        approvedPagesRef.current.add(c.id);
-        // Prepend the section header then stream the body
-        const header = `\n\n## ${c.title}\n\n`;
-        setEditorContent(prev => prev + header);
-        // Stream the body with a typewriter animation
-        typewriterAppend(c.content || '', setEditorContent, 12);
-      });
-    }
+    registerManuscriptCallback((chunk, cardId) => {
+      if (chunk.startsWith('\n\n##')) {
+        // Section heading — mark ghost writing started
+        setIsGhostWriting(true);
+        setEditorContent(prev => prev + chunk);
+      } else {
+        setEditorContent(prev => prev + chunk);
+      }
+    });
+    return () => registerManuscriptCallback(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Watch for all generating cards finishing → hide ghost overlay
+  React.useEffect(() => {
+    const stillGenerating = pageCards.some(c => c.status === 'generating');
+    if (!stillGenerating) setIsGhostWriting(false);
   }, [pageCards]);
 
   const handleExport = () => {
@@ -179,21 +166,41 @@ const EbookStudioPage: React.FC = () => {
                 {/* Editor top bar */}
                 <div className="flex items-center justify-between px-8 py-3 border-b border-zinc-800/60 bg-[#0d0d0f] shrink-0">
                     <div className="flex items-center gap-3">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Live Manuscript</span>
+                        <div className={cn(
+                            "w-2 h-2 rounded-full transition-colors",
+                            isGhostWriting ? "bg-blue-500 animate-pulse" : "bg-emerald-500"
+                        )} />
+                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                            {isGhostWriting ? 'Ghost Writing...' : 'Live Manuscript'}
+                        </span>
                         {pageCards.filter(c => c.status === 'approved').length > 0 && (
                             <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                                {pageCards.filter(c => c.status === 'approved').length} pages approved
+                                {pageCards.filter(c => c.status === 'approved').length} pages
                             </span>
                         )}
                     </div>
                     <div className="text-[10px] font-bold text-zinc-700 uppercase tracking-widest">
-                        Type <span className="text-zinc-500">/</span> for block options
+                        {isGhostWriting ? (
+                            <span className="text-blue-400 animate-pulse">AI is writing · do not edit</span>
+                        ) : (
+                            <span>Type <span className="text-zinc-500">/</span> for block options</span>
+                        )}
                     </div>
                 </div>
 
-                {/* Actual Novel Editor canvas */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar">
+                {/* Novel Editor canvas + ghost writing overlay */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar relative">
+                    {/* Ghost writing indicator strip at top */}
+                    {isGhostWriting && (
+                        <div className="sticky top-0 z-20 w-full">
+                            <div className="h-0.5 bg-gradient-to-r from-transparent via-blue-500 to-transparent animate-pulse" />
+                            <div className="absolute top-1 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-zinc-950/90 border border-blue-500/30 rounded-full px-3 py-1 backdrop-blur-sm">
+                                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-ping" />
+                                <span className="text-[9px] font-bold text-blue-400 uppercase tracking-widest">Co-Author is writing</span>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="max-w-[700px] mx-auto py-16 px-8">
                         <NovelEditor
                             title={editorTitle}
