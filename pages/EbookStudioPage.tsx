@@ -56,14 +56,21 @@ const EbookStudioPage: React.FC = () => {
   const [editorContent, setEditorContent] = React.useState(INTRO_TEMPLATE);
   const [isGhostWriting, setIsGhostWriting] = React.useState(false);
 
+  // Track whether the template has been cleared for the current writing session
+  const clearedForSession = React.useRef<Set<string>>(new Set());
+
   // Register the manuscript streaming callback once on mount
   // Every chunk streamed by generatePage flows here in real time
   React.useEffect(() => {
     registerManuscriptCallback((chunk, cardId) => {
-      if (chunk.startsWith('\n\n##')) {
-        // Section heading — mark ghost writing started
+      // On the very first chunk of a card, wipe the template and start fresh
+      if (!clearedForSession.current.has(cardId)) {
+        clearedForSession.current.add(cardId);
         setIsGhostWriting(true);
-        setEditorContent(prev => prev + chunk);
+        // Clear the editor — ghost starts on a blank canvas
+        setEditorContent('');
+        // Small delay so the clear renders before streaming starts
+        setTimeout(() => setEditorContent(chunk), 30);
       } else {
         setEditorContent(prev => prev + chunk);
       }
