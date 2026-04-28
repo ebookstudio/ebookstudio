@@ -12,19 +12,19 @@ import { cmdPayout } from './commands/payout';
 const program = new Command();
 
 program
-  .name('opendev')
+  .name('ebookstudio')
   .description('EbookStudio CLI — AI-powered ebook creation from your terminal')
   .version(CLI_VERSION)
   .addHelpText('after', `
 ${c.brand.bold('Examples:')}
-  ${c.dim('$')} opendev login
-  ${c.dim('$')} opendev chat
-  ${c.dim('$')} opendev generate --topic "Quantum Computing for Beginners"
-  ${c.dim('$')} opendev generate --topic "..." --output book.json
-  ${c.dim('$')} opendev library
-  ${c.dim('$')} opendev publish --price 299
-  ${c.dim('$')} opendev sales
-  ${c.dim('$')} opendev payout --upi yourname@upi --amount 500
+  ${c.dim('$')} ebookstudio login
+  ${c.dim('$')} ebookstudio chat
+  ${c.dim('$')} ebookstudio generate --topic "Quantum Computing for Beginners"
+  ${c.dim('$')} ebookstudio generate --topic "..." --output book.json
+  ${c.dim('$')} ebookstudio library
+  ${c.dim('$')} ebookstudio publish --price 299
+  ${c.dim('$')} ebookstudio sales
+  ${c.dim('$')} ebookstudio payout --upi yourname@upi --amount 500
 
 ${c.brand.bold('Browser:')}
   ${c.dim('→')} https://ebookstudio.vercel.app — same account, all features

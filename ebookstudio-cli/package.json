@@ -1,10 +1,10 @@
 {
   "name": "ebookstudio-cli",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "EbookStudio CLI — control ebookstudio.vercel.app from your terminal",
   "main": "dist/index.js",
   "bin": {
-    "opendev": "dist/index.js"
+    "ebookstudio": "dist/index.js"
   },
   "scripts": {
     "build": "tsc",

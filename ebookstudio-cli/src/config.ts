@@ -8,6 +8,6 @@ export const FIREBASE_REFRESH_URL = `https://securetoken.googleapis.com/v1/token
 export const FIREBASE_SIGNUP_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_API_KEY}`;
 
 // CLI branding
-export const CLI_NAME = 'opendev';
-export const CLI_VERSION = '1.1.0';
+export const CLI_NAME = 'ebookstudio';
+export const CLI_VERSION = '1.2.0';
 export const BRAND_COLOR = '#6366f1'; // indigo

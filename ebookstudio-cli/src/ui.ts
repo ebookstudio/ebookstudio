@@ -19,7 +19,7 @@ export const c = {
 
 // ─── Branding ─────────────────────────────────────────────────────────────────
 export function printBanner(): void {
-  const art = figlet.textSync('opendev', {
+  const art = figlet.textSync('ebookstudio', {
     font: 'Slant',
     horizontalLayout: 'default',
   });
