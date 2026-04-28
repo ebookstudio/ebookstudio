@@ -64,14 +64,17 @@ export function AgentChat() {
             } else if (line.startsWith('9:')) {
               const toolCall = JSON.parse(line.slice(2));
               if (toolCall.toolName === 'plan_page') {
-                 const args = toolCall.args || {
-                   pageNumber: (pageCards.length || 0) + 1,
-                   title: "Drafting Page...",
-                   summary: "The neural link is syncing the blueprint for this page.",
-                   estimatedWords: 800
-                 };
-                 const newCardId = addPageCard(args);
-                 aiMessage.plannedCardIds.push(newCardId || args.pageNumber);
+                // Only use fallback if args is genuinely missing
+                const args = (toolCall.args && toolCall.args.title && toolCall.args.title !== '')
+                  ? toolCall.args
+                  : {
+                      pageNumber: (aiMessage.plannedCardIds.length || 0) + 1,
+                      title: `Page ${(aiMessage.plannedCardIds.length || 0) + 1}`,
+                      summary: "Planned by Co-Author.",
+                      estimatedWords: 800
+                    };
+                const newCardId = addPageCard(args);
+                aiMessage.plannedCardIds.push(newCardId || args.pageNumber);
               }
             }
           } catch (e) {
@@ -146,54 +149,26 @@ export function AgentChat() {
               </div>
             )}
             
-            {/* After planning: show a single summary badge, not individual cards */}
+            {/* After planning: inline note (single card) or simple text summary (multiple) */}
             {m.role === 'assistant' && m.plannedCardIds?.length > 0 && (() => {
               const planned = pageCards.filter(
                 (card) => m.plannedCardIds.includes(card.id) || m.plannedCardIds.includes(card.pageNumber)
               );
               if (planned.length === 0) return null;
               if (planned.length === 1) {
-                // Single page — show the one MessageCard
                 return (
                   <div className="w-full mt-2">
                     <MessageCard card={planned[0]} />
                   </div>
                 );
               }
-              // Multiple pages — show a compact summary badge only
+              // Multiple pages — simple inline dimmed note, no card/border
               return (
-                <div className="w-full mt-2">
-                  <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 px-4 py-3 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-5 h-5 rounded-lg bg-emerald-500/15 flex items-center justify-center">
-                          <span className="text-[10px]">📚</span>
-                        </div>
-                        <span className="text-[11px] font-bold text-zinc-200">
-                          {planned.length} pages planned
-                        </span>
-                      </div>
-                      <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-wider">
-                        Book Structure
-                      </span>
-                    </div>
-                    {/* Mini page list preview */}
-                    <div className="space-y-1">
-                      {planned.slice(0, 4).map(card => (
-                        <div key={card.id} className="flex items-center gap-2 text-[10px] text-zinc-500">
-                          <div className="w-3.5 h-3.5 rounded bg-zinc-800 flex items-center justify-center shrink-0">
-                            <span className="text-[8px] text-zinc-600">{card.pageNumber}</span>
-                          </div>
-                          <span className="truncate">{card.title}</span>
-                        </div>
-                      ))}
-                      {planned.length > 4 && (
-                        <div className="text-[9px] text-zinc-600 pl-5">
-                          +{planned.length - 4} more in Structure panel →
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                <div className="mt-2 flex items-center gap-2 text-[10px] text-zinc-600">
+                  <span>📚</span>
+                  <span className="font-bold text-zinc-500">{planned.length} pages</span>
+                  <span>added to the Book Structure panel</span>
+                  <span className="text-zinc-700">→</span>
                 </div>
               );
             })()}
