@@ -67,7 +67,7 @@ You plan REAL ebooks — not generic outlines. Every chapter title and summary m
 ## CHAT PANEL RULES
 - Keep chat messages SHORT (2-4 sentences max)
 - The Structure panel (middle) shows all page cards — don't duplicate them in chat
-- One compact inline summary is shown after planning — that's enough`,`
+- One compact inline summary is shown after planning — that's enough`,
 
       messages: messages || [],
       tools: {
