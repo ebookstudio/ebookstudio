@@ -51,6 +51,7 @@ export interface User {
   purchaseHistory: EBook[];
   purchasedBookIds: string[]; // Added for fast access control
   wishlist: EBook[];
+  createdBooks?: EBook[]; // Private drafts from EbookStudio — not yet in public store
   isVerified?: boolean; 
   username?: string;
   profileImageUrl?: string;
@@ -129,6 +130,7 @@ export interface AppContextType {
   allBooks: EBook[]; // Added to manage AI-created books dynamically
   addCreatedBook: (book: EBook) => void; // For AI eBook creation
   updateEBook: (book: EBook) => void; // Added for editing eBooks
+  publishCreatedBook: (bookId: string, price: number, isFree: boolean) => void; // Publish draft to public store
   handleGoogleLogin: () => Promise<boolean>; // Updated for Firebase SDK
   handleEmailLogin: (email: string, password: string) => Promise<{success: boolean, message?: string}>; // ADDED: Email Login
   upgradeToSeller: () => void; // Upgrade User to Seller

@@ -25,7 +25,8 @@ const defaultAppContext: AppContextType = {
   updateSellerCreatorSite: () => {},
   allBooks: [],
   addCreatedBook: () => {},
-  updateEBook: () => {}, 
+  updateEBook: () => {},
+  publishCreatedBook: () => {},
   handleGoogleLogin: async () => false,
   handleEmailLogin: async () => ({ success: false }),
   upgradeToSeller: () => {},
@@ -318,26 +319,30 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const addCreatedBook = (book: EBook) => {
-    setAllBooks(prevBooks => {
-        // Prevent duplicates
-        if (prevBooks.some(b => b.id === book.id)) return prevBooks;
-        return [book, ...prevBooks];
-    });
+    // Always mark as draft — never auto-publish to the public store
+    const draftBook = { ...book, isDraft: true };
 
-    // If current user is a seller, also add to their uploadedBooks
     if (currentUser && userType === UserType.SELLER) {
-        setCurrentUserState(prev => {
-            const seller = prev as Seller;
-            const currentUploadedBooks = seller.uploadedBooks || [];
-            return {
-                ...seller,
-                uploadedBooks: [book, ...currentUploadedBooks]
-            };
-        });
+      // Sellers: save to their uploadedBooks list (shown in Seller Dashboard → Library Assets)
+      setCurrentUserState(prev => {
+        const seller = prev as Seller;
+        const existing = seller.uploadedBooks || [];
+        if (existing.some(b => b.id === draftBook.id)) return seller;
+        return { ...seller, uploadedBooks: [draftBook, ...existing] };
+      });
+    } else if (currentUser) {
+      // Regular users: save to their private createdBooks (shown in My Library)
+      setCurrentUserState(prev => {
+        if (!prev) return prev;
+        const user = prev as any;
+        const existing = user.createdBooks || [];
+        if (existing.some((b: any) => b.id === draftBook.id)) return user;
+        return { ...user, createdBooks: [draftBook, ...existing] };
+      });
     }
 
     // Sync to cloud
-    saveBookToCloud(book);
+    saveBookToCloud(draftBook);
   };
 
   const updateEBook = (updatedBook: EBook) => {
@@ -358,7 +363,40 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     saveBookToCloud(updatedBook);
   };
 
-  // --- AUTH METHODS ---
+  // Publish a draft from createdBooks/uploadedBooks → public store
+  const publishCreatedBook = (bookId: string, price: number, isFree: boolean) => {
+    const priceVal = isFree ? 0 : price;
+
+    // Move from seller's uploadedBooks to public allBooks
+    if (currentUser && userType === UserType.SELLER) {
+      setCurrentUserState(prev => {
+        const seller = prev as Seller;
+        const book = seller.uploadedBooks?.find(b => b.id === bookId);
+        if (!book) return seller;
+        const published = { ...book, price: priceVal, isDraft: false };
+        setAllBooks(prevBooks => {
+          if (prevBooks.some(b => b.id === bookId)) return prevBooks.map(b => b.id === bookId ? published : b);
+          return [published, ...prevBooks];
+        });
+        return { ...seller, uploadedBooks: seller.uploadedBooks.map(b => b.id === bookId ? published : b) };
+      });
+    } else if (currentUser) {
+      // Regular user: move from createdBooks to public allBooks
+      setCurrentUserState(prev => {
+        if (!prev) return prev;
+        const user = prev as any;
+        const book = (user.createdBooks || []).find((b: any) => b.id === bookId);
+        if (!book) return user;
+        const published = { ...book, price: priceVal, isDraft: false };
+        setAllBooks(prevBooks => {
+          if (prevBooks.some(b => b.id === bookId)) return prevBooks.map(b => b.id === bookId ? published : b);
+          return [published, ...prevBooks];
+        });
+        return { ...user, createdBooks: user.createdBooks.map((b: any) => b.id === bookId ? published : b) };
+      });
+    }
+  };
+
 
   const handleGoogleLogin = async () => {
     try {
@@ -571,7 +609,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const theme = 'dark';
 
   return (
-    <AppContext.Provider value={{ currentUser, userType, setCurrentUser, cart, addToCart, removeFromCart, clearCart, theme, geminiChat, initializeChat, isChatbotOpen, toggleChatbot, updateSellerCreatorSite, allBooks, addCreatedBook, updateEBook, handleGoogleLogin, handleEmailLogin, upgradeToSeller, verifyUser, isInitialAuthCheck, isAuthenticating, logout, finalizePurchase, updatePayoutUpi, updateSubscription, saveBookToCloud, loadUserBooksFromCloud, isSidebarCollapsed, setIsSidebarCollapsed }}>
+    <AppContext.Provider value={{ currentUser, userType, setCurrentUser, cart, addToCart, removeFromCart, clearCart, theme, geminiChat, initializeChat, isChatbotOpen, toggleChatbot, updateSellerCreatorSite, allBooks, addCreatedBook, updateEBook, publishCreatedBook, handleGoogleLogin, handleEmailLogin, upgradeToSeller, verifyUser, isInitialAuthCheck, isAuthenticating, logout, finalizePurchase, updatePayoutUpi, updateSubscription, saveBookToCloud, loadUserBooksFromCloud, isSidebarCollapsed, setIsSidebarCollapsed }}>
       {children}
     </AppContext.Provider>
   );

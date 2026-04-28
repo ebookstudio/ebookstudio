@@ -65,7 +65,7 @@ const StatCard = ({ label, value, badge, sub, icon: Icon }: any) => (
 );
 
 export const SellerDashboardContent: React.FC = () => {
-  const { currentUser, updateSellerCreatorSite, addCreatedBook, setCurrentUser, userType, updatePayoutUpi, updateSubscription } = useAppContext();
+  const { currentUser, updateSellerCreatorSite, addCreatedBook, setCurrentUser, userType, updatePayoutUpi, updateSubscription, publishCreatedBook } = useAppContext();
   const seller = currentUser as Seller; 
   const [activeTab, setActiveTab] = useState<string>('stats');
   const navigate = useNavigate();
@@ -114,22 +114,13 @@ export const SellerDashboardContent: React.FC = () => {
     setIsDeploying(false);
   };
 
-  const handlePublishBook = async (bookId: string) => {
-      try {
-          const res = await fetch('/api/publish-book', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ bookId, price: 499 })
-          });
-          if (res.ok) {
-              alert("Book published successfully to the marketplace!");
-              window.location.reload();
-          } else {
-              alert("Failed to publish book.");
-          }
-      } catch (e) {
-          console.error(e);
-      }
+  const handlePublishBook = (bookId: string) => {
+    const answer = window.prompt('Set price in ₹ (enter 0 for free):');
+    if (answer === null) return; // cancelled
+    const price = parseInt(answer, 10) || 0;
+    const isFree = price === 0;
+    publishCreatedBook(bookId, price * 100, isFree);
+    alert(isFree ? 'Published for free!' : `Published at ₹${price}!`);
   };
 
   const handleCreatorSiteFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
