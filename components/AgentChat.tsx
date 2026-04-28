@@ -146,18 +146,57 @@ export function AgentChat() {
               </div>
             )}
             
-            {/* Render page cards planned by this message inline */}
-            {m.role === 'assistant' && m.plannedCardIds?.length > 0 && (
-              <div className="w-full mt-2 space-y-2">
-                {pageCards
-                  .filter((card) => m.plannedCardIds.includes(card.id) || 
-                    m.plannedCardIds.includes(card.pageNumber))
-                  .map((card) => (
-                    <MessageCard key={card.id} card={card} />
-                  ))
-                }
-              </div>
-            )}
+            {/* After planning: show a single summary badge, not individual cards */}
+            {m.role === 'assistant' && m.plannedCardIds?.length > 0 && (() => {
+              const planned = pageCards.filter(
+                (card) => m.plannedCardIds.includes(card.id) || m.plannedCardIds.includes(card.pageNumber)
+              );
+              if (planned.length === 0) return null;
+              if (planned.length === 1) {
+                // Single page — show the one MessageCard
+                return (
+                  <div className="w-full mt-2">
+                    <MessageCard card={planned[0]} />
+                  </div>
+                );
+              }
+              // Multiple pages — show a compact summary badge only
+              return (
+                <div className="w-full mt-2">
+                  <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 px-4 py-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-5 h-5 rounded-lg bg-emerald-500/15 flex items-center justify-center">
+                          <span className="text-[10px]">📚</span>
+                        </div>
+                        <span className="text-[11px] font-bold text-zinc-200">
+                          {planned.length} pages planned
+                        </span>
+                      </div>
+                      <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-wider">
+                        Book Structure
+                      </span>
+                    </div>
+                    {/* Mini page list preview */}
+                    <div className="space-y-1">
+                      {planned.slice(0, 4).map(card => (
+                        <div key={card.id} className="flex items-center gap-2 text-[10px] text-zinc-500">
+                          <div className="w-3.5 h-3.5 rounded bg-zinc-800 flex items-center justify-center shrink-0">
+                            <span className="text-[8px] text-zinc-600">{card.pageNumber}</span>
+                          </div>
+                          <span className="truncate">{card.title}</span>
+                        </div>
+                      ))}
+                      {planned.length > 4 && (
+                        <div className="text-[9px] text-zinc-600 pl-5">
+                          +{planned.length - 4} more in Structure panel →
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
 
             <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-tighter mt-1 px-1">
               {m.role === 'user' ? 'You' : 'Agent'}
