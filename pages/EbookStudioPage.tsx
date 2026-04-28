@@ -231,7 +231,7 @@ const EbookStudioPage: React.FC = () => {
 
           <Button
             variant="outline" size="sm"
-            onClick={handleExport}
+            onClick={handleSave}
             className="h-8 px-4 rounded-xl border-zinc-800 bg-zinc-950 text-zinc-100 text-[10px] font-bold uppercase tracking-widest hover:bg-zinc-900 hover:border-zinc-700 transition-all"
           >
             Publish Draft
