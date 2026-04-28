@@ -4,60 +4,34 @@ import { EBook } from '../types';
 import * as ReactRouterDOM from 'react-router-dom';
 import { useAgentStore } from '../stores/agentStore';
 import { AgentChat } from '../components/AgentChat';
+import { BookStructurePanel } from '../components/BookStructurePanel';
 import { Button } from '../components/ui/button';
 import NovelEditor from '../components/NovelEditor';
 import { cn } from '../lib/utils';
 
 const { useNavigate } = ReactRouterDOM as any;
 
-const INTRO_TEMPLATE = `# Your Book Title
-
-> *"A compelling quote or epigraph goes here."*
-
----
-
-## Preface
-
-Welcome to the beginning of something extraordinary. This introduction sets the tone for everything that follows — the ideas, the stories, and the insights that will unfold page by page.
-
-Write a few lines here about what inspired this book, who it is for, and what the reader can expect from the journey ahead.
-
----
-
-## What You Will Find Inside
-
-- **Part One** — The foundation and core concepts
-- **Part Two** — Deep dives and real-world application
-- **Part Three** — Advanced insights and the path forward
-
----
-
-## A Note to the Reader
-
-This book was written with one person in mind: you. Whether you are a complete beginner or a seasoned expert, you will find value in these pages. Read at your own pace, take notes, and revisit chapters whenever you need to.
-
-*Let's begin.*
-`;
+const BLANK_PAGE = `Start writing or click Proceed on a page in the structure panel to generate content...`;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GhostWritingCanvas — a zero-reparse streaming view
-// Appends text via DOM mutation, not React state, so zero re-renders during stream
+// GhostWritingCanvas — DOM-direct streaming, zero React re-renders
 // ─────────────────────────────────────────────────────────────────────────────
 const GhostWritingCanvas = React.forwardRef<
   { append: (text: string) => void; getText: () => string },
-  {}
->((_, ref) => {
+  { pageTitle?: string }
+>(({ pageTitle }, ref) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const fullTextRef   = React.useRef('');
+  const fullTextRef  = React.useRef('');
 
   React.useImperativeHandle(ref, () => ({
     append(text: string) {
       fullTextRef.current += text;
       if (containerRef.current) {
-        // Direct DOM append — zero React reconciliation overhead
         containerRef.current.innerText = fullTextRef.current;
-        // Auto-scroll to bottom
-        containerRef.current.scrollTop = containerRef.current.scrollHeight;
+        containerRef.current.parentElement?.scrollTo({
+          top: containerRef.current.parentElement.scrollHeight,
+          behavior: 'smooth'
+        });
       }
     },
     getText() {
@@ -70,31 +44,24 @@ const GhostWritingCanvas = React.forwardRef<
       {/* Animated top strip */}
       <div className="sticky top-0 z-20 w-full pointer-events-none">
         <div className="h-0.5 bg-gradient-to-r from-transparent via-blue-500/70 to-transparent animate-pulse" />
-        <div className="flex justify-center pt-2">
-          <div className="flex items-center gap-2 bg-zinc-950/90 border border-blue-500/25 rounded-full px-3 py-1 backdrop-blur-sm">
+        <div className="flex justify-center pt-3">
+          <div className="flex items-center gap-2 bg-zinc-950/90 border border-blue-500/25 rounded-full px-3 py-1.5 backdrop-blur-sm shadow-xl">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-ping" />
             <span className="text-[9px] font-bold text-blue-400 uppercase tracking-widest">
-              Co-Author is writing
+              Co-Author is writing{pageTitle ? ` · ${pageTitle}` : ''}
             </span>
           </div>
         </div>
       </div>
 
-      {/* Raw text render — no parsing, no re-renders */}
+      {/* Raw DOM-written text — no parsing overhead */}
       <div
         ref={containerRef}
-        className="max-w-[700px] mx-auto py-16 px-8 font-serif text-[1.15rem] text-zinc-300 leading-[2] whitespace-pre-wrap"
-        style={{ minHeight: '60vh' }}
+        className="max-w-[700px] mx-auto pt-12 pb-32 px-8 font-serif text-[1.15rem] text-zinc-300 leading-[2] whitespace-pre-wrap"
+        style={{ minHeight: '80vh' }}
       />
 
-      {/* Blinking cursor appended via CSS ::after */}
       <style>{`
-        .ghost-cursor::after {
-          content: '▋';
-          color: #60a5fa;
-          animation: blink 0.7s step-end infinite;
-          margin-left: 2px;
-        }
         @keyframes blink { 50% { opacity: 0; } }
       `}</style>
     </div>
@@ -103,12 +70,18 @@ const GhostWritingCanvas = React.forwardRef<
 GhostWritingCanvas.displayName = 'GhostWritingCanvas';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// EbookStudioPage
+// EbookStudioPage — 3-panel layout
 // ─────────────────────────────────────────────────────────────────────────────
 const EbookStudioPage: React.FC = () => {
   const { currentUser, addCreatedBook } = useAppContext();
   const navigate = useNavigate();
-  const { pageCards, resetStore, registerManuscriptCallback } = useAgentStore();
+  const {
+    pageCards,
+    currentViewPageId,
+    setCurrentViewPage,
+    resetStore,
+    registerManuscriptCallback,
+  } = useAgentStore();
   const [draftId] = React.useState<string>(() => `draft-${Date.now()}`);
 
   // Clear stale state on every session start
@@ -117,29 +90,30 @@ const EbookStudioPage: React.FC = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Two-phase rendering: ghost canvas during stream, NovelEditor when editing
-  const [editorTitle,   setEditorTitle]   = React.useState('My Book');
-  const [editorContent, setEditorContent] = React.useState(INTRO_TEMPLATE);
+  // Per-page editor content — keyed by cardId
+  const [pageContents, setPageContents] = React.useState<Record<string, string>>({});
   const [isGhostWriting, setIsGhostWriting] = React.useState(false);
+  const [ghostPageTitle, setGhostPageTitle] = React.useState('');
 
-  // Ghost canvas imperative handle — so we can call .append() without React state
+  // Ghost canvas imperative handle
   const ghostRef = React.useRef<{ append: (t: string) => void; getText: () => string } | null>(null);
 
   // Track which cards we've already started writing
   const startedCards = React.useRef<Set<string>>(new Set());
 
+  // Register the streaming callback
   React.useEffect(() => {
     registerManuscriptCallback((chunk, cardId) => {
       if (!startedCards.current.has(cardId)) {
-        // First chunk for this card → switch to ghost canvas mode
         startedCards.current.add(cardId);
+        // Resolve the page title for the ghost banner
+        const card = useAgentStore.getState().pageCards.find(c => c.id === cardId);
+        setGhostPageTitle(card?.title || '');
         setIsGhostWriting(true);
-        // Let React render the ghost canvas, then start writing
         requestAnimationFrame(() => {
           ghostRef.current?.append(chunk);
         });
       } else {
-        // Subsequent chunks → direct DOM append, ZERO React state updates
         ghostRef.current?.append(chunk);
       }
     });
@@ -147,35 +121,51 @@ const EbookStudioPage: React.FC = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // When streaming finishes → hand the raw text to the NovelEditor once and switch back
+  // When streaming finishes → save to per-page content, switch to editor
   React.useEffect(() => {
     const stillGenerating = pageCards.some(c => c.status === 'generating');
     if (!stillGenerating && isGhostWriting) {
-      // Small delay for the final chunk to flush to DOM
       const timer = setTimeout(() => {
         const finalText = ghostRef.current?.getText() || '';
-        if (finalText) {
-          setEditorContent(finalText);
+        if (finalText && currentViewPageId) {
+          setPageContents(prev => ({ ...prev, [currentViewPageId]: finalText }));
         }
         setIsGhostWriting(false);
+        setGhostPageTitle('');
       }, 300);
       return () => clearTimeout(timer);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageCards, isGhostWriting]);
+
+  // Sync approved page content from store into local pageContents
+  React.useEffect(() => {
+    pageCards.forEach(card => {
+      if (card.status === 'approved' && card.content && !pageContents[card.id]) {
+        setPageContents(prev => ({ ...prev, [card.id]: card.content! }));
+      }
+    });
   }, [pageCards]);
+
+  // The content shown in the editor for the selected page
+  const currentCard    = pageCards.find(c => c.id === currentViewPageId);
+  const currentContent = currentViewPageId ? (pageContents[currentViewPageId] || BLANK_PAGE) : BLANK_PAGE;
+
+  const handleContentChange = (val: string) => {
+    if (currentViewPageId) {
+      setPageContents(prev => ({ ...prev, [currentViewPageId]: val }));
+    }
+  };
 
   const handleExport = () => {
     const approvedCards = pageCards.filter(c => c.status === 'approved');
-    const pagesToExport = approvedCards.length > 0 ? approvedCards : pageCards;
-
-    if (pagesToExport.length === 0) {
+    if (approvedCards.length === 0) {
       alert("Please generate at least one page before publishing.");
       return;
     }
-
     const finalBook: EBook = {
       id: draftId,
-      title: editorTitle || pageCards[0]?.title || "Untitled Masterpiece",
+      title: pageCards[0]?.title || "Untitled Masterpiece",
       author: currentUser?.name || 'Author',
       description: 'Authored with Studio-Grade AI Precision',
       price: 299,
@@ -183,10 +173,10 @@ const EbookStudioPage: React.FC = () => {
       genre: 'Literature',
       sellerId: currentUser?.id || 'guest',
       publicationDate: new Date().toISOString().split('T')[0],
-      pages: pagesToExport.map(c => ({
+      pages: approvedCards.map(c => ({
         id: c.id,
         title: c.title,
-        content: editorContent,
+        content: pageContents[c.id] || c.content || '',
         pageNumber: c.pageNumber
       })),
       isDraft: false
@@ -214,48 +204,63 @@ const EbookStudioPage: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Page navigation label */}
+          {currentCard && !isGhostWriting && (
+            <div className="hidden lg:flex items-center gap-2 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full">
+              <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-wider">
+                Page {currentCard.pageNumber}
+              </span>
+              <div className="w-px h-3 bg-zinc-800" />
+              <span className="text-[10px] font-bold text-zinc-400 max-w-[160px] truncate">
+                {currentCard.title}
+              </span>
+            </div>
+          )}
+
           <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full">
             <div className={cn(
               "w-1.5 h-1.5 rounded-full transition-colors",
               isGhostWriting ? "bg-blue-500 animate-ping" : "bg-emerald-500 animate-pulse"
             )} />
             <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
-              {isGhostWriting ? 'Ghost Writing' : 'Neural Link Syncing'}
+              {isGhostWriting ? 'Ghost Writing' : 'Neural Link'}
             </span>
           </div>
+
           <Button
-            variant="outline"
-            size="sm"
+            variant="outline" size="sm"
             onClick={handleExport}
             className="h-8 px-4 rounded-xl border-zinc-800 bg-zinc-950 text-zinc-100 text-[10px] font-bold uppercase tracking-widest hover:bg-zinc-900 hover:border-zinc-700 transition-all"
           >
             Publish Draft
           </Button>
           <Button
-            variant="ghost"
-            size="sm"
+            variant="ghost" size="sm"
             onClick={() => navigate('/dashboard')}
             className="text-zinc-500 hover:text-zinc-200 hover:bg-zinc-900 text-[10px] font-bold uppercase tracking-wider"
           >
             Exit
           </Button>
           <div className="w-7 h-7 rounded-lg border border-zinc-800 bg-zinc-900 flex items-center justify-center overflow-hidden">
-            {currentUser?.profileImageUrl ? (
-              <img src={currentUser.profileImageUrl} className="w-full h-full object-cover" />
-            ) : (
-              <span className="text-[10px] font-bold text-zinc-600">{(currentUser?.name || 'U')[0]}</span>
-            )}
+            {currentUser?.profileImageUrl
+              ? <img src={currentUser.profileImageUrl} className="w-full h-full object-cover" />
+              : <span className="text-[10px] font-bold text-zinc-600">{(currentUser?.name || 'U')[0]}</span>
+            }
           </div>
         </div>
       </header>
 
-      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+      {/* ── THREE-PANEL BODY ── */}
+      <div className="flex-1 flex overflow-hidden">
 
-        {/* ── LEFT PANEL: AI CHAT + CARDS ── */}
+        {/* Panel 1: AI Chat */}
         <AgentChat />
 
-        {/* ── RIGHT PANEL ── */}
-        <main className="flex-1 flex flex-col bg-[#0d0d0f] overflow-hidden relative h-full">
+        {/* Panel 2: Book Structure */}
+        <BookStructurePanel />
+
+        {/* Panel 3: Novel Editor / Ghost Canvas */}
+        <main className="flex-1 flex flex-col bg-[#0d0d0f] overflow-hidden relative">
 
           {/* Top bar */}
           <div className="flex items-center justify-between px-8 py-3 border-b border-zinc-800/60 bg-[#0d0d0f] shrink-0">
@@ -265,40 +270,51 @@ const EbookStudioPage: React.FC = () => {
                 isGhostWriting ? "bg-blue-500 animate-pulse scale-125" : "bg-emerald-500"
               )} />
               <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
-                {isGhostWriting ? 'Ghost Writing...' : 'Live Manuscript'}
+                {isGhostWriting ? 'Ghost Writing...' : currentCard ? `Page ${currentCard.pageNumber}` : 'Manuscript'}
               </span>
-              {pageCards.filter(c => c.status === 'approved').length > 0 && (
-                <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                  {pageCards.filter(c => c.status === 'approved').length} pages
-                </span>
-              )}
             </div>
             <div className="text-[10px] font-bold text-zinc-700 uppercase tracking-widest">
               {isGhostWriting
                 ? <span className="text-blue-400/70">AI is writing · please wait</span>
-                : <span>Type <span className="text-zinc-500">/</span> for block options</span>
+                : <span>Type <span className="text-zinc-500">/</span> for formatting</span>
               }
             </div>
           </div>
 
-          {/* Phase 1: Ghost Writing Canvas — zero-reparse, DOM-direct streaming */}
+          {/* Ghost canvas (streaming phase) */}
           {isGhostWriting && (
-            <GhostWritingCanvas ref={ghostRef} />
+            <GhostWritingCanvas ref={ghostRef} pageTitle={ghostPageTitle} />
           )}
 
-          {/* Phase 2: NovelEditor — only mounted when not streaming */}
+          {/* Novel Editor (editing phase) */}
           {!isGhostWriting && (
             <div className="flex-1 overflow-y-auto custom-scrollbar">
-              <div className="max-w-[700px] mx-auto py-16 px-8">
-                <NovelEditor
-                  title={editorTitle}
-                  onTitleChange={setEditorTitle}
-                  content={editorContent}
-                  onContentChange={setEditorContent}
-                  onTriggerAI={(prompt) => console.log('AI trigger:', prompt)}
-                  onTriggerImageGen={(prompt) => console.log('Image gen:', prompt)}
-                />
-              </div>
+              {currentViewPageId ? (
+                <div className="max-w-[700px] mx-auto py-16 px-8">
+                  <NovelEditor
+                    key={currentViewPageId}
+                    title={currentCard?.title || ''}
+                    onTitleChange={() => {}}
+                    content={currentContent}
+                    onContentChange={handleContentChange}
+                    onTriggerAI={(p) => console.log('AI:', p)}
+                    onTriggerImageGen={(p) => console.log('Img:', p)}
+                  />
+                </div>
+              ) : (
+                /* Empty state — no page selected */
+                <div className="flex-1 flex flex-col items-center justify-center text-center opacity-40 h-full">
+                  <div className="w-20 h-20 rounded-3xl border-2 border-dashed border-zinc-800 flex items-center justify-center mb-6">
+                    <span className="text-3xl">📄</span>
+                  </div>
+                  <p className="text-sm font-medium text-zinc-400 max-w-xs">
+                    Ask the AI to plan your book, then click Proceed on a page to generate it.
+                  </p>
+                  <p className="text-[10px] text-zinc-600 uppercase tracking-widest mt-3">
+                    {pageCards.length === 0 ? 'No pages planned yet' : `${pageCards.length} pages planned — select one`}
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </main>

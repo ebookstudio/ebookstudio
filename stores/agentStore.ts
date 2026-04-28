@@ -8,6 +8,7 @@ export interface PageCard {
   title: string;
   summary: string;
   estimatedWords: number;
+  content?: string; // Final generated content for this page
 }
 
 export interface Message {
@@ -19,11 +20,7 @@ export interface Message {
 interface AgentStore {
   messages: Message[];
   pageCards: PageCard[];
-  currentBook: {
-    title: string;
-    pages: any[];
-    approvedPages: string[];
-  };
+  currentViewPageId: string | null;
   isLoading: boolean;
 
   // Manuscript streaming callback — registered by EbookStudioPage
@@ -34,7 +31,9 @@ interface AgentStore {
   setMessages: (messages: Message[]) => void;
   addPageCard: (card: Omit<PageCard, 'id' | 'type' | 'status'>) => string;
   updatePageCard: (id: string, updates: Partial<PageCard>) => void;
+  setCurrentViewPage: (id: string | null) => void;
   generatePage: (cardId: string) => Promise<void>;
+  generateAllPages: () => Promise<void>;
   registerManuscriptCallback: (cb: ((chunk: string, cardId: string) => void) | null) => void;
   resetStore: () => void;
 }
@@ -42,11 +41,7 @@ interface AgentStore {
 export const useAgentStore = create<AgentStore>((set, get) => ({
   messages: [],
   pageCards: [],
-  currentBook: {
-    title: '',
-    pages: [],
-    approvedPages: [],
-  },
+  currentViewPageId: null,
   isLoading: false,
   _manuscriptCallback: null,
 
@@ -76,14 +71,22 @@ export const useAgentStore = create<AgentStore>((set, get) => ({
     )
   })),
 
+  setCurrentViewPage: (id) => set({ currentViewPageId: id }),
+
   registerManuscriptCallback: (cb) => set({ _manuscriptCallback: cb }),
 
   generatePage: async (cardId) => {
     const card = get().pageCards.find(c => c.id === cardId);
     if (!card) return;
 
+    // Don't allow parallel generation
+    const alreadyGenerating = get().pageCards.some(c => c.status === 'generating');
+    if (alreadyGenerating) return;
+
     set({ isLoading: true });
     get().updatePageCard(cardId, { status: 'generating' });
+    // Switch view to this page immediately
+    set({ currentViewPageId: cardId });
 
     const writingPrompt = `Write the full content for the following book section.
 
@@ -95,7 +98,7 @@ Requirements:
 - Write in a professional, engaging, literary style
 - Use rich markdown formatting (## subheadings, **bold** for emphasis, > blockquotes for key ideas)
 - Include a proper opening paragraph, developed body content, and a closing thought
-- Do NOT include a title heading — just the body content
+- Do NOT include a title heading — just the body content starting from the first paragraph
 - Return ONLY the written content, no meta-commentary or preamble`;
 
     try {
@@ -113,42 +116,54 @@ Requirements:
 
       const decoder = new TextDecoder();
       const callback = get()._manuscriptCallback;
+      let fullContent = '';
 
-      // Send the heading to the manuscript first
-      const heading = `\n\n## ${card.title}\n\n`;
+      // Send page heading first
+      const heading = `# ${card.title}\n\n`;
       if (callback) callback(heading, cardId);
+      fullContent += heading;
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        for (const line of chunk.split('\n').filter(Boolean)) {
+        const raw = decoder.decode(value, { stream: true });
+        for (const line of raw.split('\n').filter(Boolean)) {
           if (line.startsWith('0:')) {
             try {
               const text = JSON.parse(line.slice(2));
-              // Stream each chunk directly to the Novel Editor via callback
-              if (callback && text) callback(text, cardId);
+              if (text) {
+                fullContent += text;
+                if (callback) callback(text, cardId);
+              }
             } catch {}
           }
         }
       }
 
-      // Auto-approve the card when writing is complete
-      get().updatePageCard(cardId, { status: 'approved' });
+      // Save final content to the card and mark approved
+      get().updatePageCard(cardId, { status: 'approved', content: fullContent });
 
     } catch (error) {
       console.error('Failed to generate page:', error);
-      // Revert to planned so user can retry
       get().updatePageCard(cardId, { status: 'planned' });
     } finally {
       set({ isLoading: false });
     }
   },
 
+  generateAllPages: async () => {
+    const planned = get().pageCards.filter(c => c.status === 'planned');
+    for (const card of planned) {
+      await get().generatePage(card.id);
+      // Small pause between pages
+      await new Promise(r => setTimeout(r, 500));
+    }
+  },
+
   resetStore: () => set({
     messages: [],
     pageCards: [],
-    currentBook: { title: '', pages: [], approvedPages: [] },
+    currentViewPageId: null,
     isLoading: false,
     _manuscriptCallback: null,
   }),
