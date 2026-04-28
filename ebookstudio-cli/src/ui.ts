@@ -19,13 +19,13 @@ export const c = {
 
 // ─── Branding ─────────────────────────────────────────────────────────────────
 export function printBanner(): void {
-  const art = figlet.textSync('ebookstudio', {
-    font: 'Slant',
+  const art = figlet.textSync('EbookStudio', {
+    font: 'Standard',
     horizontalLayout: 'default',
   });
-  console.log(gradient(['#6366f1', '#818cf8', '#a5b4fc'])(art));
-  console.log(c.dim('  EbookStudio CLI — AI-powered ebook creation from your terminal'));
-  console.log(c.dim('  ─────────────────────────────────────────────────────────────\n'));
+  console.log(gradient(['#818cf8', '#6366f1', '#4f46e5'])(art));
+  console.log(c.dim('  AI-powered publishing platform for the next generation'));
+  console.log(c.dim('  ──────────────────────────────────────────────────────\n'));
 }
 
 // ─── Styled boxes ─────────────────────────────────────────────────────────────

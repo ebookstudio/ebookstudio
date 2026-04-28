@@ -17,12 +17,11 @@ program
   .version(CLI_VERSION)
   .addHelpText('after', `
 ${c.brand.bold('Examples:')}
-  ${c.dim('$')} ebookstudio login
+  ${c.dim('$')} ebookstudio connect      ${c.dim('← New! Auto-connect from browser')}
+  ${c.dim('$')} ebookstudio login        ${c.dim('← Manual login')}
   ${c.dim('$')} ebookstudio chat
-  ${c.dim('$')} ebookstudio generate --topic "Quantum Computing for Beginners"
-  ${c.dim('$')} ebookstudio generate --topic "..." --output book.json
+  ${c.dim('$')} ebookstudio generate --topic "Quantum Computing"
   ${c.dim('$')} ebookstudio library
-  ${c.dim('$')} ebookstudio publish --price 299
   ${c.dim('$')} ebookstudio sales
   ${c.dim('$')} ebookstudio payout --upi yourname@upi --amount 500
 
@@ -30,7 +29,16 @@ ${c.brand.bold('Browser:')}
   ${c.dim('→')} https://ebookstudio.vercel.app — same account, all features
 `);
 
-// ─── Auth commands ────────────────────────────────────────────────────────────
+// ─── Commands ─────────────────────────────────────────────────────────────────
+
+program
+  .command('connect')
+  .description('Auto-connect CLI using your browser session')
+  .action(async () => {
+    const { connect } = await import('./commands/connect.js');
+    await connect();
+  });
+
 program
   .command('login')
   .description('Sign in to your EbookStudio account')

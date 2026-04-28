@@ -9,5 +9,5 @@ export const FIREBASE_SIGNUP_URL = `https://identitytoolkit.googleapis.com/v1/ac
 
 // CLI branding
 export const CLI_NAME = 'ebookstudio';
-export const CLI_VERSION = '1.2.0';
+export const CLI_VERSION = '1.3.0';
 export const BRAND_COLOR = '#6366f1'; // indigo

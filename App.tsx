@@ -19,6 +19,7 @@ import EditEBookPage from './pages/EditEBookPage';
 import EbookStudioPage from './pages/EbookStudioPage';
 import EbookReaderPage from './pages/EbookReaderPage';
 import HostingPreviewPage from './pages/HostingPreviewPage';
+import CLIAuthPage from './pages/CLIAuthPage';
 import LoadingScreen from './components/LoadingScreen';
 import { useAppContext } from './contexts/AppContext';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -65,6 +66,7 @@ const AnimatedRoutes = () => {
                     <Route path="/refund-policy" element={<RefundPolicyPage />} />
                     <Route path="/terms-and-conditions" element={<TermsPage />} />
                     <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                    <Route path="/cli-auth" element={<CLIAuthPage />} />
                   </Routes>
             </motion.div>
         </AnimatePresence>
