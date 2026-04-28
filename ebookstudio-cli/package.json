@@ -1,6 +1,6 @@
 {
   "name": "ebookstudio-cli",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "EbookStudio CLI — control ebookstudio.vercel.app from your terminal",
   "main": "dist/index.js",
   "bin": {
@@ -12,7 +12,12 @@
     "start": "node dist/index.js",
     "prepublishOnly": "npm run build"
   },
-  "keywords": ["ebook", "ai", "cli", "writing"],
+  "keywords": [
+    "ebook",
+    "ai",
+    "cli",
+    "writing"
+  ],
   "author": "EbookStudio",
   "license": "MIT",
   "dependencies": {
