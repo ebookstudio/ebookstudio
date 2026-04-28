@@ -83,6 +83,7 @@ const EbookStudioPage: React.FC = () => {
     registerManuscriptCallback,
   } = useAgentStore();
   const [draftId] = React.useState<string>(() => `draft-${Date.now()}`);
+  const [savedOk, setSavedOk] = React.useState(false);
 
   // Clear stale state on every session start
   React.useEffect(() => {
@@ -157,18 +158,17 @@ const EbookStudioPage: React.FC = () => {
     }
   };
 
-  const handleExport = () => {
+  // Save to library WITHOUT navigating away
+  const handleSave = () => {
     const approvedCards = pageCards.filter(c => c.status === 'approved');
-    if (approvedCards.length === 0) {
-      alert("Please generate at least one page before publishing.");
-      return;
-    }
+    if (approvedCards.length === 0) return;
+    const bookTitle = pageCards[0]?.title || 'Untitled Ebook';
     const finalBook: EBook = {
       id: draftId,
-      title: pageCards[0]?.title || "Untitled Masterpiece",
+      title: bookTitle,
       author: currentUser?.name || 'Author',
-      description: 'Authored with Studio-Grade AI Precision',
-      price: 299,
+      description: pageCards[2]?.summary || 'Authored with Studio-Grade AI Precision',
+      price: 999,
       coverImageUrl: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&q=80&w=800',
       genre: 'Literature',
       sellerId: currentUser?.id || 'guest',
@@ -179,11 +179,13 @@ const EbookStudioPage: React.FC = () => {
         content: pageContents[c.id] || c.content || '',
         pageNumber: c.pageNumber
       })),
-      isDraft: false
+      isDraft: true
     };
     addCreatedBook(finalBook);
-    navigate('/dashboard');
+    setSavedOk(true);
+    setTimeout(() => setSavedOk(false), 4000);
   };
+
 
   return (
     <div className="flex flex-col h-[100dvh] w-full bg-zinc-950 overflow-hidden font-sans text-zinc-100 selection:bg-zinc-100/10">
@@ -257,7 +259,7 @@ const EbookStudioPage: React.FC = () => {
         <AgentChat />
 
         {/* Panel 2: Book Structure */}
-        <BookStructurePanel />
+        <BookStructurePanel onSave={handleSave} savedOk={savedOk} />
 
         {/* Panel 3: Novel Editor / Ghost Canvas */}
         <main className="flex-1 flex flex-col bg-[#0d0d0f] overflow-hidden relative">
