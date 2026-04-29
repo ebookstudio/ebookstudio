@@ -15,19 +15,27 @@ export async function connect() {
     // 1. Initialize connection with retry
     let initRes;
     let retries = 3;
+    const urls = [
+      `${API_BASE}/api/cli/start-session`,
+      `https://ebookstudio-git-main-ebookstudio.vercel.app/api/cli/start-session`
+    ];
+
     while (retries > 0) {
       try {
-        initRes = await axios.get(`${API_BASE}/api/cli/start-session?t=${Date.now()}`, {
+        const targetUrl = urls[retries % urls.length].replace('/api/cli/start-session', '/api/cli-start');
+        initRes = await axios.get(`${targetUrl}?t=${Date.now()}`, {
           headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-          }
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept': 'application/json'
+          },
+          timeout: 10000
         });
         break;
       } catch (err: any) {
         if (err.response?.status === 429 && retries > 1) {
           retries--;
-          spinner.text = `System busy, retrying... (${3 - retries}/3)`;
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          spinner.text = `Connection throttled, waiting 5s... (${3 - retries}/3)`;
+          await new Promise(resolve => setTimeout(resolve, 5000));
           continue;
         }
         throw err;
@@ -54,10 +62,9 @@ export async function connect() {
 
     const pollSpinner = ora('Waiting for authorization...').start();
     
-    // 2. Poll for status
     const pollInterval = setInterval(async () => {
       try {
-        const checkRes = await axios.get(`${API_BASE}/api/cli/check-connect?deviceCode=${deviceCode}&t=${Date.now()}`, {
+        const checkRes = await axios.get(`${API_BASE}/api/cli-check?deviceCode=${deviceCode}&t=${Date.now()}`, {
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
           }
