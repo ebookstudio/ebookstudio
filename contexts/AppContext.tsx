@@ -41,6 +41,7 @@ const defaultAppContext: AppContextType = {
   loadUserBooksFromCloud: async () => {},
   isSidebarCollapsed: false,
   setIsSidebarCollapsed: () => {},
+  idToken: null,
 };
 
 const AppContext = createContext<AppContextType>(defaultAppContext);
@@ -88,6 +89,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [isInitialAuthCheck, setIsInitialAuthCheck] = useState(true);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [idToken, setIdToken] = useState<string | null>(null);
 
   const syncWithNeon = useCallback(async (userId: string) => {
     try {
@@ -155,12 +157,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
                 
                 // Sync with Neon immediately after login
                 syncWithNeon(firebaseUser.uid);
+                setIdToken(await firebaseUser.getIdToken());
             } catch (error) {
                 console.error("Profile Load Error:", error);
             }
         } else {
             setCurrentUserState(null);
             setUserTypeState(UserType.GUEST);
+            setIdToken(null);
         }
         setIsInitialAuthCheck(false);
     });
@@ -609,7 +613,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const theme = 'dark';
 
   return (
-    <AppContext.Provider value={{ currentUser, userType, setCurrentUser, cart, addToCart, removeFromCart, clearCart, theme, geminiChat, initializeChat, isChatbotOpen, toggleChatbot, updateSellerCreatorSite, allBooks, addCreatedBook, updateEBook, publishCreatedBook, handleGoogleLogin, handleEmailLogin, upgradeToSeller, verifyUser, isInitialAuthCheck, isAuthenticating, logout, finalizePurchase, updatePayoutUpi, updateSubscription, saveBookToCloud, loadUserBooksFromCloud, isSidebarCollapsed, setIsSidebarCollapsed }}>
+    <AppContext.Provider value={{ currentUser, userType, setCurrentUser, cart, addToCart, removeFromCart, clearCart, theme, geminiChat, initializeChat, isChatbotOpen, toggleChatbot, updateSellerCreatorSite, allBooks, addCreatedBook, updateEBook, publishCreatedBook, handleGoogleLogin, handleEmailLogin, upgradeToSeller, verifyUser, isInitialAuthCheck, isAuthenticating, logout, finalizePurchase, updatePayoutUpi, updateSubscription, saveBookToCloud, loadUserBooksFromCloud, isSidebarCollapsed, setIsSidebarCollapsed, idToken }}>
       {children}
     </AppContext.Provider>
   );

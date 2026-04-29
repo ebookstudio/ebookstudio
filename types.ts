@@ -145,6 +145,7 @@ export interface AppContextType {
   loadUserBooksFromCloud: () => Promise<void>; // Added for cloud draft sync
   isSidebarCollapsed: boolean;
   setIsSidebarCollapsed: (collapsed: boolean) => void;
+  idToken: string | null;
 }
 
 export interface GroundingChunkWeb {

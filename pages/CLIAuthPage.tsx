@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAppContext } from '../contexts/AppContext';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Loader2, CheckCircle, ShieldCheck } from 'lucide-react';
 
 const CLIAuthPage: React.FC = () => {
-  const { user, idToken } = useAuth();
+  const { currentUser: user, idToken } = useAppContext();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [status, setStatus] = useState<'checking' | 'ready' | 'connecting' | 'done' | 'error'>('checking');
