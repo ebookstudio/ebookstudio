@@ -1,8 +1,7 @@
-import http from 'http';
 import { exec } from 'child_process';
-import url from 'url';
 import ora from 'ora';
 import chalk from 'chalk';
+import axios from 'axios';
 import { saveSession, Session } from '../auth.js';
 import { printBanner } from '../ui.js';
 import { API_BASE } from '../config.js';
@@ -12,62 +11,69 @@ export async function connect() {
   
   const spinner = ora('Initializing secure connection...').start();
   
-  const startServer = (p: number) => {
-    const server = http.createServer(async (req, res) => {
-      const parsedUrl = url.parse(req.url || '', true);
-      
-      if (parsedUrl.pathname === '/callback') {
-        const { idToken, email, refreshToken, uid } = parsedUrl.query;
+  try {
+    // 1. Initialize connection
+    const initRes = await axios.post(`${API_BASE}/api/cli/init-connect`);
+    const { deviceCode } = initRes.data;
+    
+    spinner.stop();
+    
+    console.log(`  ${chalk.bold('Action Required:')}`);
+    console.log(`  1. Confirm this code matches on your screen: ${chalk.bgWhite.black.bold(` ${deviceCode} `)}`);
+    console.log(`  2. Authorize the connection in your browser.\n`);
+    
+    const authUrl = `${API_BASE}/cli-auth?code=${deviceCode}`;
+    
+    // Open browser
+    const command = process.platform === 'win32' ? 'start' : process.platform === 'darwin' ? 'open' : 'xdg-open';
+    exec(`${command} "${authUrl}"`);
+    
+    console.log(`  ${chalk.dim('Opening browser...')}`);
+    console.log(`  ${chalk.cyan.underline(authUrl)}\n`);
+
+    const pollSpinner = ora('Waiting for authorization...').start();
+    
+    // 2. Poll for status
+    const pollInterval = setInterval(async () => {
+      try {
+        const checkRes = await axios.get(`${API_BASE}/api/cli/check-connect?deviceCode=${deviceCode}`);
+        const data = checkRes.data;
         
-        if (idToken && email && refreshToken && uid) {
+        if (data.status === 'authorized') {
+          clearInterval(pollInterval);
+          
           const session: Session = {
-            uid: uid as string,
-            email: email as string,
-            name: (email as string).split('@')[0],
-            idToken: idToken as string,
-            refreshToken: refreshToken as string,
-            expiresAt: Date.now() + 3600 * 1000, // 1 hour default
+            uid: data.uid,
+            email: data.email,
+            name: data.email.split('@')[0],
+            idToken: data.id_token,
+            refreshToken: data.refresh_token,
+            expiresAt: Date.now() + 3600 * 1000,
           };
+          
           saveSession(session);
-          
-          res.writeHead(200, { 'Content-Type': 'text/html' });
-          res.end(`
-            <html>
-              <body style="font-family: sans-serif; text-align: center; padding-top: 50px; background: #f9fafb;">
-                <h1 style="color: #4f46e5;">Successfully Connected!</h1>
-                <p>You can close this window and return to your terminal.</p>
-              </body>
-            </html>
-          `);
-          
-          spinner.succeed(`Connected as ${chalk.bold(email)}`);
-          server.close();
+          pollSpinner.succeed(`Connected successfully as ${chalk.bold(data.email)}!`);
           process.exit(0);
-        } else {
-          res.writeHead(400);
-          res.end('Authentication failed: Missing session data');
-          spinner.fail('Authentication failed.');
         }
+      } catch (err: any) {
+        if (err.response?.status === 404) {
+          clearInterval(pollInterval);
+          pollSpinner.fail('Connection request expired or was denied.');
+          process.exit(1);
+        }
+        // Keep polling on other errors
       }
-    });
+    }, 2000);
 
-    server.listen(p, () => {
-      const authUrl = `${API_BASE}/cli-auth?port=${p}`;
-      spinner.text = `Opening browser for authentication...`;
-      
-      const command = process.platform === 'win32' ? 'start' : process.platform === 'darwin' ? 'open' : 'xdg-open';
-      exec(`${command} "${authUrl}"`);
-      
-      console.log(`\n  ${chalk.dim('If the browser didn\'t open, visit:')}`);
-      console.log(`  ${chalk.cyan.underline(authUrl)}\n`);
-    }).on('error', (err: any) => {
-      if (err.code === 'EADDRINUSE') {
-        startServer(p + 1);
-      } else {
-        spinner.fail(`Failed to start local server: ${err.message}`);
-      }
-    });
-  };
+    // Timeout after 5 minutes
+    setTimeout(() => {
+      clearInterval(pollInterval);
+      pollSpinner.fail('Connection timed out.');
+      process.exit(1);
+    }, 5 * 60 * 1000);
 
-  startServer(9999);
+  } catch (error: any) {
+    spinner.fail(`Failed to initialize connection: ${error.message}`);
+    process.exit(1);
+  }
 }
