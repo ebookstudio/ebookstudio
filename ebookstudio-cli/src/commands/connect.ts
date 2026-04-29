@@ -17,7 +17,11 @@ export async function connect() {
     let retries = 3;
     while (retries > 0) {
       try {
-        initRes = await axios.get(`${API_BASE}/api/cli/start-session?t=${Date.now()}`);
+        initRes = await axios.get(`${API_BASE}/api/cli/start-session?t=${Date.now()}`, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+          }
+        });
         break;
       } catch (err: any) {
         if (err.response?.status === 429 && retries > 1) {
@@ -53,7 +57,11 @@ export async function connect() {
     // 2. Poll for status
     const pollInterval = setInterval(async () => {
       try {
-        const checkRes = await axios.get(`${API_BASE}/api/cli/check-connect?deviceCode=${deviceCode}`);
+        const checkRes = await axios.get(`${API_BASE}/api/cli/check-connect?deviceCode=${deviceCode}&t=${Date.now()}`, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+          }
+        });
         const data = checkRes.data;
         
         if (data.status === 'authorized') {
