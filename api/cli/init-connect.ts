@@ -4,6 +4,10 @@ import { neon } from '@neondatabase/serverless';
 const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : null;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+
   if (req.method !== 'POST') return res.status(405).end();
   if (!sql) return res.status(500).json({ error: 'Database not configured' });
 

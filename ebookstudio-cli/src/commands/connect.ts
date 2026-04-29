@@ -12,8 +12,25 @@ export async function connect() {
   const spinner = ora('Initializing secure connection...').start();
   
   try {
-    // 1. Initialize connection
-    const initRes = await axios.post(`${API_BASE}/api/cli/init-connect`);
+    // 1. Initialize connection with retry
+    let initRes;
+    let retries = 3;
+    while (retries > 0) {
+      try {
+        initRes = await axios.post(`${API_BASE}/api/cli/init-connect`);
+        break;
+      } catch (err: any) {
+        if (err.response?.status === 429 && retries > 1) {
+          retries--;
+          spinner.text = `System busy, retrying... (${3 - retries}/3)`;
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          continue;
+        }
+        throw err;
+      }
+    }
+    
+    if (!initRes) throw new Error('Failed to initialize connection after retries');
     const { deviceCode } = initRes.data;
     
     spinner.stop();
