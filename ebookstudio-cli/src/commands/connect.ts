@@ -17,7 +17,7 @@ export async function connect() {
     let retries = 3;
     while (retries > 0) {
       try {
-        initRes = await axios.post(`${API_BASE}/api/cli/init-connect`);
+        initRes = await axios.get(`${API_BASE}/api/cli/start-session?t=${Date.now()}`);
         break;
       } catch (err: any) {
         if (err.response?.status === 429 && retries > 1) {
