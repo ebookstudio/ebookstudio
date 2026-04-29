@@ -22,7 +22,7 @@ export async function connect() {
 
     while (retries > 0) {
       try {
-        const targetUrl = urls[retries % urls.length].replace('/api/cli/start-session', '/api/cli-start');
+        const targetUrl = urls[retries % urls.length];
         initRes = await axios.get(`${targetUrl}?t=${Date.now()}`, {
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -64,7 +64,7 @@ export async function connect() {
     
     const pollInterval = setInterval(async () => {
       try {
-        const checkRes = await axios.get(`${API_BASE}/api/cli-check?deviceCode=${deviceCode}&t=${Date.now()}`, {
+        const checkRes = await axios.get(`${API_BASE}/api/cli/check-connect?deviceCode=${deviceCode}&t=${Date.now()}`, {
           headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
           }

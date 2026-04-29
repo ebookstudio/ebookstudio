@@ -26,7 +26,7 @@ const CLIAuthPage: React.FC = () => {
     
     setStatus('connecting');
     try {
-      const response = await fetch('/api/cli-authorize', {
+      const response = await fetch('/api/cli/authorize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
